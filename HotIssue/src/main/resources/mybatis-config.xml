@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+    <setting name="logImpl" value="LOG4J2"/>
+    <!-- DB 컬럼명과 자바 객체 필드명을 자동으로 매핑 
+         컬럼명(user_id)을 Java객체의 camelCase 필드명(userId)과 자동으로 매핑
+    -->
+    <setting name="mapUnderscoreToCamelCase" value="true"/>
+  </settings>
+  <typeAliases>
+  <typeAlias alias="MyMapperDTO" type="com.pcwk.ehr.mymapper.domain.MyMapperDTO"></typeAlias>
+  <typeAlias alias="UserDTO" type="com.pcwk.ehr.user.domain.UserDTO"/>
+  <typeAlias alias="SearchDTO" type="com.pcwk.ehr.cmn.SearchDTO"/>
+  </typeAliases>
+</configuration>

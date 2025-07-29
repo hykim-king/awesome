@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pcwk.ehr.user">
+
+
+	<sql id="userWhere">
+		<where>
+			<if test="searchDiv !='' ">
+				<choose>
+					<when test="searchDiv == '10' ">
+						user_id LIKE #{searchWord} ||'%'
+					</when>
+					<when test="searchDiv == '20' ">
+						name LIKE #{searchWord} ||'%'
+					</when>
+					<when test="searchDiv == '30' ">
+						email LIKE #{searchWord} ||'%'
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+	<select id="doRetrieve" parameterType="SearchDTO"
+		resultType="UserDTO">
+		SELECT A.*,B.*
+		  FROM(
+		      SELECT tt3.RNUM as no,
+		             tt3.user_id,
+		             tt3.name,
+		             tt3.password,
+		             tt3.login,
+		             tt3.recommand,
+		             DECODE(tt3.grade,1,'BASIC',2,'SILVER',3,'GOLD','Unknown value') AS grade,
+		             tt3.email,
+		             TO_CHAR(tt3.reg_dt,'YYYY/MM/DD HH24:MI:SS') AS reg_dt
+		      FROM
+		          (
+		          SELECT ROWNUM AS RNUM,
+		                 tt2.*
+		           FROM(
+		              SELECT t1.*
+		                FROM member t1
+		<include refid="userWhere"></include>
+		              ORDER BY t1.reg_dt desc
+		              )tt2                                                            
+                <![CDATA[WHERE ROWNUM <= (#{pageSize}*(#{pageNo} - 1) + #{pageSize})                                               
+                )tt3                                                            
+            WHERE RNUM >= (#{pageSize}*(#{pageNo} - 1) + 1) ]]>
+		          )A
+		CROSS JOIN
+		  (SELECT COUNT(*) AS total_cnt
+		     FROM member
+		--WHERE : searchDiv(10): user_id, searchDiv(20): name, searchDiv(30): email
+		<include refid="userWhere"></include>
+		)B
+	</select>
+
+	<insert id="saveAll">
+		INSERT INTO MEMBER
+		SELECT 'jamesol' || level as user_id,
+		'이상무' || level as name,
+		'4321_' || level as password,
+		MOD(level,10) as login,
+		MOD(level,2) as recommand,
+		DECODE(MOD(level,3),0,3,MOD(level,3)) as grade,
+		'dlwhd0614@naver.com' as email,
+		SYSDATE - level as reg_dt
+		FROM dual                                              
+          <![CDATA[ CONNECT BY LEVEL <= 502]]>
+	</insert>
+
+	<update id="doUpdate" parameterType="UserDTO">
+		UPDATE member
+		SET name = #{name},
+		password = #{password},
+		login = #{login},
+		recommand = #{recommand},
+		grade = DECODE(#{grade},'BASIC',1,'SILVER',2,'GOLD',3),
+		email = #{email},
+		reg_dt = SYSDATE
+		WHERE
+		user_id = #{userId}
+	</update>
+
+	<insert id="doSave" parameterType="UserDTO">
+		INSERT INTO member (
+		user_id,
+		name,
+		password,
+		login,
+		recommand,
+		grade,
+		email,
+		reg_dt
+		) VALUES ( #{userId},
+		#{name},
+		#{password},
+		#{login},
+		#{recommand},
+		DECODE(#{grade},'BASIC',1,'SILVER',2,'GOLD',3),
+		#{email},
+		SYSDATE )
+	</insert>
+
+	<resultMap type="UserDTO" id="userMap">
+		<!-- id PK 또는 고유값에 해당 합니다 -->
+		<id column="user_id" property="userId" />
+		<id column="name" property="name" />
+		<id column="password" property="password" />
+		<id column="login" property="login" />
+		<id column="recommand" property="recommand" />
+		<id column="grade" property="grade" />
+		<id column="email" property="email" />
+		<id column="regDt" property="regDt" />
+	</resultMap>
+
+	<select id="getAll" resultType="UserDTO">
+		SELECT
+		user_id,
+		name,
+		password,
+		login,
+		recommand,
+		DECODE(grade,1,'BASIC',2,'SILVER',3,'GOLD','Unknown value') AS grade,
+		email,
+		TO_CHAR(reg_dt,'YYYY/MM/DD HH24:MI:SS') AS reg_dt_str
+		FROM
+		member
+		ORDER BY user_id
+
+	</select>
+
+
+	<select id="doSelectOne" parameterType="UserDTO"
+		resultMap="userMap">
+		SELECT
+		user_id,
+		name,
+		password,
+		login,
+		recommand,
+		DECODE(grade,1,'BASIC',2,'SILVER',3,'GOLD','Unknown value') AS grade,
+		email,
+		TO_CHAR(reg_dt,'YYYY/MM/DD HH24:MI:SS') AS regDt
+		FROM
+		member
+		WHERE user_id = #{userId}
+	</select>
+
+	<select id="getCount" resultType="java.lang.Integer">
+		select count(*) AS totalCnt
+		from member
+	</select>
+
+	<delete id="doDelete" parameterType="UserDTO">
+		DELETE FROM member
+		WHERE
+		user_id = #{userId}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM member
+	</delete>
+
+
+</mapper>
