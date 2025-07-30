@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- message설정 
+	    등록시 주의 사항 : 이름이 messageSource로 고정되어 있다.
+	  id="messageSource"
+	 -->	
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+	   <property name="basenames">
+	     <list>
+	       <value>message.message</value>
+	     </list>
+	   </property>
+	</bean>	
+	
+	<!-- 로케일 변경 인터셉터 
+	언언 설정 변경 요청을 가로채고 사용자의 Locale을 동적으로 변경해주는 인터셉터
+	-->
+	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	    <property name="paramName" value="lang"></property>
+	</bean>
+	
+	<!-- LocaleResolver : 웹브라우저가 서버에 요청하면 브라우저의 Locale정보가 Http 요청 메시지 헤더에 자동으로 설정되어 서버로 전송
+	이 때 스프링은 LocaleResolver를 통해 클라이언트의 Locale정보를 추출하고, 이 Locale정보에 해당하는 언어의 메시지를 적용한다.
+	 -->
+	
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	</bean>
+	
+		
+	<!-- aes.properties 파일 읽기 -->
+	<context:property-placeholder location="classpath:aes.properties"/>
+	<!-- 양방향 암호화 -->
+	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
+	
+	<!-- 단방향 암호화 -->
+	<bean id="passwordEncoder" 
+	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+		
+    <!-- 예외처리: 최종테스트에 열고 사용 하세요 -->
+<!--     <bean id="exceptionResolver" 
+       class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.ArithmeticException">
+                    cmn/arithmeticError
+                </prop>            
+            </props>
+
+        </property>  
+
+        <property name="defaultErrorView" value="cmn/error"></property>
+    </bean> -->
+		
+    <!-- fileupload -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="maxUploadSize" value="10485760"/>
+        <property name="maxInMemorySize" value="20480"/>
+    </bean>
+    
+    
+    <!--Mapper 자동 scann *Impl 제거 -->
+    <!-- com.pcwk.ehr.mapper: 경로 매우 중요 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.pcwk.ehr.mapper" />
+    </bean>
+    
+    
+    <!-- mybatis -->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactoryBean"/>
+    </bean>
+    
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- mybatis-config -->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- mypper:sql -->
+        <property name="mapperLocations" value="classpath:mapper/**/*.xml"></property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager" 
+    proxy-target-class="true" />
+    
+    <!-- Transaction -->  
+    <tx:annotation-driven proxy-target-class="true"
+        transaction-manager="transactionManager" />
+    <!-- 트랜잭션 Advice -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+       <tx:attributes>
+           <!-- 트랜잭션 적용: up으로 시작하는 메서드에 적용한다. 
+           name : 트랜잭션 적용 메서드 이름
+           read-only : 읽기 전용 여부
+           rollback-for : 트랜잭션을 롤백할 예외 
+           -->
+           <tx:method name="up*" read-only="false" rollback-for="Exception"/>
+           
+           <!-- 트랜잭션 제외 : up으로 시작하지 않는 모든 메서드-->
+           <tx:method name="*" read-only="true"/>
+       </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+       <aop:pointcut expression="execution( * com.pcwk.ehr..service.*Impl.up*(..))" id="txPointCut"/>
+       <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+    </aop:config>
+
+
+
+    <!-- Advice :성능 측정 -->
+    <bean id="performanceAdvice"
+        class="com.pcwk.ehr.cmn.apect.PerformanceAdvice"></bean>
+
+    <!-- Spring + AspectJ 사용 (가장 일반적) -->
+    <!-- AOP -->
+    <!-- <aop:config> <aop:aspect ref="performanceAdvice"> <aop:pointcut expression="execution(* 
+        com.pcwk.ehr..service.*Impl.none*(..) )" id="performancePointcut"/> <aop:around 
+        method="logExecutionTime" pointcut-ref="performancePointcut"/> </aop:aspect> 
+        </aop:config> -->
+
+
+    <bean id="dummyMailService"
+        class="com.pcwk.ehr.user.service.DummyMailService"></bean> 
+
+    <!-- Naver smtp -->
+
+    <!-- google smtp -->
+    <bean id="mailSenderImpl"
+        class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="smtp.gmail.com" />
+        <property name="port" value="587" />
+        <property name="username" value="zoqwkdrudfud@gmail.com" />
+        <property name="password" value="***" />
+        <property name="protocol" value="smtp" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+                <prop key="mail.debug">true</prop>
+            </props>
+        </property>
+    </bean>
+    
+    
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="driverClassName"
+            value="oracle.jdbc.driver.OracleDriver" />
+        <property name="jdbcUrl"
+            value="jdbc:oracle:thin:@192.168.100.167:1521:XE" />
+        <property name="username" value="scott" />
+        <property name="password" value="pcwk"></property>
+        <!-- Optional settings -->
+        <property name="maximumPoolSize" value="10"></property>
+        <property name="minimumIdle" value="5"></property>
+        <property name="connectionTimeout" value="30000"></property>
+        <property name="idleTimeout" value="600000"></property>
+        <property name="maxLifetime" value="1800000"></property>
+        <!-- maximumPoolSize : 풀에 유지할 최대 연결 수 minimumIdle : 유휴상태로 유지할수 있는 최대 연결 
+            수 connectionTimeout: 연결 시도 시 타임아웃 설정(밀리 초) idleTimeout : 유휴 연결이 풀에서 제거되기 
+            전 대기 시간(밀리 초) maxLifetime : 연결이 풀에서 제거되기 전 최대 생존 시간 입니다.(밀리 초) -->
+
+    </bean>
+
+</beans>
