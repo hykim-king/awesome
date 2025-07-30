@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pcwk</groupId>
 	<artifactId>ehr</artifactId>
-	<name>sw16_final</name>
+	<name>Awesome</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
