@@ -197,7 +197,7 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>${mail-version}</version>
-        </dependency>
+            </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
         <dependency>
             <groupId>org.springframework</groupId>
