@@ -37,5 +37,14 @@
 		  SYSDATE
 		)
 	</insert>
+	
+	<!-- 단건 삭제 -->
+    <delete id="doDelete" parameterType="long">
+       DELETE FROM article
+        WHERE article_code = #{articleCode}
+    </delete>
+    
+    
+	
 </mapper>
 
