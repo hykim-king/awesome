@@ -2,9 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pcwk.ehr.mapper.ArticleMapper">
 	<delete id="deleteAll">
-	   DELETE FROM article
+		DELETE FROM article
 	</delete>
-	
+
+	<update id="updateReadCnt"
+		parameterType="com.pcwk.ehr.article.domain.ArticleDTO">
+		UPDATE article
+		SET
+		  views = NVL(views,0)+1
+		WHERE
+		  ARTICLE_CODE = #{articleCode}
+	</update>
+
+	<select id="getCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM article
+	</select>
+
 	<insert id="doSave"
 		parameterType="com.pcwk.ehr.article.domain.ArticleDTO"
 		useGeneratedKeys="true" keyProperty="articleCode">
@@ -37,60 +50,64 @@
 		  SYSDATE
 		)
 	</insert>
-	
-	<!-- 단건 삭제 -->
-    <delete id="doDelete" parameterType="long">
-       DELETE FROM article
-        WHERE article_code = #{articleCode}
-    </delete>
-    
-    <!-- 단건 조회 (기사 코드로 조회) -->
-<select id="doSelectOne" parameterType="long" resultType="com.pcwk.ehr.article.domain.ArticleDTO">
-    SELECT 
-        ARTICLE_CODE,
-        CATEGORY,
-        PRESS,
-        TITLE,
-        SUMMARY,
-        URL,
-        PUBLIC_DT,
-        VIEWS,
-        REG_DT,
-        MOD_DT
-    FROM ARTICLE
-    WHERE ARTICLE_CODE = #{articleCode}
-</select>
 
-<select id="doRetrieve" parameterType="com.pcwk.ehr.cmn.SearchDTO" resultType="com.pcwk.ehr.article.domain.ArticleDTO">
-    SELECT 
-        ARTICLE_CODE,
-        CATEGORY,
-        PRESS,
-        TITLE,
-        SUMMARY,
-        URL,
-        PUBLIC_DT,
-        VIEWS,
-        REG_DT,
-        MOD_DT
-    FROM ARTICLE
-    WHERE 1=1
-    <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
-        <choose>
-            <when test="searchDiv == '10'">
-                AND TITLE LIKE '%' || #{searchWord} || '%'
-            </when>
-            <when test="searchDiv == '20'">
-                AND SUMMARY LIKE '%' || #{searchWord} || '%'
-            </when>
-            <when test="searchDiv == '30'">
-                AND (TITLE || SUMMARY) LIKE '%' || #{searchWord} || '%'
-            </when>
-        </choose>
-    </if>
-    ORDER BY REG_DT DESC
-</select>
-    
-	
+	<!-- 단건 삭제 -->
+	<delete id="doDelete" parameterType="long">
+		DELETE FROM article
+		WHERE article_code = #{articleCode}
+	</delete>
+
+	<!-- 단건 조회 (기사 코드로 조회) -->
+	<select id="doSelectOne" parameterType="long"
+		resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+		SELECT
+			ARTICLE_CODE,
+			CATEGORY,
+			PRESS,
+			TITLE,
+			SUMMARY,
+			URL,
+			PUBLIC_DT,
+			VIEWS,
+			REG_DT,
+			MOD_DT
+			FROM ARTICLE
+		WHERE ARTICLE_CODE = #{articleCode}
+	</select>
+
+	<select id="doRetrieve"
+		parameterType="com.pcwk.ehr.cmn.SearchDTO"
+		resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+		SELECT
+			ARTICLE_CODE,
+			CATEGORY,
+			PRESS,
+			TITLE,
+			SUMMARY,
+			URL,
+			PUBLIC_DT,
+			VIEWS,
+			REG_DT,
+			MOD_DT
+			FROM ARTICLE
+		WHERE 1=1
+		<if
+			test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
+			<choose>
+				<when test="searchDiv == '10'">
+					AND TITLE LIKE '%' || #{searchWord} || '%'
+				</when>
+				<when test="searchDiv == '20'">
+					AND SUMMARY LIKE '%' || #{searchWord} || '%'
+				</when>
+				<when test="searchDiv == '30'">
+					AND (TITLE || SUMMARY) LIKE '%' || #{searchWord} || '%'
+				</when>
+			</choose>
+		</if>
+		ORDER BY REG_DT DESC
+	</select>
+
+
 </mapper>
 
