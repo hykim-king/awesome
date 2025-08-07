@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pcwk.ehr.mapper.BookmarkMapper">
+
+
+    <!-- 단건등록 -->
+	<insert id="doSave" parameterType="BookmarkDTO">
+	    <selectKey keyProperty="bmCode" resultType="int" order="BEFORE">
+	        SELECT BM_SEQ.NEXTVAL FROM dual
+	    </selectKey>   
+		    INSERT INTO bookmark (
+		    bm_code,
+		    article_code,
+		    user_id,
+		    reg_dt
+		) VALUES ( #{bmCode},
+		           #{articleCode},
+		           #{userId},
+		           SYSDATE )
+	</insert>
+	
+	
+	<!-- 북마크한 기사 조회 -->
+	<select id="doRetrive" parameterType="BookmarkDTO" resultType="BookmarkDTO">
+		SELECT
+		    COUNT(*) OVER() AS totalCnt,
+		    bm.bm_code,
+		    bm.article_code,
+		    bm.user_id,
+		    bm.reg_dt,
+		    ar.title,
+		    ar.summary,
+		    ar.press
+		FROM bookmark bm
+		JOIN ARTICLE ar
+		  ON bm.article_code = ar.article_code
+		WHERE user_id = #{userId}
+	</select>
+	
+	<!-- 카운트 세기 -->
+    <select id="getCount" resultType="java.lang.Integer">
+        SELECT count(*) totalCnt from bookmark
+    </select>
+	
+	
+	<!-- 단건 삭제 -->
+	<delete id="doDelete" parameterType="BookmarkDTO">
+	  DELETE FROM bookmark
+	  WHERE bm_code = #{bmCode};
+	</delete>
+	
+	
+	<!-- 전체삭제 -->
+    <delete id="deleteAll">
+        DELETE FROM bookmark
+    </delete>
+    
+	
+	<!-- 다건등록 -->
+	<insert id="saveAll">
+    INSERT INTO bookmark 
+        SELECT bm_seq NEXTVAL AS bmCode,
+        LEVEL AS articleCode, 
+        DECODE(MOD(LEVEL, 2), 0, 'user01', 'user02') AS userId,
+        DECODE(MOD(LEVEL, 2), 0, '2025-05-17', '2025-05-15') AS regDt
+            FROM dual                        
+     <![CDATA[ CONNECT BY LEVEL <=502  ]]>
+    </insert>
+
+
+</mapper>
