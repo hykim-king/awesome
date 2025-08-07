@@ -102,6 +102,7 @@ class ArticleDaoTest {
 		search.setPageNo(1);
 		search.setPageSize(10);
 		search.setDiv("10");
+		
 
 		List<ArticleDTO> list = mapper.doRetrieve(search);
 
@@ -122,5 +123,6 @@ class ArticleDaoTest {
 		log.debug(mapper);
 
 	}
+	
 
 }
