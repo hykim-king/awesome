@@ -44,6 +44,52 @@
         WHERE article_code = #{articleCode}
     </delete>
     
+    <!-- 단건 조회 (기사 코드로 조회) -->
+<select id="doSelectOne" parameterType="long" resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+    SELECT 
+        ARTICLE_CODE,
+        CATEGORY,
+        PRESS,
+        TITLE,
+        SUMMARY,
+        URL,
+        PUBLIC_DT,
+        VIEWS,
+        REG_DT,
+        MOD_DT
+    FROM ARTICLE
+    WHERE ARTICLE_CODE = #{articleCode}
+</select>
+
+<select id="doRetrieve" parameterType="com.pcwk.ehr.cmn.SearchDTO" resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+    SELECT 
+        ARTICLE_CODE,
+        CATEGORY,
+        PRESS,
+        TITLE,
+        SUMMARY,
+        URL,
+        PUBLIC_DT,
+        VIEWS,
+        REG_DT,
+        MOD_DT
+    FROM ARTICLE
+    WHERE 1=1
+    <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
+        <choose>
+            <when test="searchDiv == '10'">
+                AND TITLE LIKE '%' || #{searchWord} || '%'
+            </when>
+            <when test="searchDiv == '20'">
+                AND SUMMARY LIKE '%' || #{searchWord} || '%'
+            </when>
+            <when test="searchDiv == '30'">
+                AND (TITLE || SUMMARY) LIKE '%' || #{searchWord} || '%'
+            </when>
+        </choose>
+    </if>
+    ORDER BY REG_DT DESC
+</select>
     
 	
 </mapper>
