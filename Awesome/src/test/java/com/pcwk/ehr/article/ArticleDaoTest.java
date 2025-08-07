@@ -3,6 +3,7 @@ package com.pcwk.ehr.article;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,25 @@ class ArticleDaoTest {
 
 	@AfterEach
 	void tearDown() throws Exception {
+	}
+	
+	@Test
+	void updateReadCnt() throws Exception {
+		mapper.deleteAll();
+		
+		int flag = mapper.doSave(dto01);
+		
+		int count = mapper.getCount();
+		assertEquals(1, count);
+		
+		flag = mapper.updateReadCnt(dto01);
+		assertEquals(1, flag);
+		
+		ArticleDTO outVO = mapper.doSelectOne(dto01);
+		assertEquals(1, outVO.getViews());
+		log.debug("outVO.getReadCnt():{}",outVO.getViews());
+		
+		
 	}
 
 	// @Disabled
