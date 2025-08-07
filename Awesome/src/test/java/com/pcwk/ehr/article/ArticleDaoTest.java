@@ -48,12 +48,34 @@ class ArticleDaoTest {
 	void tearDown() throws Exception {
 	}
 	
+	@Disabled
 	@Test
 	public void doSave() throws Exception{
-		//mapper.deleteAll();
+		mapper.deleteAll();
 		
 		int flag=mapper.doSave(dto01);
 		assertEquals(1, flag);
+	}
+	
+	@Disabled
+	@Test
+	public void doDelete() throws Exception{
+		
+		mapper.doSave(dto01);
+		
+		
+		int count = mapper.doDelete(dto01);
+		assertEquals(1, count);
+		
+	}
+	
+	@Test
+	public void doRetrieve() throws Exception{
+		
+		mapper.deleteAll();
+		
+		
+		
 	}
 
 	@Test
