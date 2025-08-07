@@ -101,8 +101,11 @@
 					AND SUMMARY LIKE '%' || #{searchWord} || '%'
 				</when>
 				<when test="searchDiv == '30'">
-					AND (TITLE || SUMMARY) LIKE '%' || #{searchWord} || '%'
+					AND PRESS LIKE '%' || #{searchWord} || '%'
 				</when>
+				<when test="searchDiv == '40'">
+                    AND PUBLIC_DT LIKE '%' || #{searchWord} || '%'
+                </when>
 			</choose>
 		</if>
 		ORDER BY REG_DT DESC

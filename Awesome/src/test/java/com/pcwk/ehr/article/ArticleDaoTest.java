@@ -65,7 +65,7 @@ class ArticleDaoTest {
 		
 		ArticleDTO outVO = mapper.doSelectOne(dto01);
 		assertEquals(1, outVO.getViews());
-		log.debug("outVO.getReadCnt():{}",outVO.getViews());
+		log.debug("outVO.getViews():{}",outVO.getViews());
 		
 		
 	}
