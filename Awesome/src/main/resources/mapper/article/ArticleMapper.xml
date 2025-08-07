@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pcwk.ehr.mapper.ArticleMapper">
+    <insert id="doSave" parameterType="com.pcwk.ehr.article.domain.ArticleDTO">
+        INSERT INTO ARTICLE (
+            ARTICLE_CODE,
+            CATEGORY,
+            PRESS,
+            TITLE,
+            SUMMARY,
+            URL,
+            PUBLIC_DT,
+            VIEWS,
+            REG_DT,
+            MOD_DT
+        )
+        VALUES (
+            #{articleCode},
+            #{category},
+            #{press},
+            #{title},
+            #{summary},
+            #{url},
+            #{publicDt},
+            #{views},
+            SYSDATE,
+            SYSDATE
+        )
+    </insert>
+</mapper>
+
