@@ -7,6 +7,9 @@ import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.cmn.WorkDiv;
 
 public interface ArticleMapper extends WorkDiv<ArticleDTO> {
+	
+	//조회수 증가
+	int updateReadCnt(ArticleDTO param);
 
 	int saveAll();
 

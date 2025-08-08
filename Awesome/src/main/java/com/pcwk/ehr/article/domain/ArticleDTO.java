@@ -33,12 +33,40 @@ public class ArticleDTO {
 
 	// 10. 수정일
 	private Date modDt;
+	
 
 	/**
 	 * 
 	 */
 	public ArticleDTO() {
 
+	}
+
+	/**
+	 * @param articleCode
+	 * @param category
+	 * @param press
+	 * @param title
+	 * @param summary
+	 * @param url
+	 * @param publicDt
+	 * @param views
+	 * @param regDt
+	 * @param modDt
+	 */
+	public ArticleDTO(Long articleCode, int category, String press, String title, String summary, String url,
+			Date publicDt, int views, Date regDt, Date modDt) {
+		super();
+		this.articleCode = articleCode;
+		this.category = category;
+		this.press = press;
+		this.title = title;
+		this.summary = summary;
+		this.url = url;
+		this.publicDt = publicDt;
+		this.views = views;
+		this.regDt = regDt;
+		this.modDt = modDt;
 	}
 
 	/**
@@ -187,8 +215,5 @@ public class ArticleDTO {
 				+ title + ", summary=" + summary + ", url=" + url + ", publicDt=" + publicDt + ", views=" + views
 				+ ", regDt=" + regDt + ", modDt=" + modDt + "]";
 	}
-	
-	
 
-	
 }

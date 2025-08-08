@@ -140,7 +140,7 @@
         <property name="host" value="smtp.gmail.com" />
         <property name="port" value="587" />
         <property name="username" value="zoqwkdrudfud@gmail.com" />
-        <property name="password" value="***" />
+        <property name="password" value="" />
         <property name="protocol" value="smtp" />
         <property name="javaMailProperties">
             <props>
@@ -165,8 +165,8 @@
             value="oracle.jdbc.driver.OracleDriver" />
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
-        <property name="username" value="scott" />
-        <property name="password" value="pcwk"></property>
+        <property name="username" value="awesome" />
+        <property name="password" value=""></property>
         <!-- Optional settings -->
         <property name="maximumPoolSize" value="10"></property>
         <property name="minimumIdle" value="5"></property>
