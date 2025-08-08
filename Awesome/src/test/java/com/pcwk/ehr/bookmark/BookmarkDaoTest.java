@@ -45,7 +45,7 @@ class BookmarkDaoTest {
 
 	ArticleDTO aDto01;
 	
-	Long arCode;
+	Long articleCode;
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -53,14 +53,16 @@ class BookmarkDaoTest {
 		log.debug("│ setUp()                                                 │");
 		log.debug("└─────────────────────────────────────────────────────────┘");
 		
-		aDto01 = new ArticleDTO(arCode, 10, "조선일보", "더위가 기승을 이루고 있는 가운데 폭우가 내릴 예정입니다.", "최근 체감 온도 40도를 육박하는 역대급 폭염인 가운데 다음 주 상당한 양의 비가 내릴 예정입니다.", "https://n.news.naver.com/mnews/article/001/0015554603?rc=N&ntype=RANKING",new Date(), 0, new Date(), new Date());
+		aDto01 = new ArticleDTO(null, 10, "조선일보", "더위가 기승을 이루고 있는 가운데 폭우가 내릴 예정입니다.", "최근 체감 온도 40도를 육박하는 역대급 폭염인 가운데 다음 주 상당한 양의 비가 내릴 예정입니다.", "https://n.news.naver.com/mnews/article/001/0015554603?rc=N&ntype=RANKING",new Date(), 0, new Date(), new Date());
 		
 		//1. Article 데이터 단건 주입
 		aMapper.doSave(aDto01);
+		
+		articleCode = aDto01.getArticleCode();
 
-		bDto01 = new BookmarkDTO(arCode.intValue(), "User01");
-		bDto02 = new BookmarkDTO(arCode.intValue(), "User01");
-		bDto03 = new BookmarkDTO(arCode.intValue(), "User03");
+		bDto01 = new BookmarkDTO(articleCode.intValue(), "User01");
+		bDto02 = new BookmarkDTO(articleCode.intValue(), "User01");
+		bDto03 = new BookmarkDTO(articleCode.intValue(), "User03");
 		
 	}
 
@@ -71,6 +73,50 @@ class BookmarkDaoTest {
 		log.debug("└─────────────────────────────────────────────────────────┘");
 	}
 
+	//@Disabled
+	@Test
+	void doDelete() throws SQLException{
+		log.debug("┌─────────────────────────────────────────────────────────┐");
+		log.debug("│ doDelete()                                              │");
+		log.debug("└─────────────────────────────────────────────────────────┘");
+		
+		//1. 전체삭제
+		//2. 다건등록
+		//3. 기사조회
+		//4. 단건삭제
+		//5. 등록 건수 조회
+		
+		//1. 
+		bMapper.deleteAll();
+		
+		//2.
+		int count = bMapper.saveAll();
+		assertEquals(502, count);
+		log.debug(count);
+		
+		//3. 
+		BookmarkDTO param = new BookmarkDTO();
+		param.setUserId("user01");
+		List<BookmarkDTO> outVO = bMapper.doRetrive(param);
+		assertNotNull(outVO);
+		log.debug("outVO: {}", outVO);
+		
+		for(BookmarkDTO list:outVO) {
+			log.debug("list:{}",list);
+		}
+		
+		//4. 
+		int bmCode = outVO.get(0).getBmCode();
+		bMapper.doDelete(bmCode);
+		
+		//5. 
+		count = bMapper.getCount();
+		assertEquals(501, count);
+		log.debug(count);
+		
+	}
+	
+	//@Disabled
 	@Test
 	void  doRetrieve() throws SQLException{
 		log.debug("┌─────────────────────────────────────────────────────────┐");
@@ -80,7 +126,7 @@ class BookmarkDaoTest {
 		//1. 전체삭제
 		//2. 단건등록
 		//3. 등록건수비교
-		//4. 단건조회
+		//4. 기사조회
 		
 		//1. 
 		bMapper.deleteAll();
