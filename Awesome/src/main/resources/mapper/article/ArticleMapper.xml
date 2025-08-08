@@ -118,6 +118,7 @@
         ORDER BY REG_DT DESC
     </select>
 
+    <select id="">
     parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
     resultType="com.pcwk.ehr.article.domain.ArticleDTO">
     SELECT *
@@ -153,7 +154,7 @@
         ) A
     )
     WHERE RN BETWEEN #{startRow} AND #{endRow}
-</select>
+    </select>
 
 
 

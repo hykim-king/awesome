@@ -69,8 +69,6 @@ public class ArticleController {
 
 	Logger log = LogManager.getLogger(getClass());
 
-	@Autowired
-	ArticleService service;
 
 	// 페이징,검색 동시
 	@GetMapping("/list.do")
