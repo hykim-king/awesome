@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
+import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.article.service.ArticleService;
 import com.pcwk.ehr.cmn.SearchDTO;
 
@@ -27,7 +28,7 @@ public class ArticleController {
 							Model model) throws Exception {
 		
 		//검색 조건 설정
-		SearchDTO search = new SearchDTO();
+		ArticleSearchDTO search = new ArticleSearchDTO();
 		search.setSearchDiv(searchDiv);
 		search.setSearchWord(searchWord);
 		
@@ -44,9 +45,14 @@ public class ArticleController {
 	
 	@GetMapping("/category.do")
 	public String categoryByArticleList(@RequestParam("category") int category,
-										Model model) {
-		SearchDTO search = new SearchDTO();
+										Model model) throws Exception {
+		ArticleSearchDTO search = new ArticleSearchDTO();
+		search.setCategory(category);
 		
+		List<ArticleDTO> list = service.doRetrieve(search);
+		
+		model.addAttribute("list", list);
+		model.addAttribute("category", category);
 		
 		
 		return "article/list";

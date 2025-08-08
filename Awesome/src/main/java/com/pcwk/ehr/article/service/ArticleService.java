@@ -3,6 +3,7 @@ package com.pcwk.ehr.article.service;
 import java.util.List;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
+import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.cmn.SearchDTO;
 
 public interface ArticleService {
@@ -13,6 +14,6 @@ public interface ArticleService {
 	
 	int doDelete(ArticleDTO param);
 	
-	List<ArticleDTO> doRetrieve(SearchDTO param) throws Exception;
+	List<ArticleDTO> doRetrieve(ArticleSearchDTO param) throws Exception;
 		
 }
