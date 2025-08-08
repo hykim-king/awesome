@@ -33,6 +33,7 @@ public class ArticleDTO {
 
 	// 10. 수정일
 	private Date modDt;
+	
 
 	/**
 	 * 
@@ -40,8 +41,6 @@ public class ArticleDTO {
 	public ArticleDTO() {
 
 	}
-	
-	
 
 	/**
 	 * @param articleCode
@@ -69,8 +68,6 @@ public class ArticleDTO {
 		this.regDt = regDt;
 		this.modDt = modDt;
 	}
-
-
 
 	/**
 	 * @return the articleCode
@@ -218,8 +215,5 @@ public class ArticleDTO {
 				+ title + ", summary=" + summary + ", url=" + url + ", publicDt=" + publicDt + ", views=" + views
 				+ ", regDt=" + regDt + ", modDt=" + modDt + "]";
 	}
-	
-	
 
-	
 }
