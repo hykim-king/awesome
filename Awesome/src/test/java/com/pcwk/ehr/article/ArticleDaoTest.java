@@ -3,7 +3,6 @@ package com.pcwk.ehr.article;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
-import com.pcwk.ehr.cmn.SearchDTO;
 import com.pcwk.ehr.mapper.ArticleMapper;
 
 @ExtendWith(SpringExtension.class)
