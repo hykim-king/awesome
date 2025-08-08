@@ -76,6 +76,48 @@
 	</select>
 
     <select id="doRetrieve"
+
+        parameterType="com.pcwk.ehr.article.domain.ArticleDTO"
+        resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+        SELECT
+            ARTICLE_CODE,
+            CATEGORY,
+            PRESS,
+            TITLE,
+            SUMMARY,
+            URL,
+            PUBLIC_DT,
+            VIEWS,
+            REG_DT,
+            MOD_DT
+        FROM ARTICLE
+        WHERE 1=1
+
+        <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchDiv == '10'">
+                    AND TITLE LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchDiv == '20'">
+                    AND SUMMARY LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchDiv == '30'">
+                    AND PRESS LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchDiv == '40'">
+                    AND PUBLIC_DT LIKE '%' || #{searchWord} || '%'
+                </when>
+            </choose>
+        </if>
+
+        <!-- ✅ 카테고리 조건 추가 -->
+        <if test="category != null and category != 0">
+            AND CATEGORY = #{category}
+        </if>
+
+        ORDER BY REG_DT DESC
+    </select>
+
     parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
     resultType="com.pcwk.ehr.article.domain.ArticleDTO">
     SELECT *
@@ -112,6 +154,7 @@
     )
     WHERE RN BETWEEN #{startRow} AND #{endRow}
 </select>
+
 
 
 </mapper>
