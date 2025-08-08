@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
+import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.cmn.SearchDTO;
 import com.pcwk.ehr.mapper.ArticleMapper;
 
@@ -59,7 +60,7 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public List<ArticleDTO> doRetrieve(SearchDTO param) throws Exception {
+	public List<ArticleDTO> doRetrieve(ArticleSearchDTO param) throws Exception {
 
 		return mapper.doRetrieve(param);
 	}

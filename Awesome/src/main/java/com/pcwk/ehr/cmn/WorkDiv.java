@@ -15,6 +15,8 @@ package com.pcwk.ehr.cmn;
 
 import java.util.List;
 
+import com.pcwk.ehr.article.domain.ArticleSearchDTO;
+
 /**
  * @author user
  *
@@ -26,7 +28,7 @@ public interface WorkDiv<T> {
 	 * @param param
 	 * @return List<T>
 	 */
-	List<T> doRetrieve(SearchDTO param);
+	List<T> doRetrieve(ArticleSearchDTO param);
 
 	/**
 	 * 단건 삭제

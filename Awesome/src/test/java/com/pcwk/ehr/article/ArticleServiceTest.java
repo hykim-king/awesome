@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
+import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.article.service.ArticleService;
 import com.pcwk.ehr.cmn.SearchDTO;
 import com.pcwk.ehr.mapper.ArticleMapper;
@@ -42,13 +43,13 @@ class ArticleServiceTest {
 
 	ArticleDTO dto01;
 
-	SearchDTO search;
+	ArticleSearchDTO search;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		dto01 = new ArticleDTO(1L, 10, "조선일보", "AI가 세상을 바꾼다", "AI 기술의 발전과 전망", "https://chosun.com/ai-future",
 				new Date(), 0, new Date(), new Date());
-		search = new SearchDTO();
+		search = new ArticleSearchDTO();
 	}
 
 	@AfterEach
@@ -106,7 +107,7 @@ class ArticleServiceTest {
 			assertEquals(1, result, "등록 실패!");
 		}
 		
-		SearchDTO search = new SearchDTO();
+		ArticleSearchDTO search = new ArticleSearchDTO();
 		search.setPageNo(1);
 		search.setPageSize(10);
 		search.setDiv("10");
