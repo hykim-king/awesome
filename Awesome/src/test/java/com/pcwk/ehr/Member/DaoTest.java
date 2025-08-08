@@ -3,12 +3,15 @@ package com.pcwk.ehr.Member;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +48,80 @@ Logger log = LogManager.getLogger(getClass());
 	void tearDown() throws Exception {
 	}
 	
-	@Test
+	  	@Disabled
+	    @Test
+	    @DisplayName("1. 등록 후 단건 조회 테스트")
+	    void doSaveAndSelectOne() throws SQLException {
+	        // 삭제
+	        mapper.deleteAll();
+
+	        // 저장
+	        int saveResult = mapper.doSave(dto01);
+	        assertEquals(1, saveResult);
+
+	        // 조회
+	        MemberDTO param = new MemberDTO();
+	        param.setUserId(dto01.getUserId());
+
+	        MemberDTO result = mapper.doSelectOne(param);
+	        assertNotNull(result);
+	        assertEquals(dto01.getUserId(), result.getUserId());
+	    }
+	
+	  	@Disabled
+	    @Test
+	    @DisplayName("2. 수정 테스트")
+	    void doUpdate() throws SQLException {
+	  		mapper.deleteAll();
+	  		mapper.doSave(dto01);
+
+	  		MemberDTO param = new MemberDTO();
+	  	    param.setUserId(dto01.getUserId());
+	  	    param.setPwd("NewPassword123!");
+	  	    param.setUserNm("테스트유저수정");
+	  	    param.setNickNm("닉네임수정");
+	  	    param.setBirthDt("20000101");
+	  	    param.setMailAddr("updated@email.com");
+	  	    param.setEmailAuthYn("Y");
+	  	    param.setEmailAuthToken("updated-token-999");
+	  	    param.setUserGradeCd(dto01.getUserGradeCd());
+	  	    param.setModDt(new Date(System.currentTimeMillis()));
+
+	        int updateResult = mapper.doUpdate(param);
+	        assertEquals(1, updateResult);
+
+	        MemberDTO updated = mapper.doSelectOne(param);
+	        assertEquals("NewPassword123!", updated.getPwd());
+	    }
+	
+	    
+	    
+	@Disabled
+	 @Test
+	 @DisplayName("3. 저장 테스트")
 	void doSave() throws Exception {
 		mapper.deleteAll();
 		
 		int flag = mapper.doSave(dto01);
 		assertEquals(1, flag);
 	}
+	
+	
+	@Disabled
+    @Test
+    @DisplayName("4. 삭제 테스트")
+    void doDelete() throws SQLException {
+        mapper.deleteAll();
+        mapper.doSave(dto01);
 
+        MemberDTO param = new MemberDTO();
+        param.setUserId(dto01.getUserId());
+
+        int deleteResult = mapper.doDelete(param);
+        assertEquals(1, deleteResult);
+    }
+	
+	@Disabled
 	@Test
 	void bean() {
 		assertNotNull(context);

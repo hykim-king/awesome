@@ -7,11 +7,6 @@
 
 
 
-
-
-
-
-
     <!-- INSERT -->
     <insert id="doSave" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
         INSERT INTO MEMBER (
@@ -34,19 +29,20 @@
 
     <!-- UPDATE -->
     <update id="doUpdate" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
-        UPDATE MEMBER
-        SET 
-            PWD = #{pwd},
-            USER_NM = #{userNm},
-            NICK_NM = #{nickNm},
-            BIRTH_DT = #{birthDt},
-            MAIL_ADDR = #{mailAddr},
-            EMAIL_AUTH_YN = #{emailAuthYn},
-            EMAIL_AUTH_TOKEN = #{emailAuthToken},
-            USER_GRADE_CD = #{userGradeCd},
-            MOD_DT = #{modDt, jdbcType=DATE}
-        WHERE USER_ID = #{userId}
-    </update>
+    UPDATE MEMBER
+    SET 
+        PWD              = #{pwd, jdbcType=VARCHAR},
+        USER_NM          = #{userNm, jdbcType=VARCHAR},
+        NICK_NM          = #{nickNm, jdbcType=VARCHAR},
+        BIRTH_DT         = #{birthDt, jdbcType=VARCHAR},
+        MAIL_ADDR        = #{mailAddr, jdbcType=VARCHAR},
+        EMAIL_AUTH_YN    = #{emailAuthYn, jdbcType=VARCHAR},
+        EMAIL_AUTH_TOKEN = #{emailAuthToken, jdbcType=VARCHAR},
+        USER_GRADE_CD    = #{userGradeCd, jdbcType=NUMERIC},
+        MOD_DT           = #{modDt, jdbcType=DATE}
+    WHERE 
+        USER_ID          = #{userId, jdbcType=VARCHAR}
+</update>
 
     <!-- DELETE -->
     <delete id="doDelete" parameterType="String">
@@ -58,6 +54,13 @@
     DELETE FROM MEMBER
     </delete>
     
+    
+    <!-- 이메일 토큰으로 사용자 조회 -->
+    <select id="findByEmailAuthToken" parameterType="String" resultType="com.pcwk.ehr.member.domain.MemberDTO">
+    SELECT *
+    FROM MEMBER
+    WHERE EMAIL_AUTH_TOKEN = #{token}
+    </select>
 
 
 </mapper>
