@@ -46,7 +46,7 @@
 	<!-- 단건 삭제 -->
 	<delete id="doDelete" parameterType="BookmarkDTO">
 	  DELETE FROM bookmark
-	  WHERE bm_code = #{bmCode};
+	  WHERE bm_code = #{bmCode}
 	</delete>
 	
 	
@@ -58,12 +58,12 @@
 	
 	<!-- 다건등록 -->
 	<insert id="saveAll">
-    INSERT INTO bookmark 
-        SELECT bm_seq NEXTVAL AS bmCode,
+    INSERT INTO bookmark (bm_code, article_code, user_id, reg_dt)
+    SELECT bm_seq.NEXTVAL AS bmCode,
         LEVEL AS articleCode, 
         DECODE(MOD(LEVEL, 2), 0, 'user01', 'user02') AS userId,
-        DECODE(MOD(LEVEL, 2), 0, '2025-05-17', '2025-05-15') AS regDt
-            FROM dual                        
+        TO_DATE(DECODE(MOD(LEVEL, 2), 0, '2025-05-17', '2025-05-15')) AS regDt
+	  FROM dual                        
      <![CDATA[ CONNECT BY LEVEL <=502  ]]>
     </insert>
 
