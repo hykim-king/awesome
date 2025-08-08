@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pcwk.ehr.mapper.MemberMapper">
+
+
+
+
+
+
+
+
+    <!-- INSERT -->
+    <insert id="doSave" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
+        INSERT INTO MEMBER (
+            USER_ID, PWD, USER_NM, NICK_NM, BIRTH_DT,
+            MAIL_ADDR, EMAIL_AUTH_YN, EMAIL_AUTH_TOKEN, USER_GRADE_CD,
+            REG_DT, MOD_DT
+        ) VALUES (
+            #{userId}, #{pwd}, #{userNm}, #{nickNm}, #{birthDt},
+            #{mailAddr}, #{emailAuthYn}, #{emailAuthToken}, #{userGradeCd},
+            #{regDt},#{modDt}
+        )
+    </insert>
+
+    <!-- SELECT -->
+    <select id="doSelectOne" parameterType="String" resultType="com.pcwk.ehr.member.domain.MemberDTO">
+        SELECT *
+        FROM MEMBER
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <!-- UPDATE -->
+    <update id="doUpdate" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
+        UPDATE MEMBER
+        SET 
+            PWD = #{pwd},
+            USER_NM = #{userNm},
+            NICK_NM = #{nickNm},
+            BIRTH_DT = #{birthDt},
+            MAIL_ADDR = #{mailAddr},
+            EMAIL_AUTH_YN = #{emailAuthYn},
+            EMAIL_AUTH_TOKEN = #{emailAuthToken},
+            USER_GRADE_CD = #{userGradeCd},
+            MOD_DT = #{modDt, jdbcType=DATE}
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!-- DELETE -->
+    <delete id="doDelete" parameterType="String">
+        DELETE FROM MEMBER
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <delete id="deleteAll">
+    DELETE FROM MEMBER
+    </delete>
+    
+
+
+</mapper>

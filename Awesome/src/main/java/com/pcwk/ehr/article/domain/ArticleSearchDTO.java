@@ -8,8 +8,11 @@ public class ArticleSearchDTO extends DTO {
 	private String searchWord;// 검색어
 	private String div; // 구분(게시)
 	private int category;
+
+
 	private int startRow; // 페이징 시작 인덱스
     private int endRow; // 페이지 끝 인덱스
+
 
 	/**
 	 * 
@@ -72,6 +75,8 @@ public class ArticleSearchDTO extends DTO {
 	public void setCategory(int category) {
 		this.category = category;
 	}
+
+
 	
 	
 
@@ -102,6 +107,7 @@ public class ArticleSearchDTO extends DTO {
 	public void setEndRow(int endRow) {
 		this.endRow = endRow;
 	}
+
 
 	@Override
 	public String toString() {
