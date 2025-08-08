@@ -16,13 +16,20 @@ public interface BookmarkMapper {
 	 */
 	int doSave(BookmarkDTO param);
 	
+	/**
+	 * 기사 별 북마크 조회
+	 * @param param
+	 * @return
+	 */
+	BookmarkDTO doSelectOne(BookmarkDTO param);
+	
 	
 	/**
-	 * 북마크한 기사 조회
+	 * 마이페이지 북마크한 기사 조회
 	 * @param param
 	 * @return BookmarkDTO
 	 */
-	List<BookmarkDTO> doRetrive(BookmarkDTO param);
+	List<BookmarkDTO> doRetriveMy(BookmarkDTO param);
 	
 	
 	/**

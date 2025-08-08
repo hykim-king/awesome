@@ -76,6 +76,7 @@
 	</select>
 
     <select id="doRetrieve"
+
         parameterType="com.pcwk.ehr.article.domain.ArticleDTO"
         resultType="com.pcwk.ehr.article.domain.ArticleDTO">
         SELECT
@@ -116,6 +117,45 @@
 
         ORDER BY REG_DT DESC
     </select>
+
+    <select id="">
+    parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
+    resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+    SELECT *
+    FROM (
+        SELECT 
+            A.*, ROWNUM RN
+        FROM (
+            SELECT
+                ARTICLE_CODE,
+                CATEGORY,
+                PRESS,
+                TITLE,
+                SUMMARY,
+                URL,
+                PUBLIC_DT,
+                VIEWS,
+                REG_DT,
+                MOD_DT
+            FROM ARTICLE
+            WHERE 1=1
+            <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
+                <choose>
+                    <when test="searchDiv == '10'">
+                        AND TITLE LIKE '%' || #{searchWord} || '%'
+                    </when>
+                    <!-- ... 나머지 검색조건 ... -->
+                </choose>
+            </if>
+            <if test="category != null and category != 0">
+                AND CATEGORY = #{category}
+            </if>
+            ORDER BY REG_DT DESC
+        ) A
+    )
+    WHERE RN BETWEEN #{startRow} AND #{endRow}
+    </select>
+
 
 
 </mapper>

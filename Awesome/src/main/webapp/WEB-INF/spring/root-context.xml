@@ -177,7 +177,9 @@
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
         <property name="username" value="awesome" />
-        <property name="password" value=""></property>
+
+        <property name="password" value="a4321"></property>
+
         <!-- Optional settings -->
         <property name="maximumPoolSize" value="10"></property>
         <property name="minimumIdle" value="5"></property>
