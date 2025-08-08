@@ -2,11 +2,8 @@ package com.pcwk.ehr.article.controller;
 
 import java.util.List;
 
-
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.article.service.ArticleService;
-
-import com.pcwk.ehr.cmn.SearchDTO;
 
 
 @Controller
