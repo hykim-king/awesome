@@ -75,4 +75,9 @@ public class ArticleServiceImpl implements ArticleService {
 		return mapper.getCountAll();
 	}
 
+	@Override
+	public int updateReadCnt(ArticleDTO param) throws Exception {
+		return mapper.updateReadCnt(param);
+	}
+
 }

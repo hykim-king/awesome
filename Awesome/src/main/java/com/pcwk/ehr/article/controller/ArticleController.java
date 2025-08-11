@@ -90,6 +90,25 @@ public class ArticleController {
 
 		return "article/list";
 	}
+	
+	@GetMapping("/visit.do")
+	public String visit(@RequestParam("articleCode") long articleCode) throws Exception{
+		
+		ArticleDTO req = new ArticleDTO();
+		req.setArticleCode(articleCode);
+		
+		ArticleDTO article = service.doSelectOne(req);
+		
+		if(article == null || article.getUrl() == null || article.getUrl().isEmpty()) {
+			return "redirect:/article/list.do";
+		}
+		String url = article.getUrl();
+		if(!(url.startsWith("http://")||url.startsWith("https://"))) {
+			return "redirect:/article/list.do";
+		}
+		
+		return "redirect:"+url;
+	}
 
 
 }
