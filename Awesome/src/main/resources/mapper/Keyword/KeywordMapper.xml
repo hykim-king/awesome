@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pcwk.ehr.mapper.KeywordMapper">
+
+    <!-- 결과 매핑 -->
+    <resultMap id="KeywordResult" type="com.pcwk.ehr.keyword.domain.KeywordDTO">
+        <id     column="dk_code"       property="dkCode"/>
+        <result column="dk_dt"         property="dkDt"/>
+        <result column="update_period" property="updatePeriod"/>
+        <result column="category"      property="category"/>
+        <result column="keyword"       property="keyword"/>
+    </resultMap>
+
+    <!-- 1건 저장 -->
+    <insert id="doSave" parameterType="com.pcwk.ehr.keyword.domain.KeywordDTO">
+        <selectKey keyProperty="dkCode"
+                   resultType="long"
+                   order="BEFORE">
+            SELECT DK_SEQ.NEXTVAL
+            FROM DUAL
+        </selectKey>
+        INSERT INTO daily_keyword (
+            dk_code, dk_dt, update_period, category, keyword
+        ) VALUES (
+            #{dkCode}, #{dkDt}, #{updatePeriod}, #{category}, #{keyword}
+        )
+    </insert>
+
+    <!-- 전체 조회 -->
+    <select id="doRetrieve" resultMap="KeywordResult">
+        SELECT dk_code, dk_dt, update_period, category, keyword
+          FROM daily_keyword
+         ORDER BY dk_dt DESC, update_period
+    </select>
+
+    <!-- 삭제 -->
+    <delete id="doDelete" parameterType="com.pcwk.ehr.keyword.domain.KeywordDTO">
+        DELETE FROM daily_keyword
+         WHERE dk_code = #{dkCode}
+    </delete>
+
+    <!-- 전체삭제 -->
+    <delete id="deleteAll">
+      DELETE FROM daily_keyword
+    </delete>
+
+
+
+    <!-- 단건 조회 -->
+    <select id="doSelectOne"
+            parameterType="com.pcwk.ehr.keyword.domain.KeywordDTO"
+            resultMap="KeywordResult">
+        SELECT dk_code, dk_dt, update_period, category, keyword
+          FROM daily_keyword
+         WHERE dk_code = #{dkCode}
+    </select>
+
+    <!-- 수정 -->
+    <update id="doUpdate" parameterType="com.pcwk.ehr.keyword.domain.KeywordDTO">
+        UPDATE daily_keyword
+           SET dk_dt         = #{dkDt},
+               update_period = #{updatePeriod},
+               category      = #{category},
+               keyword       = #{keyword}
+         WHERE dk_code = #{dkCode}
+    </update>
+
+    <!-- 전체 건수 조회 -->
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*)
+          FROM daily_keyword
+    </select>
+
+</mapper>

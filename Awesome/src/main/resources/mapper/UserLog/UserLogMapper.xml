@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pcwk.ehr.mapper.UserLogMapper">
+
+  <!-- 결과 매핑 -->
+  <resultMap id="UserLogResult" type="com.pcwk.ehr.userLog.domain.UserLogDTO">
+    <id     column="log_code"      property="logCode"/>
+    <result column="user_id"       property="userId"/>
+    <result column="article_code"  property="articleCode"/>
+    <result column="clicked_at"    property="clickedAt"/>
+  </resultMap>
+
+  <!-- 1건 저장 -->
+  <insert id="doSave" parameterType="com.pcwk.ehr.userLog.domain.UserLogDTO">
+    <selectKey keyProperty="logCode"
+               resultType="long"
+               order="BEFORE">
+      SELECT LOG_SEQ.NEXTVAL
+      FROM DUAL
+    </selectKey>
+    INSERT INTO user_click_log (
+      log_code, user_id, article_code, clicked_at
+    ) VALUES (
+      #{logCode}, #{userId}, #{articleCode},
+      NVL(#{clickedAt}, SYSDATE)
+    )
+  </insert>
+
+  <!-- 전체 조회 -->
+  <select id="doRetrieve" resultMap="UserLogResult">
+    SELECT log_code, user_id, article_code, clicked_at
+      FROM user_click_log
+     ORDER BY clicked_at DESC
+  </select>
+
+  <!-- 삭제 -->
+  <delete id="doDelete" parameterType="com.pcwk.ehr.userLog.domain.UserLogDTO">
+    DELETE FROM user_click_log
+     WHERE log_code = #{logCode}
+  </delete>
+
+   <!-- 전체삭제 -->
+   <delete id="deleteAll">
+     DELETE FROM user_click_log
+   </delete>
+
+  <!-- 단건 조회 -->
+  <select id="doSelectOne"
+          parameterType="com.pcwk.ehr.userLog.domain.UserLogDTO"
+          resultMap="UserLogResult">
+    SELECT log_code, user_id, article_code, clicked_at
+      FROM user_click_log
+     WHERE log_code = #{logCode}
+  </select>
+
+
+  <!-- 특정 사용자 로그 조회 -->
+  <select id="doRetrieveByUser"
+          parameterType="com.pcwk.ehr.userLog.domain.UserLogDTO"
+          resultMap="UserLogResult">
+    SELECT log_code, user_id, article_code, clicked_at
+      FROM user_click_log
+     WHERE user_id = #{userId}
+     ORDER BY clicked_at DESC
+  </select>
+
+  <!-- 페이징 조회 (ROW_NUMBER 사용, 공용 DTO: startRow/endRow 필드 가정) -->
+  <select id="doRetrievePaging"
+          parameterType="com.pcwk.ehr.cmn.DTO"
+          resultType="com.pcwk.ehr.userLog.domain.UserLogDTO">
+    SELECT *
+      FROM (
+        SELECT
+          log_code      AS logCode,
+          user_id       AS userId,
+          article_code  AS articleCode,
+          clicked_at    AS clickedAt,
+          ROW_NUMBER() OVER (ORDER BY clicked_at DESC) rn
+        FROM user_click_log
+      )
+     WHERE rn BETWEEN #{startRow} AND #{endRow}
+  </select>
+
+  <!-- 전체 건수 -->
+  <select id="getTotalCount" resultType="int">
+    SELECT COUNT(*) FROM user_click_log
+  </select>
+
+</mapper>
