@@ -15,5 +15,9 @@ public interface ArticleService {
 	int doDelete(ArticleDTO param);
 	
 	List<ArticleDTO> doRetrieve(ArticleSearchDTO param) throws Exception;
+	
+	int getCount(ArticleSearchDTO param) throws Exception;
+	
+	int getCountAll() throws Exception;
 		
 }
