@@ -9,10 +9,10 @@ public class ArticleSearchDTO extends DTO {
 	private String div; // 구분(게시)
 	private int category;
 
+	private String dateFilter;
 
 	private int startRow; // 페이징 시작 인덱스
-    private int endRow; // 페이지 끝 인덱스
-
+	private int endRow; // 페이지 끝 인덱스
 
 	/**
 	 * 
@@ -76,10 +76,6 @@ public class ArticleSearchDTO extends DTO {
 		this.category = category;
 	}
 
-
-	
-	
-
 	/**
 	 * @return the startRow
 	 */
@@ -108,11 +104,25 @@ public class ArticleSearchDTO extends DTO {
 		this.endRow = endRow;
 	}
 
+	/**
+	 * @return the dateFilter
+	 */
+	public String getDateFilter() {
+		return dateFilter;
+	}
+
+	/**
+	 * @param dateFilter the dateFilter to set
+	 */
+	public void setDateFilter(String dateFilter) {
+		this.dateFilter = dateFilter;
+	}
 
 	@Override
 	public String toString() {
 		return "ArticleSearchDTO [searchDiv=" + searchDiv + ", searchWord=" + searchWord + ", div=" + div
-				+ ", category=" + category + super.toString() + "]";
+				+ ", category=" + category + ", dateFilter=" + dateFilter + ", startRow=" + startRow + ", endRow="
+				+ endRow + "]";
 	}
 
 }

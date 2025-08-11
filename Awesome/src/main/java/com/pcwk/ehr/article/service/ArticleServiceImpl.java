@@ -65,4 +65,14 @@ public class ArticleServiceImpl implements ArticleService {
 		return mapper.doRetrieve(param);
 	}
 
+	@Override
+	public int getCount(ArticleSearchDTO param) throws Exception {
+		return mapper.getCount(param);
+	}
+
+	@Override
+	public int getCountAll() throws Exception {
+		return mapper.getCountAll();
+	}
+
 }
