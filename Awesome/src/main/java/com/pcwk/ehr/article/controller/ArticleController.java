@@ -20,49 +20,11 @@ import com.pcwk.ehr.article.service.ArticleService;
 @RequestMapping("/article")
 public class ArticleController {
 
+	Logger log = LogManager.getLogger(getClass());
 	
 	@Autowired
-	ArticleService service;
-	
-	//검색
-	@GetMapping("/list.do")
-	public String articleList(@RequestParam(value = "searchDiv", required = false) String searchDiv,
-							@RequestParam(value = "searchWord", required = false) String searchWord,
-							Model model) throws Exception {
-		
-		//검색 조건 설정
-		ArticleSearchDTO search = new ArticleSearchDTO();
-		search.setSearchDiv(searchDiv);
-		search.setSearchWord(searchWord);
-		
-		//기사 조회
-		List<ArticleDTO> list = service.doRetrieve(search);
-		
-		//결과 전달
-		model.addAttribute("list", list);
-		model.addAttribute("searchDiv", searchDiv);
-		model.addAttribute("searchWord", searchWord);
-						
-		return "article/list";
-	}
-	
-	@GetMapping("/category.do")
-	public String categoryByArticleList(@RequestParam("category") int category,
-										Model model) throws Exception {
-		ArticleSearchDTO search = new ArticleSearchDTO();
-		search.setCategory(category);
-		
-		List<ArticleDTO> list = service.doRetrieve(search);
-		
-		model.addAttribute("list", list);
-		model.addAttribute("category", category);
-		
-		
-		return "article/list";
-	}
-	
+	ArticleService service;	
 
-	Logger log = LogManager.getLogger(getClass());
 
 
 	// 페이징,검색 동시
@@ -70,6 +32,7 @@ public class ArticleController {
 	public String articleList(@RequestParam(value = "searchDiv", required = false) String searchDiv,
 			@RequestParam(value = "searchWord", required = false) String searchWord,
 			@RequestParam(value = "category", required = false) Integer category,
+			@RequestParam(value = "dateFilter", required = false) String dateFilter,
 			@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
 			@RequestParam(value = "pageSize", defaultValue = "10") int pageSize, Model model) throws Exception {
 
@@ -80,26 +43,71 @@ public class ArticleController {
 		if (category != null) {
 			search.setCategory(category);
 		}
+		if (dateFilter != null && !dateFilter.isEmpty()) {
+			search.setDateFilter(dateFilter);
+		}
 		
 		int startRow = (pageNum -1) * pageSize+1;
 		int endRow = pageNum * pageSize;
 		search.setStartRow(startRow);
 		search.setEndRow(endRow);
 		
+		int totalCount = service.getCount(search);
+		
+		int totalPage = (totalCount+pageSize-1)/pageSize;
+		
+		int blockSize = 10;
+		int currentBlk = (pageNum-1)/pageSize;
+		int startPage = currentBlk*blockSize+1;
+		int endPage = Math.min(startPage + blockSize-1, totalPage);
+		
 		log.debug("시작");
 		// 기사 조회
 		List<ArticleDTO> list = service.doRetrieve(search);
+		
+		int totalAll = service.getCountAll();
+		
+		log.debug("search={}, totalCount={}, pageNum={}, pageSize={}, startRow={}, endRow={}",
+                search, totalCount, pageNum, pageSize, startRow, endRow);
 
 		// 결과 전달
 		model.addAttribute("list", list);
 		model.addAttribute("searchDiv", searchDiv);
 		model.addAttribute("searchWord", searchWord);
 		model.addAttribute("category",category);
+		model.addAttribute("dateFilter",dateFilter);
 		model.addAttribute("pageSize",pageSize);
 		model.addAttribute("pageNum",pageNum);
 		
+		model.addAttribute("totalCount",totalCount);
+		model.addAttribute("totalPage",totalPage);
+		model.addAttribute("blockSize",blockSize);
+		model.addAttribute("startPage",startPage);
+		model.addAttribute("endPage",endPage);
+		
+		model.addAttribute("totalAll",totalAll);
+		
 
 		return "article/list";
+	}
+	
+	@GetMapping("/visit.do")
+	public String visit(@RequestParam("articleCode") long articleCode) throws Exception{
+		
+		ArticleDTO req = new ArticleDTO();
+		req.setArticleCode(articleCode);
+		
+		ArticleDTO article = service.doSelectOne(req);
+		
+		if(article == null || article.getUrl() == null || article.getUrl().isEmpty()) {
+			return "redirect:/article/list.do";
+		}
+		String url = article.getUrl();
+		if(!(url.startsWith("http://")||url.startsWith("https://"))) {
+			return "redirect:/article/list.do";
+		}
+		
+		return "redirect:"+url;
 	}
 
 

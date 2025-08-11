@@ -128,7 +128,7 @@ class ArticleServiceTest {
 		
 		int flag = mapper.doSave(dto01);
 		
-		int count = mapper.getCount();
+		int count = mapper.getCountAll();
 		assertEquals(1, count);
 		
 		flag = mapper.updateReadCnt(dto01);

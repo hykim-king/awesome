@@ -44,9 +44,9 @@
 	<!-- 양방향 암호화 -->
 	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
 	
-	<!-- 단방향 암호화 -->
-	<bean id="passwordEncoder" 
-	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+<!-- 	단방향 암호화 -->
+<!-- 	<bean id="passwordEncoder"  -->
+<!-- 	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean> -->
 		
     <!-- 예외처리: 최종테스트에 열고 사용 하세요 -->
 <!--     <bean id="exceptionResolver" 

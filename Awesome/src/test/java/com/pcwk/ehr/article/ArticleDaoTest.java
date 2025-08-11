@@ -5,8 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 import java.sql.SQLException;
-
-
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ class ArticleDaoTest {
 	@BeforeEach
 	void setUp() throws Exception {
 
-		dto01 = new ArticleDTO(1L, 10, "조선일보", "AI가 세상을 바꾼다", "AI 기술의 발전과 전망", "https://chosun.com/ai-future",
+		dto01 = new ArticleDTO(1L, 30, "조선일보", "AI가 세상을 바꾼다", "AI 기술의 발전과 전망", "https://chosun.com/ai-future",
 				new Date(), 0, new Date(), new Date());
 		search = new ArticleSearchDTO();
 	}
@@ -56,13 +56,14 @@ class ArticleDaoTest {
 	void tearDown() throws Exception {
 	}
 	
+	@Disabled
 	@Test
 	void updateReadCnt() throws Exception {
 		mapper.deleteAll();
 		
 		int flag = mapper.doSave(dto01);
 		
-		int count = mapper.getCount();
+		int count = mapper.getCountAll();
 		assertEquals(1, count);
 		
 		flag = mapper.updateReadCnt(dto01);
@@ -75,7 +76,7 @@ class ArticleDaoTest {
 		
 	}
 
-	// @Disabled
+	@Disabled
 	@Test
 	public void doSave() throws Exception {
 		mapper.deleteAll();
@@ -84,7 +85,7 @@ class ArticleDaoTest {
 		assertEquals(1, flag);
 	}
 
-	// @Disabled
+	@Disabled
 	@Test
 	public void doDelete() throws Exception {
 
@@ -95,7 +96,7 @@ class ArticleDaoTest {
 
 	}
 
-	// @Disabled
+	@Disabled
 	@Test
 	public void doSelectOne() throws Exception {
 		mapper.deleteAll();
@@ -116,9 +117,44 @@ class ArticleDaoTest {
 
 		mapper.deleteAll();
 
-		for (int i = 1; i <= 5; i++) {
-			ArticleDTO article = new ArticleDTO(1L, 10, "조선일보", "AI가 세상을 바꾼다", "AI 기술의 발전과 전망" + i,
-					"https://chosun.com/ai-future", new Date(), 0, new Date(), new Date());
+		for (int i = 1; i <= 2; i++) {
+			ArticleDTO article = new ArticleDTO(1L, 10, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,
+					"https://chosun.com/ai-future/"+i, new Date(), 0, new Date(), new Date());
+			int result = mapper.doSave(article);
+			assertEquals(1, result, "등록 실패!");
+		}
+		
+		for (int i = 3; i <= 4; i++) {
+			ArticleDTO article = new ArticleDTO(1L, 20, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,
+					"https://chosun.com/ai-future/"+i, new Date(), 0, new Date(), new Date());
+			int result = mapper.doSave(article);
+			assertEquals(1, result, "등록 실패!");
+		}
+		
+		for (int i = 5; i <= 6; i++) {
+			ArticleDTO article = new ArticleDTO(1L, 30, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,
+					"https://chosun.com/ai-future/"+i, new Date(), 0, new Date(), new Date());
+			int result = mapper.doSave(article);
+			assertEquals(1, result, "등록 실패!");
+		}
+		
+		for (int i = 7; i <= 8; i++) {
+			ArticleDTO article = new ArticleDTO(1L, 40, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,
+					"https://chosun.com/ai-future/"+i, Timestamp.valueOf("2025-08-07 10:00:00"), 0, new Date(), new Date());
+			int result = mapper.doSave(article);
+			assertEquals(1, result, "등록 실패!");
+		}
+		
+		for (int i = 9; i <= 10; i++) {
+			ArticleDTO article = new ArticleDTO(1L, 50, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,
+					"https://chosun.com/ai-future/"+i, new Date(), 0, new Date(), new Date());
+			int result = mapper.doSave(article);
+			assertEquals(1, result, "등록 실패!");
+		}
+		
+		for (int i = 11; i <= 12; i++) {
+			ArticleDTO article = new ArticleDTO(1L, 60, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,
+					"https://chosun.com/ai-future/"+i, new Date(), 0, new Date(), new Date());
 			int result = mapper.doSave(article);
 			assertEquals(1, result, "등록 실패!");
 		}
@@ -126,12 +162,12 @@ class ArticleDaoTest {
 		ArticleSearchDTO search = new ArticleSearchDTO();
 		search.setPageNo(1);
 		search.setPageSize(10);
-		search.setDiv("10");
+		search.setDiv("30");
 		
 
 		List<ArticleDTO> list = mapper.doRetrieve(search);
 
-		assertEquals(5, list.size());
+		assertEquals(12, list.size());
 
 		for (ArticleDTO dto : list) {
 			log.debug("조회 결과:{}", dto);

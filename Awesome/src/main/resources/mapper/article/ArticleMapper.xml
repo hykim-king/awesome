@@ -14,8 +14,37 @@
 		  ARTICLE_CODE = #{articleCode}
 	</update>
 
-	<select id="getCount" resultType="java.lang.Integer">
+	<select id="getCountAll" resultType="java.lang.Integer">
 		SELECT COUNT(*) FROM article
+	</select>
+	
+	<select id="getCount"
+        parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
+        resultType="int">
+	  SELECT COUNT(1)
+	  FROM ARTICLE
+	  WHERE 1=1
+	  <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
+	    <choose>
+	      <when test="searchDiv == '10'">
+	        AND TITLE   LIKE '%' || #{searchWord} || '%'
+	      </when>
+	      <when test="searchDiv == '20'">
+	        AND SUMMARY LIKE '%' || #{searchWord} || '%'
+	      </when>
+	      <when test="searchDiv == '30'">
+	        AND PRESS   LIKE '%' || #{searchWord} || '%'
+	      </when>
+	    </choose>
+	  </if>
+	
+	  <if test="category != null and category != 0">
+	    AND CATEGORY = #{category}
+	  </if>
+	
+	  <if test="dateFilter != null and dateFilter != ''">
+	    AND TRUNC(PUBLIC_DT) = TO_DATE(#{dateFilter}, 'YYYY-MM-DD')
+	  </if>
 	</select>
 
 	<insert id="doSave"
@@ -76,87 +105,34 @@
 	</select>
 
     <select id="doRetrieve"
-
-        parameterType="com.pcwk.ehr.article.domain.ArticleDTO"
-        resultType="com.pcwk.ehr.article.domain.ArticleDTO">
-        SELECT
-            ARTICLE_CODE,
-            CATEGORY,
-            PRESS,
-            TITLE,
-            SUMMARY,
-            URL,
-            PUBLIC_DT,
-            VIEWS,
-            REG_DT,
-            MOD_DT
-        FROM ARTICLE
-        WHERE 1=1
-
-        <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
-            <choose>
-                <when test="searchDiv == '10'">
-                    AND TITLE LIKE '%' || #{searchWord} || '%'
-                </when>
-                <when test="searchDiv == '20'">
-                    AND SUMMARY LIKE '%' || #{searchWord} || '%'
-                </when>
-                <when test="searchDiv == '30'">
-                    AND PRESS LIKE '%' || #{searchWord} || '%'
-                </when>
-                <when test="searchDiv == '40'">
-                    AND PUBLIC_DT LIKE '%' || #{searchWord} || '%'
-                </when>
-            </choose>
-        </if>
-
-        <!-- ✅ 카테고리 조건 추가 -->
-        <if test="category != null and category != 0">
-            AND CATEGORY = #{category}
-        </if>
-
-        ORDER BY REG_DT DESC
-    </select>
-
-    <select id="">
-    parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
-    resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+          parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
+          resultType="com.pcwk.ehr.article.domain.ArticleDTO">
     SELECT *
     FROM (
-        SELECT 
-            A.*, ROWNUM RN
-        FROM (
-            SELECT
-                ARTICLE_CODE,
-                CATEGORY,
-                PRESS,
-                TITLE,
-                SUMMARY,
-                URL,
-                PUBLIC_DT,
-                VIEWS,
-                REG_DT,
-                MOD_DT
-            FROM ARTICLE
-            WHERE 1=1
-            <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
-                <choose>
-                    <when test="searchDiv == '10'">
-                        AND TITLE LIKE '%' || #{searchWord} || '%'
-                    </when>
-                    <!-- ... 나머지 검색조건 ... -->
-                </choose>
-            </if>
-            <if test="category != null and category != 0">
-                AND CATEGORY = #{category}
-            </if>
-            ORDER BY REG_DT DESC
-        ) A
+      SELECT A.*, ROWNUM RN
+      FROM (
+        SELECT
+          ARTICLE_CODE, CATEGORY, PRESS, TITLE, SUMMARY, URL,
+          PUBLIC_DT, VIEWS, REG_DT, MOD_DT
+        FROM ARTICLE
+        WHERE 1=1
+        <if test="searchDiv != null and searchDiv != '' and searchWord != null and searchWord != ''">
+          <choose>
+            <when test="searchDiv == '10'">AND TITLE   LIKE '%' || #{searchWord} || '%'</when>
+            <when test="searchDiv == '20'">AND SUMMARY LIKE '%' || #{searchWord} || '%'</when>
+            <when test="searchDiv == '30'">AND PRESS   LIKE '%' || #{searchWord} || '%'</when>
+          </choose>
+        </if>
+        <if test="category != null and category != 0">
+          AND CATEGORY = #{category}
+        </if>
+        <if test="dateFilter != null and dateFilter != ''">
+          AND TRUNC(PUBLIC_DT) = TO_DATE(#{dateFilter}, 'YYYY-MM-DD')
+        </if>
+        ORDER BY REG_DT DESC
+      ) A
     )
     WHERE RN BETWEEN #{startRow} AND #{endRow}
-    </select>
-
-
-
+  </select>
 </mapper>
 
