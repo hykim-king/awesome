@@ -22,10 +22,8 @@
 	   </property>
 	</bean>	
 	
-	<!-- 암호화 빈 등록  -->
-	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
-	
-	
+
+
 	<!-- 로케일 변경 인터셉터 
 	언언 설정 변경 요청을 가로채고 사용자의 Locale을 동적으로 변경해주는 인터셉터
 	-->
@@ -137,14 +135,13 @@
         class="com.pcwk.ehr.user.service.DummyMailService"></bean> 
 
     <!-- Naver smtp -->
-    <bean id="mailSenderImpl"
-        class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="smtp.naver.com" />
-        <property name="port" value="465" />
-        <property name="username" value="com0494@naer.com" />
-        <property name="password" value="" />
-        <property name="protocol" value="smtp" />
-        <property name="javaMailProperties">
+   <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.naver.com"/>
+    <property name="port" value="465"/> <!-- SSL 포트 -->
+    <property name="username" value="com0494@naver.com"/>
+    <property name="password" value=""/>
+    <property name="defaultEncoding" value="UTF-8"/>
+    <property name="javaMailProperties">
    <!--google smtp
     <bean id="mailSenderImpl"
         class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -155,11 +152,25 @@
         <property name="protocol" value="smtp" />
         <property name="javaMailProperties"> -->
             <props>
-                <!-- <prop key="mail.transport.protocol">smtp</prop> -->
+                <prop key="mail.transport.protocol">smtp</prop>
                 <prop key="mail.smtp.auth">true</prop>
-                <prop key="mail.smtp.starttls.enable">true</prop>
-                <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
-                <prop key="mail.debug">true</prop>
+                
+                 <!-- 465 사용 시 SSL -->
+            <prop key="mail.smtp.ssl.enable">true</prop>
+            <prop key="mail.smtp.starttls.enable">false</prop>
+                
+              <prop key="mail.smtp.ssl.trust">smtp.naver.com</prop>
+              <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+           
+                 <!-- 타임아웃/디버그 -->
+          <prop key="mail.smtp.connectiontimeout">8000</prop>
+            <prop key="mail.smtp.timeout">8000</prop>
+            <prop key="mail.smtp.writetimeout">8000</prop>
+            <prop key="mail.debug">true</prop>
+       
+           
+           
+           
             </props>
         </property>
     </bean>
@@ -177,8 +188,7 @@
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
         <property name="username" value="awesome" />
-
-        <property name="password" value="a4321"></property>
+        <property name="password" value=""></property>
 
         <!-- Optional settings -->
         <property name="maximumPoolSize" value="10"></property>
