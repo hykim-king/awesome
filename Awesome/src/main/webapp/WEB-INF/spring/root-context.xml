@@ -22,6 +22,10 @@
 	   </property>
 	</bean>	
 	
+	<!-- 암호화 빈 등록  -->
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	
+	
 	<!-- 로케일 변경 인터셉터 
 	언언 설정 변경 요청을 가로채고 사용자의 Locale을 동적으로 변경해주는 인터셉터
 	-->
@@ -42,9 +46,9 @@
 	<!-- 양방향 암호화 -->
 	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
 	
-	<!-- 단방향 암호화 -->
-	<bean id="passwordEncoder" 
-	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+<!-- 	단방향 암호화 -->
+<!-- 	<bean id="passwordEncoder"  -->
+<!-- 	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean> -->
 		
     <!-- 예외처리: 최종테스트에 열고 사용 하세요 -->
 <!--     <bean id="exceptionResolver" 
@@ -133,18 +137,25 @@
         class="com.pcwk.ehr.user.service.DummyMailService"></bean> 
 
     <!-- Naver smtp -->
-
-    <!-- google smtp -->
+    <bean id="mailSenderImpl"
+        class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="smtp.naver.com" />
+        <property name="port" value="465" />
+        <property name="username" value="com0494@naer.com" />
+        <property name="password" value="" />
+        <property name="protocol" value="smtp" />
+        <property name="javaMailProperties">
+   <!--google smtp
     <bean id="mailSenderImpl"
         class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="smtp.gmail.com" />
         <property name="port" value="587" />
         <property name="username" value="zoqwkdrudfud@gmail.com" />
-        <property name="password" value="" />
+        <property name="password" value="***" />
         <property name="protocol" value="smtp" />
-        <property name="javaMailProperties">
+        <property name="javaMailProperties"> -->
             <props>
-                <prop key="mail.transport.protocol">smtp</prop>
+                <!-- <prop key="mail.transport.protocol">smtp</prop> -->
                 <prop key="mail.smtp.auth">true</prop>
                 <prop key="mail.smtp.starttls.enable">true</prop>
                 <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>

@@ -97,7 +97,7 @@ class BookmarkDaoTest {
 		//3. 
 		BookmarkDTO param = new BookmarkDTO();
 		param.setUserId("user01");
-		List<BookmarkDTO> outVO = bMapper.doRetrive(param);
+		List<BookmarkDTO> outVO = bMapper.doRetriveMy(param);
 		assertNotNull(outVO);
 		log.debug("outVO: {}", outVO);
 		
@@ -142,7 +142,7 @@ class BookmarkDaoTest {
 		log.debug(count);
 		
 		//4.
-		List<BookmarkDTO> outVO = bMapper.doRetrive(bDto01);
+		List<BookmarkDTO> outVO = bMapper.doRetriveMy(bDto01);
 		assertNotNull(outVO);
 		log.debug("outVO: {}", outVO);
 		

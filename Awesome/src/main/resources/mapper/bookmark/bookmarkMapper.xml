@@ -19,9 +19,17 @@
 		           SYSDATE )
 	</insert>
 	
+	<!-- 기사 별 북마크 조회  -->
+	<select id="doSelectOne" parameterType="BookmarkDTO" resultType="BookmarkDTO">
+	   SELECT
+	      COUNT(*) OVER() AS totalCnt
+	   FROM bookmark
+	   WHERE user_id = #{userId}
+	     AND article_code = #{articleCode}
+	</select>
 	
-	<!-- 북마크한 기사 조회 -->
-	<select id="doRetrive" parameterType="BookmarkDTO" resultType="BookmarkDTO">
+	<!-- 마이페이지 북마크한 기사 조회 -->
+	<select id="doRetriveMy" parameterType="BookmarkDTO" resultType="BookmarkDTO">
 		SELECT
 		    COUNT(*) OVER() AS totalCnt,
 		    bm.bm_code,

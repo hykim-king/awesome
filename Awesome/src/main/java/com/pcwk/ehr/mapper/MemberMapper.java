@@ -22,4 +22,6 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
     int idCheck(String userId);
 
     void updateEmailAuthToken(String email, String token);
+    
+    MemberDTO findByEmailAuthToken(String token) throws SQLException;
 }
