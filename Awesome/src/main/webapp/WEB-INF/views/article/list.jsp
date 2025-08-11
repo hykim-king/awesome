@@ -93,7 +93,11 @@
 								<a href="${item.url}" target="_blank">${item.title}</a>
 							</div>
 
-							<div class="summary">${item.summary}</div>
+							<div class="summary">
+							 <a href="${pageContext.request.contextPath}/article/visit.do?articleCode=${item.articleCode}">
+							 ${item.summary}
+							 </a>
+							</div>
 
 							<div class="meta">
 								${item.press} |

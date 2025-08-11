@@ -19,5 +19,7 @@ public interface ArticleService {
 	int getCount(ArticleSearchDTO param) throws Exception;
 	
 	int getCountAll() throws Exception;
+	
+	int updateReadCnt(ArticleDTO param) throws Exception;
 		
 }
