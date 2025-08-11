@@ -41,7 +41,17 @@ public class MemberController {
             return "redirect:/member/register.do";
         }
     }
-
+    
+    //아이디 중복 체크
+    // com.pcwk.ehr.member.controller.MemberController
+    @GetMapping(value = "/checkId", produces = "text/plain; charset=UTF-8")
+    @ResponseBody
+    public String checkId(@RequestParam String userId) throws Exception {
+        return memberService.existsById(userId) ? "DUP" : "OK";
+    }
+    
+    
+    
     // 이메일 인증 확인
     @GetMapping("/verifyEmail")
     public String verifyEmail(@RequestParam("token") String token, Model model) throws SQLException {

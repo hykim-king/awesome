@@ -23,9 +23,14 @@ import com.pcwk.ehr.mapper.MemberMapper;
 import com.pcwk.ehr.member.domain.MemberDTO;
 
 
-@ExtendWith(SpringExtension.class)
+/*@ExtendWith(SpringExtension.class)  //Controller test시 다시 사용
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
-		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
+		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })*/
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml"})
+		
+
 class DaoTest {
 
 Logger log = LogManager.getLogger(getClass());
@@ -48,7 +53,7 @@ Logger log = LogManager.getLogger(getClass());
 	void tearDown() throws Exception {
 	}
 	
-	  	@Disabled
+	  	//@Disabled
 	    @Test
 	    @DisplayName("1. 등록 후 단건 조회 테스트")
 	    void doSaveAndSelectOne() throws SQLException {
@@ -68,7 +73,7 @@ Logger log = LogManager.getLogger(getClass());
 	        assertEquals(dto01.getUserId(), result.getUserId());
 	    }
 	
-	  	@Disabled
+	  	//@Disabled
 	    @Test
 	    @DisplayName("2. 수정 테스트")
 	    void doUpdate() throws SQLException {
@@ -96,7 +101,7 @@ Logger log = LogManager.getLogger(getClass());
 	
 	    
 	    
-	@Disabled
+	 //@Disabled
 	 @Test
 	 @DisplayName("3. 저장 테스트")
 	void doSave() throws Exception {
@@ -107,7 +112,7 @@ Logger log = LogManager.getLogger(getClass());
 	}
 	
 	
-	@Disabled
+	//@Disabled
     @Test
     @DisplayName("4. 삭제 테스트")
     void doDelete() throws SQLException {
@@ -121,7 +126,7 @@ Logger log = LogManager.getLogger(getClass());
         assertEquals(1, deleteResult);
     }
 	
-	@Disabled
+	//@Disabled
 	@Test
 	void bean() {
 		assertNotNull(context);
