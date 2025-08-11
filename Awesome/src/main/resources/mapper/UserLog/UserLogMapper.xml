@@ -22,10 +22,9 @@
       FROM DUAL
     </selectKey>
     INSERT INTO user_click_log (
-      log_code, user_id, article_code, clicked_at
+      log_code, user_id, article_code
     ) VALUES (
-      #{logCode}, #{userId}, #{articleCode},
-      NVL(#{clickedAt}, SYSDATE)
+      #{logCode}, #{userId}, #{articleCode}
     )
   </insert>
 
