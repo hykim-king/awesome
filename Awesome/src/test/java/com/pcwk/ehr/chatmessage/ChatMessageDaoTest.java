@@ -73,41 +73,55 @@ class ChatMessageDaoTest {
 		log.debug("└─────────────────────────────────┘");
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void find_recent_by_category() {
 		log.debug("┌─────────────────────────────────┐");
 		log.debug("│ find_recent_by_category()       │");
 		log.debug("└─────────────────────────────────┘");
 
+	    m1.setCategory(politics);
+	    m2.setCategory(politics);
+	    m3.setCategory(politics);
+		
 		mapper.doSave(m1);
 		mapper.doSave(m2);
 		mapper.doSave(m3);
 
 		List<ChatMessageDTO> list = mapper.findRecentByCategory(politics, 2);
+		
 		assertEquals(2, list.size());
-		assertTrue(list.get(0).getChatCode() > list.get(1).getChatCode());
+		assertTrue(list.get(0).getChatCode() > list.get(1).getChatCode());//최신순
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void find_before_code() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
 		log.debug("│ find_before_code()              │");
 		log.debug("└─────────────────────────────────┘");
 
+        ChatMessageDTO m1 = new ChatMessageDTO(0, politics, "u1", "msg1", null);
+        ChatMessageDTO m2 = new ChatMessageDTO(0, politics, "u2", "msg2", null);
+        ChatMessageDTO m3 = new ChatMessageDTO(0, politics, "u3", "msg3", null);
+		
 		mapper.doSave(m1);
+        mapper.doSave(m2);
+        mapper.doSave(m3);
 
-		int last = m3.getChatCode(); // 가장 최신 chat코드
+		int last = m3.getChatCode(); // 가장 최근 m3 이전 2건들 요청
 		List<ChatMessageDTO> older = mapper.findBeforeCode(politics, last, 2);
+		
+        assertNotNull(older);
 		assertEquals(2, older.size());
 		assertTrue(older.get(0).getChatCode() < last);
 		assertTrue(older.get(1).getChatCode() < last);
+		assertTrue(older.get(0).getChatCode()>older.get(1).getChatCode());
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void doDelete() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -125,7 +139,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void doSave() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -144,7 +158,7 @@ class ChatMessageDaoTest {
 		assertEquals(politics, outVO.getCategory());
 	}
 
-	// @Disabled
+	@Disabled
 	@Test
 	void beans() {
 		log.debug("┌─────────────────────────────────┐");

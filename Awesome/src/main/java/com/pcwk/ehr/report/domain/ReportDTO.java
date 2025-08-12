@@ -3,19 +3,14 @@ package com.pcwk.ehr.report.domain;
 import java.util.Date;
 
 public class ReportDTO {
-	private int reportCode; //신고 코드
-	
-	private int chatCode; //채팅 메시지 고유 코드
-	
-	private String userId; //신고자Id
-	
+	private int reportCode; //신고 코드	
+	private int chatCode; //채팅 메시지 고유 코드	
+	private String userId; //신고자Id	
 	private String ctId; //신고 대상Id
-	
-	private int reason; //신고 사유
-	
-	private int status; //상태값(검토중/조치완료)
-	
+	private int reason; //신고 사유	
+	private int status; //상태값(검토중/조치완료)	
 	private Date regDt; //신고일
+
 
 	public ReportDTO() {}
 	
@@ -89,6 +84,8 @@ public class ReportDTO {
 	public void setRegDt(Date regDt) {
 		this.regDt = regDt;
 	}
+
+
 
 	@Override
 	public String toString() {
