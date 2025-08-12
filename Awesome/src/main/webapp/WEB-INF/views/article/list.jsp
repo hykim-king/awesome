@@ -220,45 +220,35 @@
 	
 	<script>
 	(function(){
+		  // 클릭 시 조회수만 +1, 링크 열기는 브라우저 기본 동작(새 탭)으로 처리
 		  window.hitAndOpen = function(a, ev){
-		    // ★ 전역 락(짧게 300ms)으로 같은 클릭의 중복 실행 방지
-		    if (window.__HIT_LOCK__) return false;
-		    window.__HIT_LOCK__ = true;
-		    setTimeout(function(){ window.__HIT_LOCK__ = false; }, 300);
+		    // 기본 동작/전파 막지 않음 → 새 탭 즉시 기사로 열림
+		    // ev && ev.preventDefault();  // ← 삭제
+		    // stopPropagation류도 불필요
 
-		    if (ev && typeof ev.preventDefault === 'function') {
-		      ev.preventDefault();
-		      if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
-		      if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
-		      ev.returnValue = false;
-		      ev.cancelBubble = true;
-		    }
-
-		    if (a.__hitting) return false;
+		    // (가벼운 중복 클릭 방지)
+		    if (a.__hitting) return true;
 		    a.__hitting = true;
+		    setTimeout(function(){ a.__hitting = false; }, 300);
 
 		    var code = a.getAttribute('data-article-code');
 		    var hitUrl = a.getAttribute('data-hit-url');
-		    var articleUrl = a.getAttribute('href');
 
-		    var win = window.open('about:blank', '_blank', 'noopener');
+		    fetch(hitUrl, {
+		      method: 'POST'
+		      // credentials: 'same-origin', // 세션/쿠키 쓰면 주석 해제
+		      // headers: { 'X-CSRF-TOKEN': '...' } // CSRF 쓰면 추가
+		    })
+		    .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
+		    .then(function(data){
+		      if (data && typeof data.views === 'number') {
+		        var span = document.getElementById('views-' + code);
+		        if (span) span.textContent = String(data.views);
+		      }
+		    })
+		    .catch(function(err){ console.error('조회수 증가 실패', err); });
 
-		    fetch(hitUrl, { method: 'POST' })
-		      .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
-		      .then(function(data){
-		        if (data && typeof data.views === 'number') {
-		          var span = document.getElementById('views-' + code);
-		          if (span) span.textContent = String(data.views);
-		        }
-		      })
-		      .catch(function(err){ console.error('조회수 증가 실패', err); })
-		      .then(function(){
-		        if (win) win.location.href = articleUrl;
-		        else window.open(articleUrl, '_blank', 'noopener');
-		        a.__hitting = false;
-		      });
-
-		    return false;
+		    return true; // ★ 기본 동작 허용 → target="_blank"로 새 탭 즉시 이동
 		  };
 		})();
 	    </script>
