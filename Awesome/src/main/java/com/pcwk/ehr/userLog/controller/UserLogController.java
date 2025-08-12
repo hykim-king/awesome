@@ -13,8 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
-// ⚠️ 네가 만든 서비스 패키지명에 맞춰 import 바꿔줘.
-// 예) com.pcwk.ehr.keyword.service.UserLogService 또는 com.pcwk.ehr.userlog.service.UserLogService
+
 import com.pcwk.ehr.userLog.service.UserLogService;
 
 @Controller
