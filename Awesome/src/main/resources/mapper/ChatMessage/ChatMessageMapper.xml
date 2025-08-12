@@ -17,9 +17,19 @@
         #{chatCode}, 
         #{category}, 
         #{userId}, 
-        #{message}, 
-        NVL(#{sendDt}, SYSDATE)
+        #{message},
+         <choose>
+        <!-- 테스트에서 명시 시간 주면 그대로 저장 -->
+        <when test="sendDt != null">
+          #{sendDt, jdbcType=TIMESTAMP}
+        </when>
+        <!-- 실시간(일반) 케이스: 서버/DB 시간이 들어감 -->
+        <otherwise>
+          SYSTIMESTAMP
+        </otherwise>
+      </choose> 
         )
+        
   </insert>
   
     <!--단건 조회 -->

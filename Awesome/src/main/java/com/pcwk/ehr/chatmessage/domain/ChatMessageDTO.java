@@ -72,6 +72,16 @@ public class ChatMessageDTO {
 		return "ChatMessageDTO [chatCode=" + chatCode + ", category=" + category + ", userId=" + userId + ", message="
 				+ message + ", sendDt=" + sendDt + ", toString()=" + super.toString() + "]";
 	}
+
+	public void setReason(int i) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setStatus(int i) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	
