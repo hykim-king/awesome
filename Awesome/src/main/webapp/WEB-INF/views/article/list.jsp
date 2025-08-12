@@ -7,6 +7,90 @@
 <head>
 <title>뉴스 기사 목록</title>
 <style>
+:root {
+  --blue:#0d47a1; --blue-weak:#e7efff;
+  --text:#111827; --muted:#6b7280; --border:#e5e7eb; --card:#ffffff; --bg:#f8fafc;
+}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+
+/* ----- Layout: 메인/사이드 ----- */
+.layout{display:grid;grid-template-columns:1fr 280px;gap:16px;max-width:1100px;margin:16px auto;padding:0 16px;}
+.main{min-width:0}
+.aside{position:sticky; top:16px; align-self:start; border:1px solid var(--border); background:var(--card); border-radius:12px; padding:12px}
+
+/* ----- 카테고리 탭 (파란 바) ----- */
+.nav{background:var(--blue); border-radius:10px; padding:8px; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+.nav a{
+  color:#cfe3ff; text-decoration:none; padding:8px 12px; border-radius:8px; transition:.15s;
+}
+.nav a:hover{background:rgba(255,255,255,.12); color:#fff}
+.nav a.active{background:#fff; color:var(--blue); font-weight:700}
+
+/* ----- 검색 바 ----- */
+.search-box{
+  display:grid; grid-template-columns:120px 1fr 160px auto; gap:8px;
+  padding:10px; border:1px solid var(--border); border-radius:12px; background:var(--card); margin-bottom:12px;
+}
+.search-box select, .search-box input[type="text"], .search-box input[type="date"]{
+  height:38px; border:1px solid var(--border); border-radius:8px; padding:0 10px; background:#fff
+}
+.search-box button{
+  height:38px; border:none; border-radius:10px; background:var(--blue); color:#fff; font-weight:600; cursor:pointer
+}
+.search-box button:hover{opacity:.92}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .aside{position:static; order:-1}
+  .search-box{grid-template-columns:1fr 1fr; grid-auto-rows:minmax(38px,auto)}
+  .search-box button{grid-column:1/-1}
+}
+
+/* ----- 뉴스 리스트 (행 카드 스타일) ----- */
+.news-list{display:flex; flex-direction:column; gap:10px}
+.news-item{
+  display:grid; grid-template-columns: 1fr auto; gap:6px 12px;
+  background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px;
+  transition:box-shadow .12s, transform .12s, border-color .12s;
+}
+.news-item:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.06); border-color:#d9dee5}
+
+/* 제목/요약/메타 */
+.news-title{grid-column:1/-1; line-height:1.35}
+.news-title a{color:var(--blue); text-decoration:none; font-weight:700; font-size:18px; word-break:break-word}
+.news-title a:hover{text-decoration:underline}
+.summary{
+  color:#374151; margin:2px 0 4px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.meta{color:var(--muted); font-size:13px; display:flex; gap:10px; align-items:center}
+
+/* ----- 조회수 뱃지(오른쪽) ----- */
+.news-item .meta + * {display:none} /* 기존 그리드 정리용(없으면 무시) */
+.meta .views-badge{
+  background:var(--blue-weak); color:var(--blue); border-radius:999px; padding:2px 8px; font-weight:700; font-size:12px
+}
+
+/* ----- 페이징 ----- */
+.paging{display:flex; justify-content:center; gap:8px; margin:16px 0 24px}
+.paging a, .paging span{
+  min-width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+  background:#fff; border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--text)
+}
+.paging a:hover{border-color:var(--blue); color:var(--blue)}
+.paging .activePage{background:var(--blue); border-color:var(--blue); color:#fff}
+.paging .disabled{color:#9ca3af; background:#f3f4f6}
+
+/* ----- 랭킹(사이드) ----- */
+.rank-title{font-weight:800; margin:4px 0 8px}
+.rank-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+.rank-list li{display:flex; align-items:center; gap:10px}
+.rank-num{
+  width:22px; height:22px; border-radius:6px; background:var(--blue); color:#fff;
+  display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
+}
+.rank-link{color:#111827; text-decoration:none}
+.rank-link:hover{color:var(--blue); text-decoration:underline}
 </style>
 <script>
 	//새로 고침 시 검색 조건 초기화
@@ -106,8 +190,17 @@
 							     ${item.title}
 							 </a>
 							</div>
-
-							<div class="summary">${item.summary}</div>
+                            <!-- 요약 80자 넘을시 ... 표시 -->
+							<div class="summary">
+							 <c:choose>
+							     <c:when test="${not empty item.summary and fn:length(item.summary) > 80}">
+							         ${fn:substring(item.summary,0,80)}...
+							     </c:when>
+							     <c:otherwise>
+							         ${item.summary}
+							     </c:otherwise>
+							 </c:choose>
+							</div>
 
 							<div class="meta">
 								${item.press} |
