@@ -9,16 +9,19 @@
 <style>
 </style>
 <script>
-//새로 고침 시 검색 조건 초기화
-  if(performance && performance.navigation && performance.navigation.type === performance.navigation.TYPE_RELOAD){
-    location.replace("${pageContext.request.contextPath}/article/list.do");
-  }
-  if(performance && performance.getEntriesByType){
-	  var nav = performance.getEntriesByType("navigation")[0];
-	  if(nav && nav.type === "reload"){
-		location.replace("${pageContext.request.contextPath}/article/list.do")  
-	  }	  
-  }  
+	//새로 고침 시 검색 조건 초기화
+	if (performance
+			&& performance.navigation
+			&& performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+		location.replace("${pageContext.request.contextPath}/article/list.do");
+	}
+	if (performance && performance.getEntriesByType) {
+		var nav = performance.getEntriesByType("navigation")[0];
+		if (nav && nav.type === "reload") {
+			location
+					.replace("${pageContext.request.contextPath}/article/list.do")
+		}
+	}
 </script>
 </head>
 <body>
@@ -46,12 +49,12 @@
 			<c:url var="cate40" value="/article/list.do">
 				<c:param name="category" value="40" />
 			</c:url>
-			<a href="${cate40}" class="${category == 40 ? 'active' : ''}">연예</a>
+			<a href="${cate40}" class="${category == 40 ? 'active' : ''}">스포츠</a>
 
 			<c:url var="cate50" value="/article/list.do">
 				<c:param name="category" value="50" />
 			</c:url>
-			<a href="${cate50}" class="${category == 50 ? 'active' : ''}">스포츠</a>
+			<a href="${cate50}" class="${category == 50 ? 'active' : ''}">연예</a>
 
 			<c:url var="cate60" value="/article/list.do">
 				<c:param name="category" value="60" />
@@ -62,11 +65,9 @@
 		<!-- 검색 폼 -->
 		<c:url var="searchAction" value="/article/list.do" />
 		<form method="get" action="${searchAction}" class="search-box">
-			<input type="hidden" name="category" value="${category}" /> 
-			<input type="hidden" name="pageNum" value="1" />
-			<input type="hidden" name="pageSize" value="${pageSize}" /> 
-			
-			<select name="searchDiv">
+			<input type="hidden" name="category" value="${category}" /> <input
+				type="hidden" name="pageNum" value="1" /> <input type="hidden"
+				name="pageSize" value="${pageSize}" /> <select name="searchDiv">
 				<option value="">검색구분</option>
 				<option value="10" ${searchDiv == '10' ? 'selected' : ''}>제목</option>
 				<option value="20" ${searchDiv == '20' ? 'selected' : ''}>내용</option>
@@ -89,20 +90,29 @@
 
 					<c:forEach var="item" items="${list}">
 						<div class="news-item">
+						
+						<c:url var="visitUrl" value="/article/visit.do">
+						  <c:param name="articleCode" value="${item.articleCode}"/>
+						</c:url>
+						
+						<c:url var="hitUrl" value="/article/hit.do">
+						  <c:param name="articleCode" value="${item.articleCode}"></c:param>
+						</c:url>
+						
 							<div class="news-title">
-								<a href="${item.url}" target="_blank">${item.title}</a>
-							</div>
-
-							<div class="summary">
-							 <a href="${pageContext.request.contextPath}/article/visit.do?articleCode=${item.articleCode}">
-							 ${item.summary}
+							 <a href="${item.url}" class="hit-open" data-article-code="${item.articleCode}"
+							     data-hit-url="${hitUrl}" target="_blank" rel="noopener noreferrer"
+							      onclick="return hitAndOpen(this,event)">
+							     ${item.title}
 							 </a>
 							</div>
+
+							<div class="summary">${item.summary}</div>
 
 							<div class="meta">
 								${item.press} |
 								<fmt:formatDate value="${item.publicDt}" pattern="yyyy-MM-dd" />
-								| 조회수: ${item.views}
+								| 조회수: <span id="views-${item.articleCode}">${item.views}</span>
 							</div>
 						</div>
 					</c:forEach>
@@ -124,84 +134,134 @@
 
 		<!-- 페이징 -->
 		<div class="paging">
-	<!-- 이전 페이지 -->
-	    <c:choose>
-	      <c:when test="${pageNum > 1}">
-	        <c:url var="prevUrl" value="/article/list.do">
-	          <c:param name="pageNum"    value="${pageNum - 1}"/>
-	          <c:param name="pageSize"   value="${pageSize}"/>
-	          <c:param name="category"   value="${category}"/>
-	          <c:param name="searchDiv"  value="${searchDiv}"/>
-	          <c:param name="searchWord" value="${searchWord}"/>
-	          <c:param name="dateFilter" value="${dateFilter}"/>
-	        </c:url>
-	        <a href="${prevUrl}">이전</a>
-	      </c:when>
-	      <c:otherwise><span class="disabled">이전</span></c:otherwise>
-	    </c:choose>
-	
-	    <!-- 이전 블록 -->
-	    <c:if test="${startPage > 1}">
-	      <c:url var="prevBlkUrl" value="/article/list.do">
-	        <c:param name="pageNum"    value="${startPage - 1}"/>
-	        <c:param name="pageSize"   value="${pageSize}"/>
-	        <c:param name="category"   value="${category}"/>
-	        <c:param name="searchDiv"  value="${searchDiv}"/>
-	        <c:param name="searchWord" value="${searchWord}"/>
-	        <c:param name="dateFilter" value="${dateFilter}"/>
-	      </c:url>
-	      <a href="${prevBlkUrl}">«</a>
-	    </c:if>
-	
-	    <!-- 숫자 페이지 -->
-	    <c:forEach var="p" begin="${startPage}" end="${endPage}">
-	      <c:choose>
-	        <c:when test="${p == pageNum}">
-	          <span class="activePage">${p}</span>
-	        </c:when>
-	        <c:otherwise>
-	          <c:url var="pageUrl" value="/article/list.do">
-	            <c:param name="pageNum"    value="${p}"/>
-	            <c:param name="pageSize"   value="${pageSize}"/>
-	            <c:param name="category"   value="${category}"/>
-	            <c:param name="searchDiv"  value="${searchDiv}"/>
-	            <c:param name="searchWord" value="${searchWord}"/>
-	            <c:param name="dateFilter" value="${dateFilter}"/>
-	          </c:url>
-	          <a href="${pageUrl}">${p}</a>
-	        </c:otherwise>
-	      </c:choose>
-	    </c:forEach>
-	
-	    <!-- 다음 블록 -->
-	    <c:if test="${endPage < totalPage}">
-	      <c:url var="nextBlkUrl" value="/article/list.do">
-	        <c:param name="pageNum"    value="${endPage + 1}"/>
-	        <c:param name="pageSize"   value="${pageSize}"/>
-	        <c:param name="category"   value="${category}"/>
-	        <c:param name="searchDiv"  value="${searchDiv}"/>
-	        <c:param name="searchWord" value="${searchWord}"/>
-	        <c:param name="dateFilter" value="${dateFilter}"/>
-	      </c:url>
-	      <a href="${nextBlkUrl}">»</a>
-	    </c:if>
-	
-	    <!-- 다음 페이지 -->
-	    <c:choose>
-	      <c:when test="${pageNum < totalPage}">
-	        <c:url var="nextUrl" value="/article/list.do">
-	          <c:param name="pageNum"    value="${pageNum + 1}"/>
-	          <c:param name="pageSize"   value="${pageSize}"/>
-	          <c:param name="category"   value="${category}"/>
-	          <c:param name="searchDiv"  value="${searchDiv}"/>
-	          <c:param name="searchWord" value="${searchWord}"/>
-	          <c:param name="dateFilter" value="${dateFilter}"/>
-	        </c:url>
-	        <a href="${nextUrl}">다음</a>
-	      </c:when>
-	      <c:otherwise><span class="disabled">다음</span></c:otherwise>
-	    </c:choose>
-	  </div>
+			<!-- 이전 페이지 -->
+			<c:choose>
+				<c:when test="${pageNum > 1}">
+					<c:url var="prevUrl" value="/article/list.do">
+						<c:param name="pageNum" value="${pageNum - 1}" />
+						<c:param name="pageSize" value="${pageSize}" />
+						<c:param name="category" value="${category}" />
+						<c:param name="searchDiv" value="${searchDiv}" />
+						<c:param name="searchWord" value="${searchWord}" />
+						<c:param name="dateFilter" value="${dateFilter}" />
+					</c:url>
+					<a href="${prevUrl}">이전</a>
+				</c:when>
+				<c:otherwise>
+					<span class="disabled">이전</span>
+				</c:otherwise>
+			</c:choose>
+
+			<!-- 이전 블록 -->
+			<c:if test="${startPage > 1}">
+				<c:url var="prevBlkUrl" value="/article/list.do">
+					<c:param name="pageNum" value="${startPage - 1}" />
+					<c:param name="pageSize" value="${pageSize}" />
+					<c:param name="category" value="${category}" />
+					<c:param name="searchDiv" value="${searchDiv}" />
+					<c:param name="searchWord" value="${searchWord}" />
+					<c:param name="dateFilter" value="${dateFilter}" />
+				</c:url>
+				<a href="${prevBlkUrl}">«</a>
+			</c:if>
+
+			<!-- 숫자 페이지 -->
+			<c:forEach var="p" begin="${startPage}" end="${endPage}">
+				<c:choose>
+					<c:when test="${p == pageNum}">
+						<span class="activePage">${p}</span>
+					</c:when>
+					<c:otherwise>
+						<c:url var="pageUrl" value="/article/list.do">
+							<c:param name="pageNum" value="${p}" />
+							<c:param name="pageSize" value="${pageSize}" />
+							<c:param name="category" value="${category}" />
+							<c:param name="searchDiv" value="${searchDiv}" />
+							<c:param name="searchWord" value="${searchWord}" />
+							<c:param name="dateFilter" value="${dateFilter}" />
+						</c:url>
+						<a href="${pageUrl}">${p}</a>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
+
+			<!-- 다음 블록 -->
+			<c:if test="${endPage < totalPage}">
+				<c:url var="nextBlkUrl" value="/article/list.do">
+					<c:param name="pageNum" value="${endPage + 1}" />
+					<c:param name="pageSize" value="${pageSize}" />
+					<c:param name="category" value="${category}" />
+					<c:param name="searchDiv" value="${searchDiv}" />
+					<c:param name="searchWord" value="${searchWord}" />
+					<c:param name="dateFilter" value="${dateFilter}" />
+				</c:url>
+				<a href="${nextBlkUrl}">»</a>
+			</c:if>
+
+			<!-- 다음 페이지 -->
+			<c:choose>
+				<c:when test="${pageNum < totalPage}">
+					<c:url var="nextUrl" value="/article/list.do">
+						<c:param name="pageNum" value="${pageNum + 1}" />
+						<c:param name="pageSize" value="${pageSize}" />
+						<c:param name="category" value="${category}" />
+						<c:param name="searchDiv" value="${searchDiv}" />
+						<c:param name="searchWord" value="${searchWord}" />
+						<c:param name="dateFilter" value="${dateFilter}" />
+					</c:url>
+					<a href="${nextUrl}">다음</a>
+				</c:when>
+				<c:otherwise>
+					<span class="disabled">다음</span>
+				</c:otherwise>
+			</c:choose>
+		</div>
 	</div>
+	
+	<script>
+	(function(){
+		  window.hitAndOpen = function(a, ev){
+		    // ★ 전역 락(짧게 300ms)으로 같은 클릭의 중복 실행 방지
+		    if (window.__HIT_LOCK__) return false;
+		    window.__HIT_LOCK__ = true;
+		    setTimeout(function(){ window.__HIT_LOCK__ = false; }, 300);
+
+		    if (ev && typeof ev.preventDefault === 'function') {
+		      ev.preventDefault();
+		      if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
+		      if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
+		      ev.returnValue = false;
+		      ev.cancelBubble = true;
+		    }
+
+		    if (a.__hitting) return false;
+		    a.__hitting = true;
+
+		    var code = a.getAttribute('data-article-code');
+		    var hitUrl = a.getAttribute('data-hit-url');
+		    var articleUrl = a.getAttribute('href');
+
+		    var win = window.open('about:blank', '_blank', 'noopener');
+
+		    fetch(hitUrl, { method: 'POST' })
+		      .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
+		      .then(function(data){
+		        if (data && typeof data.views === 'number') {
+		          var span = document.getElementById('views-' + code);
+		          if (span) span.textContent = String(data.views);
+		        }
+		      })
+		      .catch(function(err){ console.error('조회수 증가 실패', err); })
+		      .then(function(){
+		        if (win) win.location.href = articleUrl;
+		        else window.open(articleUrl, '_blank', 'noopener');
+		        a.__hitting = false;
+		      });
+
+		    return false;
+		  };
+		})();
+	    </script>
+	
 </body>
 </html>
