@@ -20,9 +20,12 @@
 	</insert>
 	
 	<!-- 기사 별 북마크 조회  -->
-	<select id="doSelectOne" parameterType="BookmarkDTO" resultType="BookmarkDTO">
+	<select id="doSelectOne" parameterType="BookmarkDTO">
 	   SELECT
-	      COUNT(*) OVER() AS totalCnt
+	      COUNT(*) OVER() AS totalCnt,
+	      bm_code,
+	      article_code,
+	      user_id
 	   FROM bookmark
 	   WHERE user_id = #{userId}
 	     AND article_code = #{articleCode}
@@ -50,6 +53,13 @@
         SELECT count(*) totalCnt from bookmark
     </select>
 	
+	<!-- 삭제 -->
+	<delete id="doDeleteByArticleUser" parameterType="BookmarkDTO">
+	  DELETE FROM bookmark
+	  WHERE article_code = #{articleCode}
+	    AND user_id = #{userId}
+	</delete>
+		
 	
 	<!-- 단건 삭제 -->
 	<delete id="doDelete" parameterType="BookmarkDTO">

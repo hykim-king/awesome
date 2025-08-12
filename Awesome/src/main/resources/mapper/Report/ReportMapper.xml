@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pcwk.ehr.mapper.ReportMapper">
+
+  <insert id="doSave" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
+    <selectKey keyProperty="reportCode" resultType="int" order="BEFORE">
+      SELECT REP_SEQ.NEXTVAL FROM dual
+    </selectKey>
+    INSERT INTO REPORT (
+      REPORT_CODE, 
+      CHAT_CODE, 
+      USER_ID, 
+      CT_ID, 
+      REASON, 
+      STATUS, 
+      REG_DT
+    ) VALUES (
+      #{reportCode}, 
+      #{chatCode}, 
+      #{userId}, 
+      #{ctId}, 
+      #{reason}, 
+      #{status}, 
+      SYSDATE
+    )
+  </insert>
+
+  <!--단건 -->
+  <select id="doSelectOne"
+          parameterType="com.pcwk.ehr.report.domain.ReportDTO"
+          resultType="com.pcwk.ehr.report.domain.ReportDTO">
+    SELECT
+      REPORT_CODE, 
+      CHAT_CODE, 
+      USER_ID, 
+      CT_ID, 
+      REASON, 
+      STATUS, 
+      REG_DT
+    FROM REPORT
+    WHERE REPORT_CODE = #{reportCode}
+  </select>
+
+    <!-- 신고 목록 조회 + 페이징 -->
+  <select id="doRetrieve"
+          parameterType="com.pcwk.ehr.report.domain.ReportDTO"
+          resultType="com.pcwk.ehr.report.domain.ReportDTO">
+    SELECT 
+    REPORT_CODE, 
+    CHAT_CODE, 
+    USER_ID, 
+    CT_ID, 
+    REASON, 
+    STATUS, 
+    REG_DT
+    FROM (
+      SELECT 
+      R.REPORT_CODE, 
+      R.CHAT_CODE, 
+      R.USER_ID, 
+      R.CT_ID, 
+      R.REASON, 
+      R.STATUS, 
+      R.REG_DT,
+             ROW_NUMBER() OVER (ORDER BY R.REPORT_CODE DESC) RN
+      FROM REPORT R
+      <where>
+        <if test="status != null and status != ''">AND R.STATUS = #{status}</if>
+        <if test="chatCode != null">AND R.CHAT_CODE = #{chatCode}</if>
+        <if test="userId != null and userId != ''">AND R.USER_ID = #{userId}</if>
+        <if test="fromDt != null and toDt != null">AND R.REG_DT BETWEEN #{fromDt} AND #{toDt}</if>
+      </where>
+    )
+    WHERE RN BETWEEN #{startRow} AND #{endRow}
+  </select>
+  
+  <select id="getCount" resultType="int">
+    SELECT COUNT(*) FROM REPORT
+  </select>
+  
+    <!-- 
+    UPDATE: 신고 정보 수정
+    - 필요한 컬럼만 동적으로 SET 절에 포함시킴
+    - reportCode(PK)로 대상 행 지정
+    - 예: 상태, 사유, 대상ID 등을 수정 가능
+    -->
+  <update id="doUpdate" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
+    UPDATE REPORT
+       <set>
+         <if test="chatCode != null">CHAT_CODE = #{chatCode},</if>
+         <if test="userId  != null and userId != ''">USER_ID = #{userId},</if>
+         <if test="ctId    != null and ctId   != ''">CT_ID   = #{ctId},</if>
+         <if test="reason  != null">REASON = #{reason},</if>
+         <if test="status  != null and status != ''">STATUS = #{status},</if>
+       </set>
+     WHERE REPORT_CODE = #{reportCode}
+  </update>
+  
+
+  <delete id="doDelete" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
+    DELETE FROM REPORT WHERE REPORT_CODE = #{reportCode}
+  </delete>
+  
+    <!-- 테스트 초기화 -->
+  <delete id="deleteAll">DELETE FROM REPORT</delete>
+  
+</mapper>

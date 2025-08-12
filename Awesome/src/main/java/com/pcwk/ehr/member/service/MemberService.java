@@ -4,8 +4,12 @@ import java.sql.SQLException;
 import java.util.List;
 import com.pcwk.ehr.member.domain.MemberDTO;
 
-public interface MemberService {
 
+
+
+public interface MemberService {
+	
+	boolean existsById(String userId) throws SQLException;
     /**
      * 회원 가입
      * @param dto
@@ -69,4 +73,7 @@ public interface MemberService {
      * @throws SQLException
      */
     MemberDTO login(MemberDTO dto) throws SQLException;
+    
+    
+    
 }

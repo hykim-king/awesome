@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pcwk.ehr.mapper.ChatMessageMapper">
+
+  <insert id="doSave" parameterType="com.pcwk.ehr.chatmessage.domain.ChatMessageDTO">
+    <selectKey keyProperty="chatCode" resultType="int" order="BEFORE">
+      SELECT CH_SEQ.NEXTVAL FROM DUAL
+    </selectKey>
+    INSERT INTO CHAT_MESSAGE (
+        CHAT_CODE, 
+        CATEGORY, 
+        USER_ID, 
+        MESSAGE, 
+        SEND_DT
+        )
+    VALUES (
+        #{chatCode}, 
+        #{category}, 
+        #{userId}, 
+        #{message}, 
+        NVL(#{sendDt}, SYSDATE)
+        )
+  </insert>
+  
+    <!--단건 조회 -->
+  <select id="doSelectOne" parameterType="int" 
+    resultType="com.pcwk.ehr.chatmessage.domain.ChatMessageDTO">
+    SELECT 
+        CHAT_CODE, 
+        CATEGORY, 
+        USER_ID, 
+        MESSAGE, 
+        SEND_DT
+        FROM CHAT_MESSAGE
+     WHERE CHAT_CODE = #{chatCode}
+  </select>
+  
+  
+	  <!--단건 삭제 -->
+	  <delete id="doDelete" parameterType="int">
+	    DELETE FROM CHAT_MESSAGE 
+	    WHERE CHAT_CODE = #{chatCode}
+	  </delete>
+	  
+	<select id="findBeforeCode"
+	        resultType="com.pcwk.ehr.chatmessage.domain.ChatMessageDTO">
+	  SELECT *
+	  FROM (
+	    SELECT CHAT_CODE, CATEGORY, USER_ID, MESSAGE, SEND_DT
+	    FROM CHAT_MESSAGE
+	    WHERE CATEGORY = #{category}
+	      AND CHAT_CODE &lt; #{lastChatCode}
+	    ORDER BY CHAT_CODE DESC
+	  )
+	  WHERE ROWNUM &lt;= #{limit}
+	</select>
+	
+		
+	<select id="findRecentByCategory"
+	        resultType="com.pcwk.ehr.chatmessage.domain.ChatMessageDTO">
+	  SELECT *
+	  FROM (
+	    SELECT CHAT_CODE, CATEGORY, USER_ID, MESSAGE, SEND_DT
+	    FROM CHAT_MESSAGE
+	    WHERE CATEGORY = #{category}
+	    ORDER BY CHAT_CODE DESC
+	  )
+	  WHERE ROWNUM &lt;= #{limit}
+	</select>
+
+    <delete id="deleteAll">
+        DELETE FROM CHAT_MESSAGE
+    </delete>
+  
+  </mapper>

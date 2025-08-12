@@ -34,15 +34,23 @@ public interface BookmarkMapper {
 	
 	/**
 	 * 전체 등록 건수 조회
-	 * @return int
+	 * @return 1(True)/ 0(False)
 	 */
 	int getCount();
+	
+	
+	/**
+	 * 북마크 단건 삭제(아이디, 기사코드로)
+	 * @param param
+	 * @return 1(True)/ 0(False)
+	 */
+	int doDeleteByArticleUser(BookmarkDTO param);
 	
 	/**
 	 * 북마크 단건 삭제
 	 * @param marked_code
 	 */
-	void doDelete(int param);
+	int doDelete(BookmarkDTO param);
 	
 	
 	/**

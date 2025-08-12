@@ -38,7 +38,7 @@ public class UserLogMapperTest {
     UserLogDTO dto02;
     UserLogDTO dto03;
 
-    // FK가 있으면 실제 존재하는 코드로 바꿔줘
+    // FK가 있으면 실제 존재하는 코드로 변경할것
     Long articleCode = 1001L;
 
     @BeforeEach
@@ -48,9 +48,9 @@ public class UserLogMapperTest {
         log.debug("user_click_log 전체삭제");
 
         // 2) 테스트 데이터 준비 (clickedAt은 비교 제외)
-        dto01 = new UserLogDTO(null, "user01", articleCode, new Date());
-        dto02 = new UserLogDTO(null, "user02", articleCode, new Date());
-        dto03 = new UserLogDTO(null, "user03", articleCode, new Date());
+        dto01 = new UserLogDTO(null, "user01", articleCode, null);
+        dto02 = new UserLogDTO(null, "user02", articleCode, null);
+        dto03 = new UserLogDTO(null, "user03", articleCode, null);
     }
 
     @AfterEach
@@ -63,6 +63,7 @@ public class UserLogMapperTest {
     @DisplayName("doSave 단건 저장 및 selectKey 채번 검증")
     void doSave() {
         int flag = mapper.doSave(dto01);
+        int flag2 = mapper.doSave(dto02);
         assertEquals(1, flag, "doSave 성공 여부 확인");
         assertNotNull(dto01.getLogCode(), "selectKey로 logCode 생성되어야 함");
 
@@ -75,7 +76,7 @@ public class UserLogMapperTest {
     @DisplayName("doSelectOne 단건 조회")
     void doSelectOne() {
         mapper.doSave(dto01);
-        assertNotNull(dto01.getLogCode(), "사전 저장 후 logCode 채번 확인");
+        assertNotNull(dto01.getLogCode(), "사전 저장 후 logCode 확인");
 
         UserLogDTO out = mapper.doSelectOne(dto01);
         assertNotNull(out, "doSelectOne 결과는 null이 아니어야 함");
@@ -95,7 +96,7 @@ public class UserLogMapperTest {
         assertNull(out, "삭제 후 doSelectOne은 null이어야 함");
     }
    
-    @Disabled
+   @Disabled
     @Test
     @DisplayName("doRetrieve 다건 조회")
     void doRetrieve() {
@@ -108,7 +109,7 @@ public class UserLogMapperTest {
         list.forEach(log::debug);
     }
 
-    @Disabled
+    //@Disabled
     @Test
     @DisplayName("doRetrieveByUser 특정 사용자 로그 조회")
     void doRetrieveByUser() {

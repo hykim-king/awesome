@@ -60,9 +60,9 @@ class BookmarkDaoTest {
 		
 		articleCode = aDto01.getArticleCode();
 
-		bDto01 = new BookmarkDTO(articleCode.intValue(), "User01");
-		bDto02 = new BookmarkDTO(articleCode.intValue(), "User01");
-		bDto03 = new BookmarkDTO(articleCode.intValue(), "User03");
+		bDto01 = new BookmarkDTO(articleCode.intValue(), "user01");
+		bDto02 = new BookmarkDTO(articleCode.intValue(), "user02");
+		bDto03 = new BookmarkDTO(articleCode.intValue(), "user03");
 		
 	}
 
@@ -71,6 +71,45 @@ class BookmarkDaoTest {
 		log.debug("┌─────────────────────────────────────────────────────────┐");
 		log.debug("│ tearDown()                                              │");
 		log.debug("└─────────────────────────────────────────────────────────┘");
+	}
+	
+	
+	@Test
+	void doSelectOne() throws SQLException{
+		log.debug("┌─────────────────────────────────────────────────────────┐");
+		log.debug("│ doSelectOne()                                           │");
+		log.debug("└─────────────────────────────────────────────────────────┘");
+		
+		//1. 전체삭제
+		//2. 다건 등록
+		//2.1 등록 건수 조회
+		//3. 단건 조회
+		//4. 단건 삭제
+		//4.1 등록 건수 조회
+		
+		//1. 
+		bMapper.deleteAll();
+		
+		//2.
+		bMapper.doSave(bDto01);
+		bMapper.doSave(bDto02);
+		bMapper.doSave(bDto03);
+		
+		//3.
+		BookmarkDTO param = new BookmarkDTO();
+		param.setArticleCode(bDto02.getArticleCode());
+		param.setUserId(bDto02.getUserId());
+		BookmarkDTO outVO = bMapper.doSelectOne(param);
+		log.debug("outVO: {}", outVO);
+		
+		//4.
+		param.setUserId(outVO.getUserId());
+		param.setArticleCode(outVO.getArticleCode());
+		bMapper.doDeleteByArticleUser(param);
+		
+		int count = bMapper.getCount();
+		assertEquals(2, count);
+		log.debug(count);
 	}
 
 	//@Disabled
@@ -106,8 +145,8 @@ class BookmarkDaoTest {
 		}
 		
 		//4. 
-		int bmCode = outVO.get(0).getBmCode();
-		bMapper.doDelete(bmCode);
+		param.setBmCode(outVO.get(0).getBmCode());
+		bMapper.doDelete(param);
 		
 		//5. 
 		count = bMapper.getCount();
