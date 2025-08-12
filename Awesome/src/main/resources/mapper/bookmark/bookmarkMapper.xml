@@ -31,8 +31,8 @@
 	     AND article_code = #{articleCode}
 	</select>
 	
-	<!-- 마이페이지 북마크한 기사 조회 -->
-	<select id="doRetriveMy" parameterType="BookmarkDTO" resultType="BookmarkDTO">
+    <!-- 마이페이지 북마크한 기사 조회 -->
+	<!--   <select id="doRetriveMy" parameterType="BookmarkDTO" resultType="BookmarkDTO">
 		SELECT
 		    COUNT(*) OVER() AS totalCnt,
 		    bm.bm_code,
@@ -46,6 +46,35 @@
 		JOIN ARTICLE ar
 		  ON bm.article_code = ar.article_code
 		WHERE user_id = #{userId}
+	</select>
+	 -->
+	 
+	<!-- 마이페이지 북마크한 기사 조회 (검색조건 없음 + ROWNUM 페이징, totalCnt 미포함) -->
+	<select id="doRetriveMy" parameterType="BookmarkDTO" resultType="BookmarkDTO">
+	  SELECT *
+	  FROM (
+	    SELECT *
+	    FROM (
+	      SELECT ROWNUM AS no, x.*         <!-- DTO.no -->
+	      FROM (
+	        SELECT
+	          bm.bm_code,
+	          bm.article_code,
+	          bm.user_id,
+	          bm.reg_dt,
+	          ar.title,
+	          ar.summary,
+	          ar.press
+	        FROM bookmark bm
+	        JOIN article ar
+	          ON bm.article_code = ar.article_code
+	        WHERE bm.user_id = #{userId}
+	        ORDER BY bm.reg_dt DESC        <!-- 정렬은 가장 안쪽 -->
+	      ) x <![CDATA[
+	      WHERE ROWNUM <= (#{pageNo} * #{pageSize})
+	    )
+	    WHERE no > ((#{pageNo} - 1) * #{pageSize})
+	  ) ]]>
 	</select>
 	
 	<!-- 카운트 세기 -->

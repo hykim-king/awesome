@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
+import com.pcwk.ehr.cmn.SearchDTO;
 import com.pcwk.ehr.mapper.ArticleMapper;
 import com.pcwk.ehr.mapper.BookmarkMapper;
 
@@ -42,10 +43,14 @@ class BookmarkDaoTest {
 	BookmarkDTO bDto01;
 	BookmarkDTO bDto02;
 	BookmarkDTO bDto03;
+	BookmarkDTO bDto04;
+	BookmarkDTO bDto05;
+	BookmarkDTO bDto06;
 
 	ArticleDTO aDto01;
 	
 	Long articleCode;
+	
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -53,17 +58,19 @@ class BookmarkDaoTest {
 		log.debug("│ setUp()                                                 │");
 		log.debug("└─────────────────────────────────────────────────────────┘");
 		
-		aDto01 = new ArticleDTO(null, 10, "조선일보", "더위가 기승을 이루고 있는 가운데 폭우가 내릴 예정입니다.", "최근 체감 온도 40도를 육박하는 역대급 폭염인 가운데 다음 주 상당한 양의 비가 내릴 예정입니다.", "https://n.news.naver.com/mnews/article/001/0015554603?rc=N&ntype=RANKING",new Date(), 0, new Date(), new Date());
-		
-		//1. Article 데이터 단건 주입
-		aMapper.doSave(aDto01);
-		
-		articleCode = aDto01.getArticleCode();
+//		aDto01 = new ArticleDTO(null, 10, "조선일보", "더위가 기승을 이루고 있는 가운데 폭우가 내릴 예정입니다.", "최근 체감 온도 40도를 육박하는 역대급 폭염인 가운데 다음 주 상당한 양의 비가 내릴 예정입니다.", "https://n.news.naver.com/mnews/article/001/0015554603?rc=N&ntype=RANKING",new Date(), 0, new Date(), new Date());
+//		
+//		//1. Article 데이터 단건 주입
+//		aMapper.doSave(aDto01);
+//		
+//		articleCode = aDto01.getArticleCode();
 
-		bDto01 = new BookmarkDTO(articleCode.intValue(), "user01");
-		bDto02 = new BookmarkDTO(articleCode.intValue(), "user02");
-		bDto03 = new BookmarkDTO(articleCode.intValue(), "user03");
-		
+		bDto01 = new BookmarkDTO(2960, "user01");
+		bDto02 = new BookmarkDTO(2965, "user01");
+		bDto03 = new BookmarkDTO(2967, "user01");
+		bDto04 = new BookmarkDTO(2883, "user01");
+		bDto05 = new BookmarkDTO(2880, "user01");
+		bDto06 = new BookmarkDTO(2892, "user01");
 	}
 
 	@AfterEach
@@ -73,7 +80,7 @@ class BookmarkDaoTest {
 		log.debug("└─────────────────────────────────────────────────────────┘");
 	}
 	
-	
+	//@Disabled
 	@Test
 	void doSelectOne() throws SQLException{
 		log.debug("┌─────────────────────────────────────────────────────────┐");
@@ -120,7 +127,7 @@ class BookmarkDaoTest {
 		log.debug("└─────────────────────────────────────────────────────────┘");
 		
 		//1. 전체삭제
-		//2. 다건등록
+		//2. 단건등록
 		//3. 기사조회
 		//4. 단건삭제
 		//5. 등록 건수 조회
@@ -128,14 +135,19 @@ class BookmarkDaoTest {
 		//1. 
 		bMapper.deleteAll();
 		
-		//2.
-		int count = bMapper.saveAll();
-		assertEquals(502, count);
-		log.debug(count);
+		//2. 
+		bMapper.doSave(bDto01);
+		bMapper.doSave(bDto02);
+		bMapper.doSave(bDto03);
+		bMapper.doSave(bDto04);
+		bMapper.doSave(bDto05);
+		bMapper.doSave(bDto06);
 		
 		//3. 
 		BookmarkDTO param = new BookmarkDTO();
-		param.setUserId("user01");
+		param.setUserId(bDto01.getUserId());
+		param.setPageNo(1);
+		param.setPageSize(5);
 		List<BookmarkDTO> outVO = bMapper.doRetriveMy(param);
 		assertNotNull(outVO);
 		log.debug("outVO: {}", outVO);
@@ -149,8 +161,8 @@ class BookmarkDaoTest {
 		bMapper.doDelete(param);
 		
 		//5. 
-		count = bMapper.getCount();
-		assertEquals(501, count);
+		int count = bMapper.getCount();
+		assertEquals(5, count);
 		log.debug(count);
 		
 	}
@@ -181,7 +193,11 @@ class BookmarkDaoTest {
 		log.debug(count);
 		
 		//4.
-		List<BookmarkDTO> outVO = bMapper.doRetriveMy(bDto01);
+		BookmarkDTO param = new BookmarkDTO();
+		param.setUserId(bDto01.getUserId());
+		param.setPageNo(1);
+		param.setPageSize(5);
+		List<BookmarkDTO> outVO = bMapper.doRetriveMy(param);
 		assertNotNull(outVO);
 		log.debug("outVO: {}", outVO);
 		
