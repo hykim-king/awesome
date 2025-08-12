@@ -221,7 +221,7 @@
 	<script>
 	(function(){
 		  window.hitAndOpen = function(a, ev){
-		    // ★ 전역 락(짧게 300ms)으로 같은 클릭의 중복 실행 방지
+		    // 전역 락(짧게 300ms)으로 같은 클릭의 중복 실행 방지
 		    if (window.__HIT_LOCK__) return false;
 		    window.__HIT_LOCK__ = true;
 		    setTimeout(function(){ window.__HIT_LOCK__ = false; }, 300);
@@ -233,16 +233,16 @@
 		      ev.returnValue = false;
 		      ev.cancelBubble = true;
 		    }
-
+		    //연타해도 중복 실행 안되게 하는 코드
 		    if (a.__hitting) return false;
 		    a.__hitting = true;
-
+		    //데이터 꺼내기
 		    var code = a.getAttribute('data-article-code');
 		    var hitUrl = a.getAttribute('data-hit-url');
 		    var articleUrl = a.getAttribute('href');
-
+		    //팝업 차단 회피용
 		    var win = window.open('about:blank', '_blank', 'noopener');
-
+		    //조회수 증가 함수
 		    fetch(hitUrl, { method: 'POST' })
 		      .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
 		      .then(function(data){
