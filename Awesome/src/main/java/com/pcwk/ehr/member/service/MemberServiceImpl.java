@@ -4,11 +4,17 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.pcwk.ehr.mapper.MemberMapper;
 import com.pcwk.ehr.member.domain.MemberDTO;
@@ -16,33 +22,45 @@ import com.pcwk.ehr.member.domain.MemberDTO;
 @Service
 public class MemberServiceImpl implements MemberService {
 
-    @Autowired 
+    private static final Logger log = LogManager.getLogger(MemberServiceImpl.class);
+
+    @Autowired
     private MemberMapper mapper;
-    @Autowired 
+
+    // 이름 충돌 방지
+    @Autowired @Qualifier("javaMailSender")
     private JavaMailSender mailSender;
 
-    // 인터페이스로 주입 (테스트에선 NoOp, 운영에선 BCrypt)
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // 링크 베이스 URL을 외부화 (없으면 기본값 사용)
+    @Value("${app.baseUrl:http://localhost:8080/ehr}")
+    private String baseUrl;
 
     // 아이디 중복
     @Override
     public boolean existsById(String userId) throws SQLException {
-        return mapper.existsById(userId) > 0;  
+        return mapper.existsById(userId) > 0;
     }
-    
+
     @Override
     public int register(MemberDTO dto) throws SQLException {
-        // 기본값
         dto.setEmailAuthYn("N");
-        dto.setEmailAuthToken(UUID.randomUUID().toString());
+
+        // ★ 폼에서 온 토큰이 비어있을 때만 새로 생성
+        if (dto.getEmailAuthToken() == null || dto.getEmailAuthToken().isEmpty()) {
+            dto.setEmailAuthToken(UUID.randomUUID().toString());
+        }
+
         Date now = new Date();
         dto.setRegDt(now);
         dto.setModDt(now);
 
-        // 비밀번호 인코딩 (테스트=NoOp → 20자 제한 OK / 운영=BCrypt)
         dto.setPwd(passwordEncoder.encode(dto.getPwd()));
         return mapper.doSave(dto);
     }
+
 
     @Override
     public MemberDTO findById(MemberDTO dto) throws SQLException {
@@ -60,30 +78,39 @@ public class MemberServiceImpl implements MemberService {
         return mapper.doDelete(dto);
     }
 
+ 
+    /** 인증메일 발송: DB 업데이트 X, 토큰만 만들어 메일 전송 후 반환 */
     @Override
-    public boolean sendEmailAuth(MemberDTO dto) throws Exception {
-        String token = dto.getEmailAuthToken();
-        String email = dto.getMailAddr();
+    public String sendEmailAuth(MemberDTO dto) throws Exception {
+        if (dto == null || !StringUtils.hasText(dto.getMailAddr())) return null;
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("[회원가입 인증] 이메일 인증을 완료해주세요");
-        // 컨트롤러 매핑과 일치
-        message.setText("다음 링크를 클릭하여 이메일 인증을 완료하세요: " +
-                "http://localhost:8080/ehr/member/verifyEmail?token=" + token);
+        String token = UUID.randomUUID().toString();
+        try {
+            SimpleMailMessage msg = new SimpleMailMessage();
+            String from = (mailSender instanceof JavaMailSenderImpl)
+                    ? ((JavaMailSenderImpl) mailSender).getUsername()
+                    : "com0494@naver.com";
 
-        mailSender.send(message);
-        return true;
+            msg.setFrom(from);
+            msg.setTo(dto.getMailAddr());
+            msg.setSubject("[회원가입 인증] 이메일 인증을 완료해주세요");
+            msg.setText("아래 링크를 클릭해 인증을 완료하세요.\n"
+                    + baseUrl + "/member/verifyEmail?token=" + token);
+
+            mailSender.send(msg);
+            return token;                     // ★ 토큰을 반환
+        } catch (Exception e) {
+            log.error("[MAIL] sendEmailAuth fail", e);
+            return null;
+        }
     }
 
     @Override
     public boolean verifyEmailToken(String token) throws SQLException {
-        MemberDTO found = mapper.findByEmailAuthToken(token);
-        if (found == null) return false;
-        found.setEmailAuthYn("Y");
-        found.setModDt(new Date());
-        return mapper.doUpdate(found) == 1;
+        return mapper.markEmailVerifiedByToken(token) == 1;
     }
+
+    
 
     @Override
     public boolean checkPassword(String inputPwd, String hashedPwd) {
@@ -92,10 +119,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO login(MemberDTO dto) throws SQLException {
-        // mapper.doSelectOne(dto)가 userId로 조회하도록 구현되어 있어야 함
         MemberDTO dbUser = mapper.doSelectOne(dto);
         if (dbUser != null && checkPassword(dto.getPwd(), dbUser.getPwd())) {
-            dbUser.setPwd(null); // 보안상 비밀번호 제거
+            dbUser.setPwd(null);
             return dbUser;
         }
         return null;
