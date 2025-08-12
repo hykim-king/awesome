@@ -1,6 +1,8 @@
 package com.pcwk.ehr.article.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
@@ -57,7 +61,7 @@ public class ArticleController {
 		int totalPage = (totalCount+pageSize-1)/pageSize;
 		
 		int blockSize = 10;
-		int currentBlk = (pageNum-1)/pageSize;
+		int currentBlk = (pageNum-1)/blockSize;
 		int startPage = currentBlk*blockSize+1;
 		int endPage = Math.min(startPage + blockSize-1, totalPage);
 		
@@ -108,6 +112,25 @@ public class ArticleController {
 		}
 		
 		return "redirect:"+url;
+	}
+	
+	@PostMapping(value = "/hit.do", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public Map<String,Object> hit(@RequestParam("articleCode") long articleCode) throws Exception{
+		ArticleDTO req = new ArticleDTO();
+		req.setArticleCode(articleCode);
+		
+		int updated = service.updateReadCnt(req);
+		ArticleDTO one = service.doSelectOne(req);
+		
+		Map<String, Object> body = new HashMap<>();
+	    
+		
+		body.put("ok", updated >0);
+		body.put("views", one !=null ? one.getViews():null);
+		
+		
+		return body;
 	}
 
 

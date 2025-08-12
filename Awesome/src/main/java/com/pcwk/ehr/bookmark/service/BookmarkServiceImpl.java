@@ -53,14 +53,14 @@ public class BookmarkServiceImpl implements BookmarkService {
 	public int toggleBookmark(BookmarkDTO param) {
 	    // 1) 먼저 삭제 시도 (있으면 OFF)
 	    int deleted = mapper.doDeleteByArticleUser(param);
-	    if (deleted > 0) return -1;
+	    if (deleted > 0) return 0;
 
 	    // 2) 없었으면 ON
 	    try {
 	        return mapper.doSave(param);
 	    } catch (org.springframework.dao.DuplicateKeyException e) { // import 주의!
 	        // 경합으로 누군가 먼저 넣은 경우
-	        return 0; // 또는 mapper.doDeleteByArticleUser(param)로 OFF 수렴
+	        return 1; // 또는 mapper.doDeleteByArticleUser(param)로 OFF 수렴
 	    }
 	}
 

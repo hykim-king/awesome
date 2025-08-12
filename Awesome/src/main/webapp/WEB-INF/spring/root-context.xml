@@ -175,6 +175,9 @@
         </property>
     </bean>
     
+    <!-- 삭제X: MainPageService component-scan -->
+<bean id="mainPageService" class="com.pcwk.ehr.mainpage.service.MainPageServiceImpl" />
+    
     
     <bean id="transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

@@ -48,8 +48,6 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public ArticleDTO doSelectOne(ArticleDTO dto) throws Exception {
 		
-		int flag = mapper.updateReadCnt(dto);
-		log.debug("flag:{}",flag);
 		
 		return mapper.doSelectOne(dto);
 	}

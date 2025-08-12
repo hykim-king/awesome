@@ -57,16 +57,16 @@ class BookmarkServiceTest {
 		log.debug("│ setUp()                                                 │");
 		log.debug("└─────────────────────────────────────────────────────────┘");
 		
-		aDto01 = new ArticleDTO(null, 10, "조선일보", "더위가 기승을 이루고 있는 가운데 폭우가 내릴 예정입니다.", "최근 체감 온도 40도를 육박하는 역대급 폭염인 가운데 다음 주 상당한 양의 비가 내릴 예정입니다.", "https://n.news.naver.com/mnews/article/001/0015554603?rc=N&ntype=RANKING",new Date(), 0, new Date(), new Date());
-		
-		//1. Article 데이터 단건 주입
-		aMapper.doSave(aDto01);
-		
-		articleCode = aDto01.getArticleCode();
+//		aDto01 = new ArticleDTO(null, 10, "조선일보", "더위가 기승을 이루고 있는 가운데 폭우가 내릴 예정입니다.", "최근 체감 온도 40도를 육박하는 역대급 폭염인 가운데 다음 주 상당한 양의 비가 내릴 예정입니다.", "https://n.news.naver.com/mnews/article/001/0015554603?rc=N&ntype=RANKING",new Date(), 0, new Date(), new Date());
+//		
+//		//1. Article 데이터 단건 주입
+//		aMapper.doSave(aDto01);
+//		
+//		articleCode = aDto01.getArticleCode();
 
-		bDto01 = new BookmarkDTO(articleCode.intValue(), "User01");
-		bDto02 = new BookmarkDTO(articleCode.intValue(), "User02");
-		bDto03 = new BookmarkDTO(articleCode.intValue(), "User03");
+		bDto01 = new BookmarkDTO(2960, "user01");
+		bDto02 = new BookmarkDTO(2965, "user01");
+		bDto03 = new BookmarkDTO(2967, "user01");
 	}
 
 	
@@ -100,22 +100,22 @@ class BookmarkServiceTest {
 		param.setUserId(bDto01.getUserId());
 		int result = service.toggleBookmark(param);
 		
-		log.debug(result);
+		log.debug("result:{}",result);
 		
 		count = bMapper.getCount();
 		assertEquals(2, count);
-		log.debug(count);
+		log.debug("count:{}",count);
 		
 		//4.
 		param.setArticleCode(bDto01.getArticleCode());
 		param.setUserId(bDto01.getUserId());
 		result = service.toggleBookmark(param);
 		
-		log.debug(result);
+		log.debug("result:{}",result);
 		
 		count = bMapper.getCount();
 		assertEquals(3, count);
-		log.debug(count);
+		log.debug("count:{}",count);
 		
 	}
 
