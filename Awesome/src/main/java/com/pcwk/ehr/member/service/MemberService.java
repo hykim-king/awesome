@@ -48,7 +48,7 @@ public interface MemberService {
      * @return true(성공)/false(실패)
      * @throws Exception
      */
-    boolean sendEmailAuth(MemberDTO dto) throws Exception;
+    String sendEmailAuth(MemberDTO dto) throws Exception;
 
     /**
      * 이메일 인증 토큰 검증

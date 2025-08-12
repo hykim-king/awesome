@@ -22,13 +22,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.pcwk.ehr.mapper.MemberMapper;
 import com.pcwk.ehr.member.domain.MemberDTO;
 
+/*
+ * @ExtendWith(SpringExtension.class)
+ * 
+ * @ContextConfiguration(locations = {
+ * "file:src/main/webapp/WEB-INF/spring/root-context.xml"})
+ */
 
-/*@ExtendWith(SpringExtension.class)  //Controller test시 다시 사용
+@ExtendWith(SpringExtension.class)  //Controller test시 다시 사용
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
-		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })*/
+		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml"})
 		
 
 class DaoTest {
@@ -36,12 +40,12 @@ class DaoTest {
 Logger log = LogManager.getLogger(getClass());
 	
 	@Autowired
-	MemberMapper mapper;
+	MemberMapper mapper;	// 테스트 대상 Bean
 	
 	@Autowired
-	ApplicationContext context;
+	ApplicationContext context;	// 컨테이너 확인용
 	
-	MemberDTO dto01;
+	MemberDTO dto01;	//테스트 데이터 & 공용 객체
 	
 	@BeforeEach
 	void setUp() throws Exception {
