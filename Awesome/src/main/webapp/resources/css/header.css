@@ -1,0 +1,141 @@
+@charset "UTF-8";
+/* 폰트는 원하면 교체 가능 */
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap');
+
+#header{
+  position: sticky;
+  top: 0;
+  z-index: 3000;
+}
+
+:root{
+  --blue:#0a45ff;           /* 상단 바 색 */
+  --text:#111;
+  --subtext:#333;
+  --line:#d9dde6;           /* 얇은 라인 */
+}
+
+*{ box-sizing:border-box; }
+body{ margin:0; font-family:'Nanum Gothic', sans-serif; color:var(--text); }
+
+/* ===== 헤더 상단 바 ===== */
+#header .navbar{ background:transparent; }
+#header .menu-bar{
+  height:55px;
+  background:var(--blue);
+  display:flex;
+  align-items:center;
+  padding:0 20px;
+}
+
+/* 좌측 로고 */
+#header .logo{
+  color:#fff;
+  font-weight:700;
+  font-size:22px;
+  letter-spacing: .3px;
+  white-space:nowrap;
+}
+
+/* 메인 메뉴: 화면 '정중앙' 고정 배치 */
+#header .main-menu{
+  position:absolute;            /* 부모(menu-bar) 기준 중앙 고정 */
+  left:50%;
+  transform:translateX(-50%);
+  top:0;
+  height:55px;
+  display:flex;
+  align-items:center;
+  gap:36px;
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+#header .main-menu > li > a{
+  color:#eaf0ff;                /* 거의 흰색 */
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  padding:0 2px;
+}
+#header .main-menu > li > a:hover{
+  text-decoration:underline;
+  text-underline-offset: 3px;
+}
+
+/* 우측 로그인/회원가입 */
+#header .navbar-right{
+  margin-left:auto;             /* 오른쪽 끝으로 */
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+#header .navbar-right a{
+  color:#eaf0ff;
+  font-size:14px;
+  text-decoration:none;
+}
+#header .navbar-right a:hover{
+  text-decoration:underline;
+}
+
+/* 상단 바 하단 라인 */
+#header .menu-bar::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:2px;
+  background:var(--line);
+}
+
+/* ===== 하단 카테고리 바 (항상 표시) =====
+   - 현재 JSP에서 .submenu는 li.has-submenu 안에 있으므로
+     그대로 아래에 펼쳐 보이도록 처리 */
+#header .has-submenu{ position:static; }
+
+/* 서브메뉴 박스: 상단바(48px) 아래, 전체폭 */
+#header .submenu-box{
+  position:absolute;
+  top:55px;
+  left:0;
+  right:0;              /* ← 전체폭 */
+  width: 100%;       /* ← 화면 폭 전체 */
+  background:transparent;
+  z-index:1000;
+  padding:10px 0;
+}
+
+/* 목록: 가운데 정렬, 줄바꿈 금지 */
+#header .submenu{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:40px;
+  list-style:none;
+  margin:0;
+  padding:0;
+  flex-wrap:nowrap;      /* ← 줄바꿈 금지 */
+}
+
+/* 항목: 한글 단어 쪼개짐 방지 */
+#header .submenu li a{
+  display:block;
+  white-space:nowrap;    /* ← 줄바꿈 금지 */
+  word-break:keep-all;   /* ← 한글 단어 단위 유지 */
+  text-decoration:none;
+  font-size:14px;
+  color:#333;
+  line-height:1.6;
+}
+#header .submenu li a:hover{ color:#0a45ff; }
+
+/* 레이아웃 보정: 상단바 바로 아래 내용이 가려지지 않도록 여백 */
+#header{ position:relative; }
+#header + *{ /* 헤더 다음 첫 요소에 top margin이 없으면 아래 규칙 사용 */
+  /* 필요하면 페이지에 맞게 조정 (상단바48 + 카테바(라인/패딩) 약 32) */
+  /* margin-top: 80px; */
+}
+
+@media (max-width: 640px){
+  #header .submenu { flex-wrap:wrap; row-gap:8px; }
+}
