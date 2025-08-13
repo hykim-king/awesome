@@ -206,8 +206,8 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
                             <!-- 요약 80자 넘을시 ... 표시 -->
 							<div class="summary">
 							 <c:choose>
-							     <c:when test="${not empty item.summary and fn:length(item.summary) > 80}">
-							         ${fn:substring(item.summary,0,80)}...
+							     <c:when test="${not empty item.summary and fn:length(item.summary) > 60}">
+							         ${fn:substring(item.summary,0,60)}...
 							     </c:when>
 							     <c:otherwise>
 							         ${item.summary}
