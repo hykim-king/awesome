@@ -91,6 +91,15 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 }
 .rank-link{color:#111827; text-decoration:none}
 .rank-link:hover{color:var(--blue); text-decoration:underline}
+
+.hidden{ display:none !important; }
+.login-modal{position:fixed; inset:0; z-index:1000;}
+.login-modal_backdrop{position:absolute; inset:0; background:rgba(0,0,0,.4);}
+.login-modal_card{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
 </style>
 <script>
 	//새로 고침 시 검색 조건 초기화
@@ -332,7 +341,7 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 	</div>
 	
 	<!-- 로그인 안내 -->
-	<div id="login-model" class="login-model hidden" aria-hidden="true" role="dialog" aria-model="true">
+	<div id="login-modal" class="login-modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
 	   <div class="login-modal_backdrop"></div>
 	   <div class="login-modal_card">
 	       <div class="login-modal_title">로그인이 필요합니다.</div>
