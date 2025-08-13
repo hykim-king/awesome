@@ -1,7 +1,10 @@
 package com.pcwk.ehr.member.controller;
 
-import com.pcwk.ehr.member.domain.MemberDTO;
-import com.pcwk.ehr.member.service.MemberService;
+import java.security.SecureRandom;
+import java.sql.SQLException;
+
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +13,16 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpSession;
-import java.security.SecureRandom;
-import java.sql.SQLException;
+import com.pcwk.ehr.member.domain.MemberDTO;
+import com.pcwk.ehr.member.service.MemberService;
 
 @Controller
 @RequestMapping("/member")
@@ -24,7 +30,8 @@ public class MemberController {
 
     private final Logger log = LogManager.getLogger(getClass());
 
-    @Autowired private MemberService memberService;
+    @Autowired 
+    private MemberService memberService;
 
     // 메일 발송에 사용 (root-context.xml의 bean id가 "javaMailSender"라면 Qualifier 지정)
     @Autowired @Qualifier("javaMailSender")
@@ -43,6 +50,13 @@ public class MemberController {
     public String checkId(@RequestParam String userId) throws Exception {
         return memberService.existsById(userId) ? "DUP" : "OK";
     }
+    // ============ 닉네임중복 체크 ============
+    @GetMapping(value = "/checkNick", produces = "text/plain; charset=UTF-8")
+    @ResponseBody
+    public String checkNick(@RequestParam String nickNm) throws Exception {
+        return memberService.existsByNick(nickNm) ? "DUP" : "OK";
+    }
+
 
     // ============ 1) 인증코드 메일 발송 ============
     // 프런트에서 '/ehr/member/sendEmailAuth.do' 로 호출
@@ -133,6 +147,18 @@ public class MemberController {
         return "redirect:" + (result == 1 ? "/member/login.do" : "/member/register.do");
     }
 
+    @GetMapping("/verifyEmail")
+    public String verifyEmail(@RequestParam("token") String token,
+                              org.springframework.ui.Model model) throws Exception {
+        // 서비스에 토큰 검증 로직이 있다고 가정
+        boolean ok = memberService.verifyEmailToken(token);
+        model.addAttribute("verified", ok);
+        return "member/emailResult";
+    }
+    
+    
+    
+    
     // ============ 로그인 처리 ============
     @PostMapping("/login.do")
     public String login(@ModelAttribute MemberDTO dto,

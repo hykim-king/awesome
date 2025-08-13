@@ -1,7 +1,7 @@
 package com.pcwk.ehr.member.service;
 
 import java.sql.SQLException;
-import java.util.List;
+
 import com.pcwk.ehr.member.domain.MemberDTO;
 
 
@@ -74,6 +74,15 @@ public interface MemberService {
      */
     MemberDTO login(MemberDTO dto) throws SQLException;
     
+    
+    boolean existsByNick(String nickNm) throws Exception;
+    
+    /**
+     * 닉네임중복
+     * @param 
+     * @return 
+     * @throws SQLException
+     */
     
     
 }

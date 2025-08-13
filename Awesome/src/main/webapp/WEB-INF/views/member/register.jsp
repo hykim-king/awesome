@@ -118,6 +118,34 @@
     .msg{ font-size:12px; margin-top:6px; }
     .msg.ok{ color:#15803d; }
     .msg.err{ color:#b91c1c; }
+  
+  
+  /* ---- modal ---- */
+.modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1000;}
+.modal.open{display:flex;}
+.modal .backdrop{position:absolute; inset:0; background:rgba(0,0,0,.45);}
+.modal .panel{
+  position:relative; max-width:640px; width:calc(100% - 32px);
+  max-height:80vh; overflow:auto; background:var(--card);
+  border-radius:16px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.2)
+}
+.modal .close{
+  position:absolute; top:10px; right:12px; border:0; background:transparent;
+  font-size:22px; cursor:pointer; line-height:1;
+}
+.modal h2{margin:0 0 10px; font-size:18px}
+.modal .content{font-size:14px; color:#334155}
+
+/* 약관 링크(글자 클릭) 스타일 */
+.checks .link{
+  margin-left:8px; color:#2563eb; text-decoration:underline; cursor:pointer;
+}
+.checks .term{ user-select:none; }
+  
+  
+  
+  
+  
   </style>
 </head>
 <body>
@@ -155,13 +183,16 @@
       </div>
 
       <!-- 닉네임 -->
-      <div class="group">
-        <label for="nickNm">닉네임</label>
-        <div class="row">
-          <input id="nickNm" name="nickNm" type="text" />
-          <button type="button" class="btn btn-ghost" disabled>중복확인</button>
-        </div>
-      </div>
+	<div class="group">
+	  <label for="nickNm">닉네임</label>
+	  <div class="row">
+	    <input id="nickNm" name="nickNm" type="text" />
+	    <!-- disabled 제거, id 부여 -->
+	    <button id="btnNickCheck" type="button" class="btn btn-ghost">중복확인</button>
+	  </div>
+	  <div id="nickMsg" class="msg"></div> <!-- 결과 메시지 영역 -->
+	</div>
+
 
       <!-- 생년월일 -->
       <div class="group">
@@ -188,12 +219,23 @@
       </div>
 
       <!-- 약관 -->
-      <div class="checks">
-        <label><input id="agreeAll" type="checkbox" /> 아래 약관에 모두 동의합니다.</label>
-        <label><input class="agree req" type="checkbox" /> 이용약관 필수 동의</label>
-        <label><input class="agree" type="checkbox" /> 마케팅 정보 수신 동의 (선택)</label>
-      </div>
+     <div class="checks">
+  <label><input id="agreeAll" type="checkbox" /> 아래 약관에 모두 동의합니다.</label>
 
+  <label class="term">
+    <input class="agree req" type="checkbox" />
+    <span class="link" role="button" tabindex="0" data-modal="tosModal">
+      이용약관 필수 동의
+    </span>
+  </label>
+
+  <label class="term">
+    <input class="agree" type="checkbox" />
+    <span class="link" role="button" tabindex="0" data-modal="marketingModal">
+      마케팅 정보 수신 동의 (선택)
+    </span>
+  </label>
+</div>
       <!-- 숨김 필드 -->
       <input type="hidden" id="emailAuthYn"  name="emailAuthYn"  value="N" />
       <input type="hidden" id="emailAuthToken" name="emailAuthToken" value="" />
@@ -201,6 +243,35 @@
 
       <button id="btnSubmit" class="btn submit" type="submit">회원가입 완료</button>
     </form>
+    
+    <!-- 이용약관 모달 -->
+	<div id="tosModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="tosTitle">
+	  <div class="backdrop" data-close></div>
+	  <div class="panel" tabindex="-1">
+	    <button type="button" class="close" aria-label="닫기" data-close>&times;</button>
+	    <h2 id="tosTitle">이용약관</h2>
+	    <div class="content">
+	      <!-- 👉 여기에 실제 약관 내용을 넣으세요 -->
+	      <p>본인은 본 서비스의 이용약관 내용을 확인하였으며, 이에 동의합니다.</p>
+	    </div>
+	  </div>
+	</div>
+
+	<!-- 마케팅 동의 모달 -->
+	<div id="marketingModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="mkTitle">
+	  <div class="backdrop" data-close></div>
+	  <div class="panel" tabindex="-1">
+	    <button type="button" class="close" aria-label="닫기" data-close>&times;</button>
+	    <h2 id="mkTitle">마케팅 정보 수신 동의</h2>
+	    <div class="content">
+	      <p>본인은 본 서비스로부터 마케팅 정보를 수신하는 것에 동의합니다.</p>
+	    </div>
+	  </div>
+	</div>
+	     
+    
+    
+    
   </div>
 
   <script>
@@ -221,6 +292,54 @@
       $("#idMsg").className = "msg " + (ok ? "ok":"err");
       $("#idMsg").textContent = ok ? "사용 가능한 아이디입니다." : "이미 사용 중인 아이디입니다.";
     };
+    
+   
+ // 닉네임 중복확인
+ /*    $("#btnNickNmCheck").onclick = async ()=>{
+      const id = $("#nickNm").value.trim();
+      if(!Nick){ 
+    	  $("#nickNmMsg").className="msg err"; 
+    	  $("#nickNmMsg").textContent="닉네임를 입력하세요."; 
+    	  return; 
+    	  }
+      const res  = await fetch('/ehr/member/nickNmCheck?nickNm='+encodeURIComponent(nickNm));
+      const text = (await res.text()).trim();
+      const ok   = (text === 'OK');
+      $("#nickNmMsg").className = "msg " + (ok ? "ok":"err");
+      $("#nickNmMsg").textContent = ok ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.";
+    }; 
+     */
+
+    
+
+     // 컨텍스트 경로 (/ehr 등)
+     const CTX = '<c:url value="/"/>'.replace(/\/$/, '');
+
+     // 닉네임 중복확인
+     document.getElementById('btnNickCheck').addEventListener('click', async ()=>{
+    const nick = document.getElementById('nickNm').value.trim();
+    const msg  = document.getElementById('nickMsg');
+
+    if(!nick){
+      msg.className = 'msg err';
+      msg.textContent = '닉네임을 입력하세요.';
+      return;
+    }
+
+    try{
+      const url  = CTX + '/member/checkNick?nickNm=' + encodeURIComponent(nick);
+      const res  = await fetch(url);
+      const text = (await res.text()).trim(); // "OK" | "DUP"
+
+      const ok = (text === 'OK'); // OK=사용 가능
+      msg.className = 'msg ' + (ok ? 'ok' : 'err');
+      msg.textContent = ok ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.';
+    }catch(e){
+      msg.className = 'msg err';
+      msg.textContent = '요청 실패: ' + e;
+    }
+  });
+    
 
     // 인증코드(또는 인증링크) 발송
     $("#btnSendCode").onclick = async ()=>{
@@ -245,43 +364,92 @@
       alert('이메일로 인증 안내를 보냈습니다. 메일함을 확인해주세요.');
     };
 
-    // (선택) 코드 인증 방식 사용 시 서버에 구현되어 있다면 연결
-    $("#btnVerifyCode").onclick = async ()=>{
-      const token = $("#emailAuthToken").value.trim(); // 필요 시 서버에서 되돌려 받은 token을 저장해둠
-      const code  = $("#emailCode").value.trim();
-      if(!code){ alert("인증번호를 입력하세요."); return; }
 
-      // 서버에 verifyEmailCode 엔드포인트가 있을 때만 사용
-      try{
-        const res = await fetch('/ehr/member/verifyEmailCode', {
-          method:'POST',
-          headers:{'Content-Type':'application/x-www-form-urlencoded'},
-          body:'token='+encodeURIComponent(token)+'&code='+encodeURIComponent(code)
-        });
-        const ok = (await res.text()).trim() === 'OK';
-        $("#emailAuthYn").value = ok ? "Y" : "N";
-        alert(ok ? "인증 완료" : "인증 실패");
-      }catch(e){
-        // 링크 인증만 사용할 경우엔 이 버튼을 숨기셔도 됩니다.
-        alert("서버에서 코드 인증 엔드포인트를 제공하지 않습니다.");
-      }
-    };
+  
+  // 인증번호 확인 (mailAddr + code로 전송)
+  $("#btnVerifyCode").onclick = async ()=>{
+    const email = $("#mailAddr").value.trim();
+    const code  = $("#emailCode").value.trim();
 
-    // 제출 전 검증
-    $("#joinForm").onsubmit = ()=>{
-      if($("#pwd").value !== $("#pwd2").value){
-        alert("비밀번호가 일치하지 않습니다."); return false;
+    if(!email){ alert("이메일을 입력하세요."); return; }
+    if(!code){  alert("인증번호를 입력하세요."); return; }
+
+    try{
+      const res = await fetch('/ehr/member/verifyEmailCode', {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'mailAddr='+encodeURIComponent(email)+'&code='+encodeURIComponent(code)
+      });
+
+      const text = (await res.text()).trim(); // OK | INVALID | EXPIRED | NO_CODE
+
+      if(text === 'OK'){
+        $("#emailAuthYn").value = "Y";
+        // 성공 후 이메일/버튼 잠궈 중복 인증 방지 (선택)
+        $("#mailAddr").readOnly = true;
+        $("#btnSendCode").disabled = true;
+        $("#emailCode").readOnly = true;
+        alert("인증 완료");
+      }else if(text === 'EXPIRED'){
+        alert("유효시간(5분)이 지났습니다. 다시 ‘인증하기’를 눌러 코드를 받으세요.");
+      }else if(text === 'NO_CODE'){
+        alert("인증코드가 없습니다. 먼저 ‘인증하기’로 코드를 받으세요.");
+      }else{ // INVALID
+        alert("인증 실패: 코드가 올바르지 않습니다.");
       }
-      if(!document.querySelector(".agree.req").checked){
-        alert("이용약관(필수)에 동의해주세요."); return false;
+    }catch(e){
+      alert("서버 통신 오류: " + e);
+    }
+  };
+  
+  
+  
+  // 모달 열기/닫기
+  function openModal(id){
+    var m = document.getElementById(id);
+    if(!m) return;
+    m.classList.add('open');
+    m.setAttribute('aria-hidden','false');
+    var p = m.querySelector('.panel');
+    if(p) p.focus();
+  }
+  function closeModal(el){
+    var m = el.closest('.modal');
+    if(!m) return;
+    m.classList.remove('open');
+    m.setAttribute('aria-hidden','true');
+  }
+
+  // 글자(약관 텍스트) 클릭 시 모달 오픈
+  document.querySelectorAll('.checks .link').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();      // 라벨 기본 동작(체크 토글) 방지
+      e.stopPropagation();     // 버블링 방지
+      openModal(el.getAttribute('data-modal'));
+    });
+    // 키보드 접근성(Enter/Space)
+    el.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        openModal(el.getAttribute('data-modal'));
       }
-      if($("#emailAuthYn").value !== "Y"){
-        // 링크 인증만 쓰는 경우: 이메일 발송 후 링크 클릭으로 검증되므로
-        // 가입 전 검사를 완화하려면 아래 줄을 주석 처리하세요.
-        alert("이메일 인증을 완료하세요."); return false;
-      }
-      return true;
-    };
-  </script>
+    });
+  });
+
+  // 모달 닫기 버튼/배경 클릭, ESC 닫기
+  document.querySelectorAll('[data-close]').forEach(function(el){
+    el.addEventListener('click', function(e){ e.preventDefault(); closeModal(el); });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      document.querySelectorAll('.modal.open').forEach(function(m){
+        m.classList.remove('open');
+        m.setAttribute('aria-hidden','true');
+      });
+    }
+  });
+</script>
+
+
 </body>
 </html>

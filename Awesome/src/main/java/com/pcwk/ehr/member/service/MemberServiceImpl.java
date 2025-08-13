@@ -43,6 +43,13 @@ public class MemberServiceImpl implements MemberService {
     public boolean existsById(String userId) throws SQLException {
         return mapper.existsById(userId) > 0;
     }
+    
+    //닉네임 중복
+    @Override
+    public boolean existsByNick(String nickNm) throws Exception {
+        return mapper.existsByNick(nickNm) > 0;
+    }
+
 
     @Override
     public int register(MemberDTO dto) throws SQLException {
@@ -119,11 +126,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO login(MemberDTO dto) throws SQLException {
-        MemberDTO dbUser = mapper.doSelectOne(dto);
-        if (dbUser != null && checkPassword(dto.getPwd(), dbUser.getPwd())) {
-            dbUser.setPwd(null);
+        // 1) 아이디로만 조회
+        MemberDTO dbUser = mapper.findByUserId(dto.getUserId());
+
+        // 2) 해시 비교 (원문 vs 해시)
+        if (dbUser != null && passwordEncoder.matches(dto.getPwd(), dbUser.getPwd())) {
+            dbUser.setPwd(null); // 노출 방지
             return dbUser;
         }
         return null;
     }
+
 }
