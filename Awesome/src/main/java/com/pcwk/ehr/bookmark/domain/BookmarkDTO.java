@@ -11,6 +11,9 @@ public class BookmarkDTO {
 	private String regDt;	 //북마크 날짜
 	private int totalCnt;	 //총 개수
 	
+    private int pageNo;     //페이지 번호
+    private int pageSize;	//페이지 사이즈
+	
 	public BookmarkDTO() {
 		// TODO Auto-generated constructor stub
 	}
@@ -28,6 +31,34 @@ public class BookmarkDTO {
 	}
 	
 	
+
+	/**
+	 * @return the pageNo
+	 */
+	public int getPageNo() {
+		return pageNo;
+	}
+
+	/**
+	 * @param pageNo the pageNo to set
+	 */
+	public void setPageNo(int pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	/**
+	 * @return the pageSize
+	 */
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	/**
+	 * @param pageSize the pageSize to set
+	 */
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
 
 	/**
 	 * @return the totalCnt
@@ -145,7 +176,7 @@ public class BookmarkDTO {
 	public String toString() {
 		return "BookmarkDTO [bmCode=" + bmCode + ", articleCode=" + articleCode + ", userId=" + userId + ", title="
 				+ title + ", summary=" + summary + ", press=" + press + ", regDt=" + regDt + ", totalCnt=" + totalCnt
-				+ "]";
+				+ ", pageNo=" + pageNo + ", pageSize=" + pageSize + "]";
 	}
 
 

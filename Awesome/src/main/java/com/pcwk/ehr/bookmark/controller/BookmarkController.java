@@ -11,10 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.ui.Model;
 
+import com.google.gson.Gson;
 import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
 import com.pcwk.ehr.bookmark.service.BookmarkService;
+import com.pcwk.ehr.cmn.MessageDTO;
 
 @Controller
 @RequestMapping("/bookmark")
@@ -32,9 +35,42 @@ public class BookmarkController {
 		
 	}
 	
-	//조회, 토글 정도
+	//로그인된 유저에 한 해 북마크 토글 기능
+	@PostMapping(value = "/toggleBookmark.do", produces = "text/plain;charset=UTF-8")
+	@ResponseBody
+	public String toggleBookmark(BookmarkDTO param, HttpSession session) {
+		log.debug("┌───────────────────────────────────────┐");
+		log.debug("│ toggleBookmark()                      │");
+		log.debug("└───────────────────────────────────────┘");
+		String jsonString = "";
+		log.debug("1. param:{}", param);
+		
+		String userId = (String) session.getAttribute("userId");
+		
+		if(userId == null || userId.trim().isEmpty()) {
+			log.warn("로그인 없이 북마크 등록 시도 차단됨");
+			MessageDTO messageDTO = new MessageDTO(-99, "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
+			return new Gson().toJson(messageDTO);
+		}
+		
+		param.setUserId(userId); //세션에서 주입
 	
-	@PostMapping
+		int flag = bookmarkService.toggleBookmark(param);
+		String message = "";
+		
+		if(1 == flag) {
+			message = "북마크가 추가 되었습니다.";
+		}else {
+			message = "북마크가 삭제 되었습니다.";
+		}
+		
+		MessageDTO messageDTO = new MessageDTO(flag, message);
+		jsonString = new Gson().toJson(messageDTO);
+		log.debug("1. jsonString: {}", jsonString);
+		
+		return jsonString;
+	}
+	
 	
 	//기사 페이지에서 각 기사마다 북마크 여부 조회
 	@GetMapping(value = "/doSelectOne.do")
@@ -73,7 +109,7 @@ public class BookmarkController {
 		
 		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
 		if(userId == null || userId.trim().isEmpty()) {
-			log.warn("로그인 없이 운동 일지 조회 시도 차단됨");
+			log.warn("로그인 없이 마이페이지 조회 시도 차단됨");
 			model.addAttribute("loginRequired", true);
 			model.addAttribute("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
 			return viewName;
@@ -89,9 +125,10 @@ public class BookmarkController {
 			model.addAttribute("bookmark", true);
 		}
 		
-		//북마크가 없는 경우 안내 문구 추가
+		//북마크가 없는 경우 안내 문구 추가ㄴ
 		if(list == null || list.isEmpty()) {
 			model.addAttribute("noBookmarkMsg", "북마크한 기사가 없습니다.<br>핫이슈 '오늘의 토픽'을 살펴보세요!");
+			model.addAttribute("bookmark", list != null);
 		}
 		
 		 return viewName;

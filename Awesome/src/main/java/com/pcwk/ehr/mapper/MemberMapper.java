@@ -1,30 +1,33 @@
 package com.pcwk.ehr.mapper;
 
 import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import com.pcwk.ehr.cmn.WorkDiv;
 import com.pcwk.ehr.member.domain.MemberDTO;
 
 @Mapper
 public interface MemberMapper extends WorkDiv<MemberDTO> {
 
-    
-    
     int deleteAll() throws SQLException;
-
 
     int getCount();
 
-
     int idCheck(String userId);
-    
-    int existsById(@Param("userId")String userId);
 
-    void updateEmailAuthToken(String email, String token);
+    int existsById(@Param("userId") String userId);
     
-    MemberDTO findByEmailAuthToken(String token) throws SQLException;
+    int markEmailVerifiedByToken(@Param("token") String token);
+
+
+    /** 메일주소 기준으로 인증토큰만 갱신 */
+    int updateEmailAuthTokenByEmail(@Param("email") String email,
+                                    @Param("token") String token) throws SQLException;
+
+    /** (선택) userId 기준 버전 */
+    int updateEmailAuthTokenByUserId(@Param("userId") String userId,
+                                     @Param("token") String token) throws SQLException;
+
+    /** 토큰으로 회원 1건 조회 */
+    MemberDTO findByEmailAuthToken(@Param("token") String token) throws SQLException;
 }

@@ -41,42 +41,61 @@
     WHERE REPORT_CODE = #{reportCode}
   </select>
 
-    <!-- 신고 목록 조회 + 페이징 -->
+
+  <!-- 신고 목록 조회 + 페이징 (ReportSearchDTO 사용) -->
   <select id="doRetrieve"
-          parameterType="com.pcwk.ehr.report.domain.ReportDTO"
+          parameterType="com.pcwk.ehr.report.domain.ReportSearchDTO"
           resultType="com.pcwk.ehr.report.domain.ReportDTO">
     SELECT 
-    REPORT_CODE, 
-    CHAT_CODE, 
-    USER_ID, 
-    CT_ID, 
-    REASON, 
-    STATUS, 
-    REG_DT
+        REPORT_CODE, 
+        CHAT_CODE, 
+        USER_ID, 
+        CT_ID, 
+        REASON, 
+        STATUS, 
+        REG_DT
     FROM (
       SELECT 
-      R.REPORT_CODE, 
-      R.CHAT_CODE, 
-      R.USER_ID, 
-      R.CT_ID, 
-      R.REASON, 
-      R.STATUS, 
-      R.REG_DT,
+        R.REPORT_CODE, 
+        R.CHAT_CODE, 
+        R.USER_ID, 
+        R.CT_ID, 
+        R.REASON, 
+        R.STATUS, 
+        R.REG_DT,
              ROW_NUMBER() OVER (ORDER BY R.REPORT_CODE DESC) RN
       FROM REPORT R
       <where>
-        <if test="status != null and status != ''">AND R.STATUS = #{status}</if>
-        <if test="chatCode != null">AND R.CHAT_CODE = #{chatCode}</if>
-        <if test="userId != null and userId != ''">AND R.USER_ID = #{userId}</if>
-        <if test="fromDt != null and toDt != null">AND R.REG_DT BETWEEN #{fromDt} AND #{toDt}</if>
+        <!-- free-text 검색 -->
+        <if test="searchWord != null and searchWord != ''">
+          AND (
+               CAST(R.REPORT_CODE AS VARCHAR2(50)) LIKE '%' || #{searchWord} || '%'
+            OR R.USER_ID LIKE '%' || #{searchWord} || '%'
+            OR R.CT_ID   LIKE '%' || #{searchWord} || '%'
+          )
+        </if>
+
+        <!-- 숫자/정확 조건: null 또는 0이면 미적용 -->
+        <if test="status != null and status != 0">
+          AND R.STATUS = #{status}
+        </if>
+        <if test="chatCode != null and chatCode != 0">
+          AND R.CHAT_CODE = #{chatCode}
+        </if>
+        <if test="reason != null and reason != 0">
+          AND R.REASON = #{reason}
+        </if>
+        <if test="userId != null and userId != ''">
+          AND R.USER_ID = #{userId}
+        </if>
+        <if test="ctId != null and ctId != ''">
+          AND R.CT_ID = #{ctId}
+        </if>
       </where>
     )
     WHERE RN BETWEEN #{startRow} AND #{endRow}
   </select>
   
-  <select id="getCount" resultType="int">
-    SELECT COUNT(*) FROM REPORT
-  </select>
   
     <!-- 
     UPDATE: 신고 정보 수정
@@ -103,5 +122,9 @@
   
     <!-- 테스트 초기화 -->
   <delete id="deleteAll">DELETE FROM REPORT</delete>
+  
+  <select id="getCount" resultType="int">
+    SELECT COUNT(*) FROM REPORT
+  </select>
   
 </mapper>
