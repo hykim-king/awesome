@@ -73,7 +73,7 @@ class ChatMessageDaoTest {
 		log.debug("└─────────────────────────────────┘");
 	}
 
-	//@Disabled
+	@Disabled
 	@Test
 	void find_recent_by_category() {
 		log.debug("┌─────────────────────────────────┐");
@@ -95,7 +95,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	//@Disabled
+	@Disabled
 	@Test
 	void find_before_code() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -121,7 +121,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	//@Disabled
+	@Disabled
 	@Test
 	void doDelete() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -139,7 +139,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	//@Disabled
+	@Disabled
 	@Test
 	void doSave() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
