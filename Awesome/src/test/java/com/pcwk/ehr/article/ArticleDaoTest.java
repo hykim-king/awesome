@@ -87,7 +87,7 @@ class ArticleDaoTest {
 		assertEquals(1, flag);
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	public void doDelete() throws Exception {
 
@@ -98,7 +98,7 @@ class ArticleDaoTest {
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	public void doSelectOne() throws Exception {
 		mapper.doSave(dto01);
