@@ -76,16 +76,18 @@ class ArticleDaoTest {
 		
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	public void doSave() throws Exception {
-		mapper.deleteAll();
 
 		int flag = mapper.doSave(dto01);
 		assertEquals(1, flag);
+		
+		flag = mapper.doDelete(dto01);
+		assertEquals(1, flag);
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	public void doDelete() throws Exception {
 
@@ -96,10 +98,9 @@ class ArticleDaoTest {
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	public void doSelectOne() throws Exception {
-		mapper.deleteAll();
 		mapper.doSave(dto01);
 
 		ArticleDTO outDto = mapper.doSelectOne(dto01);
@@ -108,14 +109,14 @@ class ArticleDaoTest {
 		assertEquals(dto01.getArticleCode(), outDto.getArticleCode());
 
 		log.debug("조회 결과: {}", outDto);
+		
+		mapper.doDelete(dto01);
 
 	}
 
-	// @Disabled
+	@Disabled
 	@Test
 	public void doRetrieve() throws Exception {
-
-		mapper.deleteAll();
 
 		for (int i = 1; i <= 2; i++) {
 			ArticleDTO article = new ArticleDTO(1L, 10, "조선일보", "AI가 세상을 바꾼다"+i, "AI 기술의 발전과 전망" + i,

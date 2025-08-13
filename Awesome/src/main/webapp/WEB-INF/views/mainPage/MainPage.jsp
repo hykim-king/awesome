@@ -1,12 +1,115 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+
 <!DOCTYPE html>
-<html>
+<html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+  <meta charset="UTF-8">
+  <title>MainPage</title>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/MainPage.css"><!--디자인불러옴 -->
 </head>
 <body>
+<!-- #0 헤더  -->
+<section id="main-header">
+  <!-- 필요시 메뉴/로고/로그인 정보 등 들어올 자리 -->
+</section>
+
+  <!-- #1 Today’s HOT ISSUE + 키워드 6개 -->
+<section id="main-hot-issue">
+<!-- 배경이랑 키워드 섹션분리 -->
+  <div class="hot-issue-inner">
+
+  <div class="keywords-left">
+    <c:forEach var="k" items="${keywords}" varStatus="st">
+      <c:if test="${st.index lt 3}">
+        <a class="keyword" href="${ctx}${k.link}">
+          <c:out value="${k.name}" />
+        </a>
+      </c:if>
+    </c:forEach>
+  </div>
+
+  <div class="hot-title">
+<!--  텍스트 삭제 GIF로 대체 -->
+  </div>
+
+  <div class="keywords-right">
+    <c:forEach var="k" items="${keywords}" varStatus="st">
+      <c:if test="${st.index ge 3}">
+        <a class="keyword" href="${ctx}${k.link}">
+          <c:out value="${k.name}" />
+        </a>
+      </c:if>
+    </c:forEach>
+
+
+  <c:if test="${empty keywords}">
+    <p>키워드를 불러오는 중입니다.</p>
+  </c:if>
+</div>
+</div> 
+  </section>
+
+  <!-- #2 조회수 기반 인기 기사 -->
+  <section id="main-popular">
+    <div class="section-box">
+    <h2>조회수 기반 인기 기사</h2>
+
+    <!-- popularArticles : List<?> -->
+    <ul>
+      <c:forEach var="item" items="${popularArticles}">
+        <!-- 안전하게 전체 객체 toString 출력 -->
+        <li><c:out value="${item}" /></li>
+      </c:forEach>
+      <c:if test="${empty popularArticles}">
+        <li>인기 기사 수집 중…</li>
+      </c:if>
+    </ul>
+  </div>
+  </section>
+  
+  
+  
+<!-- #3 + #4 묶기 -->
+<section id="main-bottom-section">
+
+  <!-- 왼쪽: 추천 기사 -->
+  <div class="left">
+    <section id="main-recommended">
+      <h2>회원별 추천 기사</h2>
+
+      <c:choose>
+        <c:when test="${not empty recommended}">
+          <ul>
+            <c:forEach var="item" items="${recommended}">
+              <li><c:out value="${item}" /></li>
+            </c:forEach>
+          </ul>
+        </c:when>
+        <c:otherwise>
+          <p>로그인하면 추천 기사가 보여요.</p>
+        </c:otherwise>
+      </c:choose>
+    </section>
+  </div>
+
+  <!-- 오른쪽: 날씨 -->
+  <div class="right">
+    <section id="main-weather">
+      <h2>오늘의 날씨</h2>
+      <p><c:out value="${weatherSummary}" default="기상 정보를 준비 중입니다." /></p>
+      <ul>
+        <c:forEach var="w" items="${weatherList}">
+          <li><c:out value="${w}" /></li>
+        </c:forEach>
+      </ul>
+    </section>
+  </div>
+
+</section>
 
 </body>
 </html>
