@@ -14,12 +14,18 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
     int getCount();
 
     int idCheck(String userId);
-
+    
     int existsById(@Param("userId") String userId);
+
+    MemberDTO findByUserId(@Param("userId") String userId);
     
     int markEmailVerifiedByToken(@Param("token") String token);
 
+    //닉네임 중복
+    int existsByNick(@Param("nickNm") String nickNm);
 
+    
+    
     /** 메일주소 기준으로 인증토큰만 갱신 */
     int updateEmailAuthTokenByEmail(@Param("email") String email,
                                     @Param("token") String token) throws SQLException;

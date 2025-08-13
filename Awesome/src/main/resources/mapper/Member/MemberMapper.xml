@@ -96,7 +96,26 @@
      SELECT COUNT(1)
      FROM MEMBER
      WHERE UPPER(USER_ID) = UPPER(TRIM(#{userId}))
-</select>
+    </select>
+    
+    <!-- 닉네임 중복 체크 -->
+    <select id="existsByNick" parameterType="string" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM MEMBER 
+	  WHERE NICK_NM = #{nickNm}
+	</select>
+    
+     <!-- kinda 아이디로만 사용자 조회 -->
+	    <select id="findByUserId" parameterType="string"
+	        resultType="com.pcwk.ehr.member.domain.MemberDTO">
+			  SELECT USER_ID, PWD, USER_NM, NICK_NM, BIRTH_DT,
+			         MAIL_ADDR, EMAIL_AUTH_YN, EMAIL_AUTH_TOKEN, USER_GRADE_CD,
+			         REG_DT, MOD_DT
+			  FROM MEMBER
+			  WHERE USER_ID = #{userId}
+	</select>
+    
+    
     
 
 </mapper>
