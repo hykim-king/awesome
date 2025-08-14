@@ -68,7 +68,12 @@ public class MemberServiceImpl implements MemberService {
         return mapper.doSave(dto);
     }
 
-
+    @Override
+    public String findUserId(String userNm, String mailAddr) throws SQLException {
+        return mapper.findUserId(userNm, mailAddr);
+    }
+    
+    
     @Override
     public MemberDTO findById(MemberDTO dto) throws SQLException {
         return mapper.doSelectOne(dto);
@@ -117,8 +122,31 @@ public class MemberServiceImpl implements MemberService {
         return mapper.markEmailVerifiedByToken(token) == 1;
     }
 
-    
+    @Override
+    public boolean sendResetMail(String userId, String mailAddr) {
+        try {
+            // TODO: 필요 시 userId/mailAddr 검증, 토큰 생성/저장, 메일 전송 로직 작성
+            // 예시(토큰만 생성해서 메일 발송):
+            String token = java.util.UUID.randomUUID().toString();
 
+            org.springframework.mail.SimpleMailMessage msg = new org.springframework.mail.SimpleMailMessage();
+            String from = (mailSender instanceof org.springframework.mail.javamail.JavaMailSenderImpl)
+                    ? ((org.springframework.mail.javamail.JavaMailSenderImpl) mailSender).getUsername()
+                    : "no-reply@example.com";
+
+            msg.setFrom(from);
+            msg.setTo(mailAddr);
+            msg.setSubject("[비밀번호 재설정] 안내 메일");
+            msg.setText("아래 링크에서 비밀번호를 재설정하세요.\n"
+                    + baseUrl + "/member/resetPwd?token=" + token);
+
+            mailSender.send(msg);
+            return true;
+        } catch (Exception e) {
+            log.error("[MAIL] sendResetMail fail", e);
+            return false;
+        }
+    }
     @Override
     public boolean checkPassword(String inputPwd, String hashedPwd) {
         return passwordEncoder.matches(inputPwd, hashedPwd);

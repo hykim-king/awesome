@@ -60,6 +60,41 @@
     </dependency>
 
 
+		<!-- JSONPath (MockMvc의 jsonPath 매처가 사용) -->
+		<dependency>
+		  <groupId>com.jayway.jsonpath</groupId>
+		  <artifactId>json-path</artifactId>
+		  <version>2.8.0</version> <!-- 2.7~2.8 권장 -->
+		  <scope>test</scope>
+		</dependency>
+		
+		<!-- (필요 시) 최신 Hamcrest – jsonPath 매처와 함께 자주 씀 -->
+		<dependency>
+		  <groupId>org.hamcrest</groupId>
+		  <artifactId>hamcrest</artifactId>
+		  <version>2.2</version>
+		  <scope>test</scope>
+		</dependency>
+
+
+
+
+        
+		        <!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-websocket</artifactId>
+		    <version>5.3.37</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-messaging</artifactId>
+		    <version>5.3.37</version>
+		</dependency>
+		        
+
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>

@@ -10,7 +10,7 @@ import com.pcwk.ehr.cmn.WorkDiv;
 
 public interface ChatMessageMapper extends WorkDiv<ChatMessageDTO> {
 	
-	void deleteAll() throws SQLException;
+	int deleteAll() throws SQLException;
 
 
     // 채팅 특화 조회: 카테고리별 최신 N건
@@ -24,4 +24,16 @@ public interface ChatMessageMapper extends WorkDiv<ChatMessageDTO> {
     	    @Param("lastChatCode") int lastChatCode,
     	    @Param("limit") int limit
     	);
+
+
+	ChatMessageDTO doSelectOne();
+
+
+	int doDelete(int chatCode);
+
+
+	ChatMessageDTO doSelectOne(int chatCode);
+	
+	int doDeleteByUser(@Param("chatCode") int chatCode, @Param("userId") String userId);
+
 }

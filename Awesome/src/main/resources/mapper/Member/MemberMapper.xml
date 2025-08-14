@@ -115,7 +115,15 @@
 			  WHERE USER_ID = #{userId}
 	</select>
     
-    
+        
+        <select id="findUserId" resultType="string">
+        SELECT USER_ID
+          FROM MEMBER
+         WHERE USER_NM = #{userNm}
+           AND MAIL_ADDR = #{mailAddr}
+         ORDER BY REG_DT DESC
+         FETCH FIRST 1 ROW ONLY
+         </select>
     
 
 </mapper>
