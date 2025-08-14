@@ -24,8 +24,8 @@ import com.pcwk.ehr.chatmessage.domain.ChatMessageDTO;
 import com.pcwk.ehr.mapper.ChatMessageMapper;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
-		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
+@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml"
+		})
 class ChatMessageDaoTest {
 	Logger log = LogManager.getLogger(getClass());
 
@@ -73,7 +73,7 @@ class ChatMessageDaoTest {
 		log.debug("└─────────────────────────────────┘");
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void find_recent_by_category() {
 		log.debug("┌─────────────────────────────────┐");
@@ -95,7 +95,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void find_before_code() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -121,7 +121,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void doDelete() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -139,7 +139,7 @@ class ChatMessageDaoTest {
 
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void doSave() throws Exception {
 		log.debug("┌─────────────────────────────────┐");
@@ -158,7 +158,7 @@ class ChatMessageDaoTest {
 		assertEquals(politics, outVO.getCategory());
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void beans() {
 		log.debug("┌─────────────────────────────────┐");

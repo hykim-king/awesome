@@ -58,7 +58,7 @@ class ChatMessageSeviceTest {
 		log.debug("└───────────────────────────────┘");
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void doSave() throws Exception {
 		log.debug("┌───────────────────────────────┐");
@@ -153,7 +153,7 @@ class ChatMessageSeviceTest {
     
     
 
-	@Disabled
+	//@Disabled
 	@Test
 	void beans() {
 		log.debug("┌───────────────────────────────┐");
