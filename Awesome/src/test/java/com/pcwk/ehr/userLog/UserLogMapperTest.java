@@ -71,7 +71,7 @@ public class UserLogMapperTest {
         isSameUserLog(saved, dto01); // clickedAt 비교 제외
     }
 
-    @Disabled
+   // @Disabled
     @Test
     @DisplayName("doSelectOne 단건 조회")
     void doSelectOne() {
@@ -83,7 +83,7 @@ public class UserLogMapperTest {
         isSameUserLog(out, dto01);
     }
 
-    @Disabled
+   // @Disabled
     @Test
     @DisplayName("doDelete 삭제")
     void doDelete() {
@@ -96,7 +96,7 @@ public class UserLogMapperTest {
         assertNull(out, "삭제 후 doSelectOne은 null이어야 함");
     }
    
-   @Disabled
+ //  @Disabled
     @Test
     @DisplayName("doRetrieve 다건 조회")
     void doRetrieve() {
