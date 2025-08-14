@@ -65,12 +65,12 @@ class BookmarkDaoTest {
 //		
 //		articleCode = aDto01.getArticleCode();
 
-		bDto01 = new BookmarkDTO(2960, "user01");
-		bDto02 = new BookmarkDTO(2965, "user01");
-		bDto03 = new BookmarkDTO(2967, "user01");
-		bDto04 = new BookmarkDTO(2883, "user01");
-		bDto05 = new BookmarkDTO(2880, "user01");
-		bDto06 = new BookmarkDTO(2892, "user01");
+		bDto01 = new BookmarkDTO(7384, "user01");
+		bDto02 = new BookmarkDTO(7385, "user01");
+		bDto03 = new BookmarkDTO(7389, "user01");
+		bDto04 = new BookmarkDTO(7393, "user01");
+		bDto05 = new BookmarkDTO(7406, "user01");
+		bDto06 = new BookmarkDTO(7410, "user01");
 	}
 
 	@AfterEach
