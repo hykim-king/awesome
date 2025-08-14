@@ -1,38 +1,34 @@
 package com.pcwk.ehr.quiz;
 
-// JUnit 5 Assertion으로 변경 (static import)
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension; // JUnit 5용 확장
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pcwk.ehr.quiz.domain.QuizDTO;
 import com.pcwk.ehr.mapper.QuizMapper;
 
-// 테스트 메서드 실행 순서 지정 (메서드 이름 오름차순)
 @TestMethodOrder(MethodOrderer.MethodName.class)
-// Spring의 테스트 기능을 JUnit 5와 통합
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/spring/root-context.xml"})
 @Transactional 
 public class QuizDaoTest {
 
-	final Logger LOG = LoggerFactory.getLogger(getClass());
+	final Logger log = LogManager.getLogger(getClass());
 	
 	@Autowired
 	ApplicationContext context;
@@ -40,111 +36,138 @@ public class QuizDaoTest {
 	@Autowired
 	QuizMapper quizMapper;
 	
-	QuizDTO quizDTO;
-	QuizDTO questionDTO; // 테스트용 질문 DTO
+	QuizDTO user1, user2;
+	QuizDTO question1, question2;
+	QuizDTO set1, set2;
+	QuizDTO quizResultForUser1;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		LOG.debug("====================");
-		LOG.debug("=@BeforeEach= setUp()");
-		LOG.debug("====================");
+		log.debug("--- setUp() ---");
 		
-		// 1. 테스트용 질문 데이터 설정
-		questionDTO = new QuizDTO();
-		questionDTO.setQsCode(9999L);
-		questionDTO.setQqCode(9999L); // 다른 데이터와 겹치지 않는 유니크한 값
-		questionDTO.setArticleCode(9999L);
-		questionDTO.setQuestionNo(1);
-		questionDTO.setQuestion("테스트용 질문입니다.");
-		questionDTO.setAnswer("O"); // 정답은 'O'
-		questionDTO.setExplanation("테스트용 해설입니다.");
-		
-		// 2. 테스트용 답변 데이터 설정
-		quizDTO = new QuizDTO();
-		quizDTO.setUserId("test");
-		quizDTO.setQqCode(questionDTO.getQqCode()); // 위에서 만든 질문의 qqCode 사용
-		quizDTO.setUserAnswer("O"); // 정답과 동일하게 답변
-		
-		// --- 데이터 정리 및 생성 (순서가 매우 중요!) ---
+		// 1. 테스트용 객체 초기화
+	    user1 = new QuizDTO();
+	    user1.setUserId("test");
 
-	    // 1. 데이터 삭제 (자식 테이블부터)
-	    quizMapper.deleteAllQuizResult(quizDTO);      // QUIZ_RESULT (손자)
-	    quizMapper.deleteQuizQuestion(questionDTO);  // QUIZ_QUESTIONS (자식)
-	    quizMapper.deleteQuizSet(questionDTO);       // QUIZ_SETS (부모)
+	    user2 = new QuizDTO();
+	    user2.setUserId("test1234");
+	    
+	    set1 = new QuizDTO();
+	    set1.setQsCode(9999L);
+	    
+	    set2 = new QuizDTO();
+	    set2.setQsCode(9998L);
 
-	    // 2. 데이터 생성 (부모 테이블부터)
-	    quizMapper.insertQuizSet(questionDTO);       // 부모 데이터 생성
-	    quizMapper.insertQuizQuestion(questionDTO);  // 자식 데이터 생성
+	    question1 = new QuizDTO(0, 0, set1.getQsCode(), 9999L, 0, 1, "질문 1", "O", "해설 1", null, 0, null, null, 0, null, 0, 0);
+	    question2 = new QuizDTO(0, 0, set2.getQsCode(), 9998L, 0, 2, "질문 2", "X", "해설 2", null, 0, null, null, 0, null, 0, 0);
+
+	    // 2. 데이터베이스 정리 (테이블 전체 비우기)
+	    quizMapper.deleteAllQuizResult(user1);
+	    quizMapper.deleteAllQuizResult(user2);
+	    quizMapper.deleteAllQuizQuestions();
+	    quizMapper.deleteAllQuizSets();
+	    
+	    // 3. 데이터베이스 생성
+	    quizMapper.insertQuizSet(set1);
+	    quizMapper.insertQuizSet(set2);
+	    quizMapper.insertQuizQuestion(question1);
+	    quizMapper.insertQuizQuestion(question2);
+		
+	    quizResultForUser1 = new QuizDTO();
+	    quizResultForUser1.setUserId(user1.getUserId());
+	    quizResultForUser1.setQqCode(question1.getQqCode());
+	    quizResultForUser1.setUserAnswer(question1.getAnswer());
 	}
 	
-	@AfterEach
-	void tearDown() throws Exception {
+	/**
+	 * 답변 제출 및 채점을 한번에 처리하는 헬퍼 메서드
+	 */
+	private void submitAndScore(String userId, QuizDTO question, String answer) throws SQLException {
+		QuizDTO result = new QuizDTO();
+		result.setUserId(userId);
+		result.setQqCode(question.getQqCode());
+		result.setUserAnswer(answer);
+		
+		quizMapper.insertQuizResult(result);
+		quizMapper.updateScoreIfCorrect(result);
 	}
-	
+
 	@Test
-	public void test01_InsertAndSelect() throws SQLException {
-		LOG.debug("====================");
-		LOG.debug("=@Test= test01_InsertAndSelect()");
-		LOG.debug("====================");
+	public void insertAndSelect() throws SQLException {
+		log.debug("--- insertAndSelect() ---");
 		
-		// 1. 등록(INSERT) 기능 테스트
-		int insertFlag = quizMapper.insertQuizResult(quizDTO);
+		int insertFlag = quizMapper.insertQuizResult(quizResultForUser1);
 		assertEquals(1, insertFlag);
 		
-		// 2. 단건 조회로 등록된 데이터 검증
-		QuizDTO result = quizMapper.selectQuizResult(quizDTO);
+		QuizDTO result = quizMapper.selectQuizResult(quizResultForUser1);
 		assertNotNull(result);
-		
-		// 입력한 값과 조회된 값이 일치하는지 확인
-		assertEquals(quizDTO.getUserId(), result.getUserId());
-		assertEquals(quizDTO.getQqCode(), result.getQqCode());
-		assertEquals(quizDTO.getUserAnswer(), result.getUserAnswer());
-		assertEquals(0, result.getScore()); // 최초 점수는 0점
+		assertEquals(quizResultForUser1.getUserId(), result.getUserId());
 	}
 
 	@Test
-	public void test02_SelectQuizList() throws SQLException {
-		LOG.debug("====================");
-		LOG.debug("=@Test= test02_SelectQuizList()");
-		LOG.debug("====================");
-		
-		quizDTO.setPageStart(1);
-		quizDTO.setPageEnd(8);
-		
-		List<QuizDTO> list = quizMapper.selectQuizList(quizDTO);
-		assertNotNull(list);
-		
-		LOG.debug("=Quiz List Size=" + list.size());
+	public void updateScore() throws SQLException {
+		log.debug("--- updateScore() ---");
+
+		quizMapper.insertQuizResult(quizResultForUser1);
+		int correctUpdateFlag = quizMapper.updateScoreIfCorrect(quizResultForUser1);
+		assertEquals(1, correctUpdateFlag);
+		QuizDTO correctResult = quizMapper.selectQuizResult(quizResultForUser1);
+		assertEquals(12.5, correctResult.getScore());
 	}
 	
 	@Test
-	public void test03_GetTotalQuizCount() throws SQLException {
-		LOG.debug("====================");
-		LOG.debug("=@Test= test03_GetTotalQuizCount()");
-		LOG.debug("====================");
-		
+	public void getTotalQuizCount() throws SQLException {
+		log.debug("--- getTotalQuizCount() ---");
 		int totalCount = quizMapper.getTotalQuizCount();
-		LOG.debug("=Total Quiz Count=" + totalCount);
-		assertTrue(totalCount >= 0);
+		assertEquals(2, totalCount);
 	}
-	
+
 	@Test
-	public void test04_SelectUserRankingTop10() throws SQLException {
-		LOG.debug("====================");
-		LOG.debug("=@Test= test04_SelectUserRankingTop10()");
-		LOG.debug("====================");
+	public void selectQuizList() throws SQLException {
+		log.debug("--- selectQuizList() ---");
 		
-		List<QuizDTO> list = quizMapper.selectUserRankingTop10();
+		QuizDTO searchDTO = new QuizDTO();
+		searchDTO.setPageStart(1);
+		searchDTO.setPageEnd(10);
+		
+		List<QuizDTO> list = quizMapper.selectQuizList(searchDTO);
 		assertNotNull(list);
-		assertTrue(list.size() <= 10);
-		
-		LOG.debug("=Ranking List Size=" + list.size());
+		assertEquals(2, list.size());
 	}
 	
 	@Test
-	@Disabled // @Ignore -> @Disabled
+	public void selectUserRankingTop10() throws SQLException {
+		log.debug("--- selectUserRankingTop10() ---");
+		
+		// 헬퍼 메서드를 사용하여 시나리오를 간결하게 표현
+		// User1('test'): 2문제 모두 정답
+		submitAndScore(user1.getUserId(), question1, "O"); // 정답
+		submitAndScore(user1.getUserId(), question2, "X"); // 정답
+		
+		// User2('test1234'): 1문제만 정답
+		submitAndScore(user2.getUserId(), question1, "O"); // 정답
+		submitAndScore(user2.getUserId(), question2, "O"); // 오답
+		
+		// 최종 검증
+		List<QuizDTO> rankingList = quizMapper.selectUserRankingTop10();
+		
+		assertNotNull(rankingList);
+		assertEquals(2, rankingList.size());
+		
+		assertEquals("test", rankingList.get(0).getUserId());
+		assertEquals(25.0, rankingList.get(0).getTotalScore());
+		
+		assertEquals("test1234", rankingList.get(1).getUserId());
+		assertEquals(12.5, rankingList.get(1).getTotalScore());
+		
+		log.debug("= Ranking Result =");
+		rankingList.forEach(rank -> log.debug(rank.toString()));
+	}
+	
+	@Test
+	@Disabled
 	void beans() {
-		LOG.debug("=context=" + context);
-		LOG.debug("=quizMapper=" + quizMapper);
+		log.debug("=context=" + context);
+		log.debug("=quizMapper=" + quizMapper);
 	}
 }
