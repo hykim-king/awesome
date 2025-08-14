@@ -30,7 +30,7 @@ public class ChatMessageController {
 	@Autowired
 	ChatMessageService service;
 
-	@Autowired
+	@Autowired(required = false)
 	SimpMessagingTemplate messagingTemplate;
 
 	@GetMapping("/chat.do")
@@ -47,7 +47,7 @@ public class ChatMessageController {
 	@PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public int doSave(@RequestBody ChatMessageDTO dto) throws Exception {
-	    return service.doSave(dto);
+		return service.doSave(dto);
 	}
 
 	/**
@@ -63,8 +63,9 @@ public class ChatMessageController {
 		log.debug("▶ dto : {}", dto);
 
 		service.doSave(dto);
-		// 카테고리별 구독 채널로 전송
-		messagingTemplate.convertAndSend("/topic/chat." + dto.getCategory(), dto);
+		if (messagingTemplate != null) { // 서버에 브로커가 있을 때만 브로드캐스트
+			messagingTemplate.convertAndSend("/topic/chat." + dto.getCategory(), dto);
+		}
 	}
 
 	/** (REST) 단건 조회 : doSelectOne */
