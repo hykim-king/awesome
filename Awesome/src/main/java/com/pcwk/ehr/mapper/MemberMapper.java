@@ -24,7 +24,8 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
     //닉네임 중복
     int existsByNick(@Param("nickNm") String nickNm);
 
-    
+    String findUserId(@Param("userNm") String userNm,
+            @Param("mailAddr") String mailAddr);
     
     /** 메일주소 기준으로 인증토큰만 갱신 */
     int updateEmailAuthTokenByEmail(@Param("email") String email,

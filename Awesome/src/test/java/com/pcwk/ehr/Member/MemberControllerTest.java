@@ -3,6 +3,7 @@ package com.pcwk.ehr.Member;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -91,6 +92,7 @@ public class MemberControllerTest {
 
         // 1) 가입
         mockMvc.perform(post("/member/register.do")
+        		.sessionAttr("emailVerified", email)
                 .param("userId", uid)
                 .param("pwd", "pwd1234")
                 .param("userNm", "홍길동")
@@ -104,8 +106,8 @@ public class MemberControllerTest {
         mockMvc.perform(post("/member/login.do")
                 .param("userId", uid)
                 .param("pwd", "pwd1234"))
-            .andExpect(status().is3xxRedirection());
-            // 성공 시: .andExpect(redirectedUrl("/home.do")) (환경에 맞게 추가 가능)
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/mainPage/main.do")) ;
     }
     
     //@Disabled

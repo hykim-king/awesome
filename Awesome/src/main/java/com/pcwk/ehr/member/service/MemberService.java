@@ -5,9 +5,13 @@ import java.sql.SQLException;
 import com.pcwk.ehr.member.domain.MemberDTO;
 
 
-
+	
 
 public interface MemberService {
+	
+	String findUserId(String userNm, String mailAddr) throws SQLException;
+
+	boolean sendResetMail(String userId, String mailAddr);
 	
 	boolean existsById(String userId) throws SQLException;
     /**
