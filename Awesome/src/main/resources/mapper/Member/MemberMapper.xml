@@ -87,7 +87,26 @@
 	         MOD_DT        = SYSDATE
 	   WHERE EMAIL_AUTH_TOKEN = #{token}
 	</update>
-
+    
+    
+     <!-- 비번재설정: 토큰 저장 -->
+	  <update id="updateResetToken">
+	    UPDATE MEMBER
+	       SET EMAIL_AUTH_TOKEN = #{token},
+	           MOD_DT = SYSDATE
+	     WHERE USER_ID = #{userId}
+	       AND MAIL_ADDR = #{mailAddr}
+	  </update>
+	
+	  <!-- 토큰으로 비밀번호 변경 + 토큰 제거 -->
+	  <update id="updatePasswordByToken">
+	    UPDATE MEMBER
+	       SET PWD = #{hashedPwd},
+	           EMAIL_AUTH_TOKEN = NULL,
+	           MOD_DT = SYSDATE
+	     WHERE EMAIL_AUTH_TOKEN = #{token}
+	  </update>
+    
     
     
     

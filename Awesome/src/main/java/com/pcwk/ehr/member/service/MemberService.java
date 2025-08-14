@@ -88,5 +88,9 @@ public interface MemberService {
      * @throws SQLException
      */
     
+    int resetPassword(String token, String newPwd) throws SQLException;
+
+   
+    
     
 }

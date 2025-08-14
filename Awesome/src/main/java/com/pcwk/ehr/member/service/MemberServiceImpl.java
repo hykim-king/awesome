@@ -122,31 +122,7 @@ public class MemberServiceImpl implements MemberService {
         return mapper.markEmailVerifiedByToken(token) == 1;
     }
 
-    @Override
-    public boolean sendResetMail(String userId, String mailAddr) {
-        try {
-            // TODO: 필요 시 userId/mailAddr 검증, 토큰 생성/저장, 메일 전송 로직 작성
-            // 예시(토큰만 생성해서 메일 발송):
-            String token = java.util.UUID.randomUUID().toString();
 
-            org.springframework.mail.SimpleMailMessage msg = new org.springframework.mail.SimpleMailMessage();
-            String from = (mailSender instanceof org.springframework.mail.javamail.JavaMailSenderImpl)
-                    ? ((org.springframework.mail.javamail.JavaMailSenderImpl) mailSender).getUsername()
-                    : "no-reply@example.com";
-
-            msg.setFrom(from);
-            msg.setTo(mailAddr);
-            msg.setSubject("[비밀번호 재설정] 안내 메일");
-            msg.setText("아래 링크에서 비밀번호를 재설정하세요.\n"
-                    + baseUrl + "/member/resetPwd?token=" + token);
-
-            mailSender.send(msg);
-            return true;
-        } catch (Exception e) {
-            log.error("[MAIL] sendResetMail fail", e);
-            return false;
-        }
-    }
     @Override
     public boolean checkPassword(String inputPwd, String hashedPwd) {
         return passwordEncoder.matches(inputPwd, hashedPwd);
@@ -165,4 +141,41 @@ public class MemberServiceImpl implements MemberService {
         return null;
     }
 
+    @Override
+    public boolean sendResetMail(String userId, String mailAddr) {
+        try {
+            String token = UUID.randomUUID().toString();
+
+            // 1) 토큰 저장
+            int rows = mapper.updateResetToken(userId, mailAddr, token);
+            if (rows != 1) return false;
+
+            // 2) 메일 발송 (.do 패턴)
+            SimpleMailMessage msg = new SimpleMailMessage();
+            String from = (mailSender instanceof JavaMailSenderImpl)
+                    ? ((JavaMailSenderImpl) mailSender).getUsername()
+                    : "no-reply@example.com";
+            msg.setFrom(from);
+            msg.setTo(mailAddr);
+            msg.setSubject("[비밀번호 재설정] 안내");
+            msg.setText("아래 링크에서 비밀번호를 재설정하세요.\n"
+                    + baseUrl + "/member/resetPwd.do?token=" + token);
+            mailSender.send(msg);
+            return true;
+        } catch (Exception e) {
+            log.error("[MAIL] sendResetMail fail", e);
+            return false;
+        }
+    }
+
+
+    @Override
+    public int resetPassword(String token, String newPwd) throws SQLException {
+        String hashed = passwordEncoder.encode(newPwd);
+        return mapper.updatePasswordByToken(token, hashed); // 1이면 성공
+    }
+	
+    
+    
+    
 }

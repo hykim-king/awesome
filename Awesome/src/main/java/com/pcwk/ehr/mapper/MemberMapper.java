@@ -37,4 +37,13 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
 
     /** 토큰으로 회원 1건 조회 */
     MemberDTO findByEmailAuthToken(@Param("token") String token) throws SQLException;
+    
+    int updateResetToken(@Param("userId") String userId,
+            @Param("mailAddr") String mailAddr,
+            @Param("token") String token);
+
+    int updatePasswordByToken(@Param("token") String token,
+                 @Param("hashedPwd") String hashedPwd);
+
+    
 }

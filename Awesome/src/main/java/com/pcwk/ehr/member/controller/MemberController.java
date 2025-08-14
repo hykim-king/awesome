@@ -198,11 +198,40 @@ public class MemberController {
         }
         return "redirect:/member/login.do";
     }
+    
+    
+ // 비밀번호 재설정 폼 (메일 링크로 진입)
+    @GetMapping("/resetPwd.do")
+    public String resetPwdForm(@RequestParam String token, Model model) {
+        model.addAttribute("token", token);
+        return "member/resetPwd";  // /WEB-INF/views/member/resetPwd.jsp
+    }
 
+    // 비밀번호 재설정 처리
+    @PostMapping("/resetPwd.do")
+    public String resetPwdSubmit(@RequestParam String token,
+                                 @RequestParam String newPwd,
+                                 RedirectAttributes ra) throws SQLException {
+        int updated = memberService.resetPassword(token, newPwd);
+        if (updated == 1) {
+            ra.addFlashAttribute("message", "비밀번호가 변경되었습니다. 로그인 해주세요.");
+            return "redirect:/member/login.do";
+        } else {
+            ra.addFlashAttribute("error", "유효하지 않은 링크이거나 만료된 토큰입니다.");
+            return "redirect:/member/findPwd.do";
+        }
+    }
+
+    
+    
     /* ================== 유틸 ================== */
     private String mask(String id) {
         if (id == null || id.isEmpty()) return "";
         if (id.length() <= 3) return id.charAt(0) + "***";
         return id.substring(0, 3) + "****";
     }
+
+
+
+
 }

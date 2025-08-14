@@ -16,8 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pcwk.ehr.mapper.MemberMapper;
 import com.pcwk.ehr.member.domain.MemberDTO;
@@ -29,6 +31,8 @@ import com.pcwk.ehr.member.domain.MemberDTO;
  * "file:src/main/webapp/WEB-INF/spring/root-context.xml"})
  */
 
+@Transactional
+@Rollback
 @ExtendWith(SpringExtension.class)  //Controller test시 다시 사용
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
 		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
@@ -49,7 +53,7 @@ Logger log = LogManager.getLogger(getClass());
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		dto01 = new MemberDTO("test","132","test","test01","2000/11/11","dlwhd0614@naver.com","Y","125",1,new Date(),new Date());
+		dto01 = new MemberDTO("test","132","test","test01","20001111","dlwhd0614@naver.com","Y","125",1,new Date(),new Date());
 	}
 	
 
