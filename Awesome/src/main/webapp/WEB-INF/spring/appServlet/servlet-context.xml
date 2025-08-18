@@ -30,6 +30,22 @@
    
    <context:property-placeholder location="classpath:aes.properties"/>
    
+   
+	<!-- websocket 설정 DispatcherServlet  -->		
+	<mvc:annotation-driven />
+	
+	<websocket:message-broker application-destination-prefix="/send">
+	    <!-- 클라에서 SockJS('/realtime-chat') 로 붙는 주소 -->
+	    <websocket:stomp-endpoint path="/realtime-chat">
+	        <websocket:sockjs/>
+	    </websocket:stomp-endpoint>
+	
+	    <!-- 서버가 convertAndSend 하는 브로커 prefix -->
+	    <websocket:simple-broker prefix="/topic"/>
+	</websocket:message-broker>
+	   
+   
+   
     
     <!-- 관리자 전용 인터셉터: /admin/** -->
     <mvc:interceptors>
