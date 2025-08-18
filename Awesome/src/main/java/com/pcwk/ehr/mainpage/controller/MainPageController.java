@@ -7,11 +7,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.pcwk.ehr.keyword.domain.KeywordLink;
+import com.pcwk.ehr.keyword.service.KeywordService;
 
 @Controller
 @RequestMapping("/mainPage")
@@ -26,62 +29,56 @@ public class MainPageController {
      *   (로그인: 추천 Top3 / 비로그인: 조회수 Top3)
      * - View: /WEB-INF/views/mainPage/MainPage.jsp
      */
- 
+
+    @Autowired
+    KeywordService keywordService;
+    
+    
     @GetMapping("/main.do")
     public String main(Model model, HttpSession session) {
         String userId = (String) session.getAttribute("userId");
         log.debug("main.do() userId={}", userId);
 
-        // 오늘의 토픽(키워드) - 탭/그리드로 노출
-        List<String> topics = Arrays.asList("정치", "경제", "사회", "문화", "연예", "스포츠", "IT/과학");
-        model.addAttribute("topics", topics);
+        // ── 키워드 6개(각각 링크 확인) 삭제. 키워드 서비스로 따로 뺌─────────
+        // JSP에서 href="${ctx}${k.link}" 로 사용 (ctx = ${pageContext.request.contextPath})
+//        List<KeywordLink> keywords = Arrays.asList(
+//            new KeywordLink("정치",   "/topic/list.do?keyword=%EC%A0%95%EC%B9%98&category=politics"),
+//            new KeywordLink("경제",   "/topic/list.do?keyword=%EA%B2%BD%EC%A0%9C&category=economy"),
+//            new KeywordLink("사회",   "/topic/list.do?keyword=%EC%82%AC%ED%9A%8C&category=society"),
+//            new KeywordLink("문화",   "/topic/list.do?keyword=%EB%AC%B8%ED%99%94&category=culture"),
+//            new KeywordLink("연예",   "/topic/list.do?keyword=%EC%97%B0%EC%98%88&category=entertain"),
+//            new KeywordLink("스포츠", "/topic/list.do?keyword=%EC%8A%A4%ED%8F%AC%EC%B8%A0&category=sports")
+//        );
+       
+        List<KeywordLink> keywords = keywordService.getTodayKeywords();
+        model.addAttribute("keywords", keywords);
 
-        // 추천/인기 기사 Top3 (더미)
-        // TODO: 로그인 시 userId 기반 추천으로 교체 -> mainService.getRecommendTop3(userId)
-        // TODO: 비로그인 시 조회수 TOP3로 교체 -> mainService.getHotTop3()
+        // ── 인기/추천 더미 데이터 (JSP 변수명에 맞춤) ────────────────
+        List<String> popularArticles = Arrays.asList(
+            "인기) 정치: 국회 본회의 쟁점 정리",
+            "인기) 스포츠: 주말 경기 하이라이트",
+            "인기) IT: 보안 업데이트 권고",
+            "인기) IT: 보안 업데이트 권고",
+            "인기) IT: 보안 업데이트 권고",
+            "인기4) IT: 보안 업데이트 권고보안 업데이트 권고보안 업데이트 권고"
+        );
+        model.addAttribute("popularArticles", popularArticles);
+
         List<String> recommended = Arrays.asList(
             "추천) 경제: 환율 급등 관련 해설",
             "추천) IT: 생성형 AI 도입 사례",
             "추천) 사회: 여름철 전력수급 이슈"
         );
-        List<String> hotTop3 = Arrays.asList(
-            "인기) 정치: 국회 본회의 쟁점 정리",
-            "인기) 스포츠: 주말 경기 하이라이트",
-            "인기) IT: 보안 업데이트 권고"
-        );
+        model.addAttribute("recommended", recommended);
 
-        if (userId != null) {
-            model.addAttribute("sectionTitle", "추천 기사 Top 3");
-            model.addAttribute("articlesTop3", recommended);
-        } else {
-            model.addAttribute("sectionTitle", "조회수 Top 3");
-            model.addAttribute("articlesTop3", hotTop3);
-        }
+        // ── 날씨 (더미) ───────────────────────────────────────────
+        model.addAttribute("weatherSummary", "서울 28℃, 구름 조금");
+        // 필요하면 상세 리스트도:
+        // model.addAttribute("weatherList", Arrays.asList("오전 맑음", "오후 구름"));
 
-        // 날씨 영역 자리(기상청 API 연동 전)
-        // TODO: weatherService.getTodaySummary() 로 교체
-        model.addAttribute("weatherSummary", "서울 28℃, 구름 조금"); // 더미 텍스트
-
-        // 퀴즈 티저 배너(12시 오픈)
-        model.addAttribute("quizTeaser", "오늘의 뉴스 퀴즈 · 12:00 오픈!");
-
-        // 페이지 메타(타이틀 등)
+        // 페이지 메타
         model.addAttribute("pageTitle", "Hot Issue - 메인");
 
-        return "mainPage/MainPage"; // /WEB-INF/views/~~ 위치. 파일명
+        return "mainPage/MainPage";
     }
-
-    
-    
-    /**
-     * (선택) 메인 리프레시용 라이트 엔드포인트
-     * - 추후 setInterval/AJAX로 특정 섹션만 갱신하고 싶을 때 사용
-     * - 지금은 뷰 먼저이므로 주석으로 남겨둠
-     */
-    // @GetMapping("/section/recommend.do")
-    // @ResponseBody
-    // public List<String> refreshRecommend(HttpSession session) {
-    //     String userId = (String) session.getAttribute("userId");
-    //     return mainService.getRecommendTop3(userId);
-    // }
 }

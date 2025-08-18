@@ -47,7 +47,7 @@ class ArticleDaoTest {
 	@BeforeEach
 	void setUp() throws Exception {
 
-		dto01 = new ArticleDTO(1L, 30, "조선일보", "AI가 세상을 바꾼다", "AI 기술의 발전과 전망", "https://chosun.com/ai-future",
+		dto01 = new ArticleDTO(1L, 30, "조선일보", "AI가 세상을 바꾼다", "AI 기술의 발전과 전망", "https://chosun.com/ai-future122",
 				new Date(), 0, new Date(), new Date());
 		search = new ArticleSearchDTO();
 	}

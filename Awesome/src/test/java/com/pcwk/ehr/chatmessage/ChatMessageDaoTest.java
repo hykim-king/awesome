@@ -24,8 +24,8 @@ import com.pcwk.ehr.chatmessage.domain.ChatMessageDTO;
 import com.pcwk.ehr.mapper.ChatMessageMapper;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
-		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
+@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml"
+		})
 class ChatMessageDaoTest {
 	Logger log = LogManager.getLogger(getClass());
 
@@ -158,7 +158,7 @@ class ChatMessageDaoTest {
 		assertEquals(politics, outVO.getCategory());
 	}
 
-	@Disabled
+	//@Disabled
 	@Test
 	void beans() {
 		log.debug("┌─────────────────────────────────┐");

@@ -43,6 +43,13 @@ public class MemberServiceImpl implements MemberService {
     public boolean existsById(String userId) throws SQLException {
         return mapper.existsById(userId) > 0;
     }
+    
+    //닉네임 중복
+    @Override
+    public boolean existsByNick(String nickNm) throws Exception {
+        return mapper.existsByNick(nickNm) > 0;
+    }
+
 
     @Override
     public int register(MemberDTO dto) throws SQLException {
@@ -61,7 +68,12 @@ public class MemberServiceImpl implements MemberService {
         return mapper.doSave(dto);
     }
 
-
+    @Override
+    public String findUserId(String userNm, String mailAddr) throws SQLException {
+        return mapper.findUserId(userNm, mailAddr);
+    }
+    
+    
     @Override
     public MemberDTO findById(MemberDTO dto) throws SQLException {
         return mapper.doSelectOne(dto);
@@ -110,7 +122,6 @@ public class MemberServiceImpl implements MemberService {
         return mapper.markEmailVerifiedByToken(token) == 1;
     }
 
-    
 
     @Override
     public boolean checkPassword(String inputPwd, String hashedPwd) {
@@ -119,11 +130,52 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO login(MemberDTO dto) throws SQLException {
-        MemberDTO dbUser = mapper.doSelectOne(dto);
-        if (dbUser != null && checkPassword(dto.getPwd(), dbUser.getPwd())) {
-            dbUser.setPwd(null);
+        // 1) 아이디로만 조회
+        MemberDTO dbUser = mapper.findByUserId(dto.getUserId());
+
+        // 2) 해시 비교 (원문 vs 해시)
+        if (dbUser != null && passwordEncoder.matches(dto.getPwd(), dbUser.getPwd())) {
+            dbUser.setPwd(null); // 노출 방지
             return dbUser;
         }
         return null;
     }
+
+    @Override
+    public boolean sendResetMail(String userId, String mailAddr) {
+        try {
+            String token = UUID.randomUUID().toString();
+
+            // 1) 토큰 저장
+            int rows = mapper.updateResetToken(userId, mailAddr, token);
+            if (rows != 1) return false;
+
+            // 2) 메일 발송 (.do 패턴)
+            SimpleMailMessage msg = new SimpleMailMessage();
+            String from = (mailSender instanceof JavaMailSenderImpl)
+                    ? ((JavaMailSenderImpl) mailSender).getUsername()
+                    : "no-reply@example.com";
+            msg.setFrom(from);
+            msg.setTo(mailAddr);
+            msg.setSubject("[비밀번호 재설정] 안내");
+            msg.setText("아래 링크에서 비밀번호를 재설정하세요.\n"
+                    + baseUrl + "/member/resetPwd.do?token=" + token);
+            mailSender.send(msg);
+            return true;
+        } catch (Exception e) {
+            log.error("[MAIL] sendResetMail fail", e);
+            return false;
+        }
+    }
+
+
+    @Override
+    public int resetPassword(String token, String newPwd) throws SQLException {
+        String hashed = passwordEncoder.encode(newPwd);
+        return mapper.updatePasswordByToken(token, hashed); // 1이면 성공
+    }
+	
+    
+    
+    
 }
