@@ -2,6 +2,8 @@ package com.pcwk.ehr.chatmessage.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,16 +36,30 @@ public class ChatMessageController {
 	@Autowired(required = false)
 	SimpMessagingTemplate messagingTemplate;
 
+	// GET /ehr/chat/chat.do?category=10 이런 식으로 진입
 	@GetMapping("/chat.do")
-	public String chatView() {
-		String viewName = "chat/chat";
+	public String chatView(
+			@RequestParam(name = "category", required = false, defaultValue ="10") int category,
+			@RequestParam(name = "guest", required = false, defaultValue ="0") int guest,
+	                       HttpSession session,
+	                       Model model) {
 		log.debug("┌───────────────────────────┐");
 		log.debug("│ *chatView()*              │");
 		log.debug("└───────────────────────────┘");
-		log.debug("viewName: {}", viewName);
+		
+	    // 로그인 세션에서 userId 꺼내기 (프로젝트에 맞게 키 이름만 맞추기)
+	    String loginUserId = (String) session.getAttribute("loginUserId"); 
+	    
+	    // 테스트 아이디
+	    if(guest == 1 && (loginUserId == null || loginUserId.isEmpty())) {
+	    	loginUserId = "guest-" + System.currentTimeMillis();
+	    }
 
-		return "chat/chat";
+	    model.addAttribute("category", category);
+	    model.addAttribute("loginUserId", loginUserId);
+	    return "chat/chat";
 	}
+
 
 	@PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

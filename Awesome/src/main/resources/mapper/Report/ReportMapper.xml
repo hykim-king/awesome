@@ -43,58 +43,59 @@
 
 
   <!-- 신고 목록 조회 + 페이징 (ReportSearchDTO 사용) -->
+  <!-- 목록 + 페이징: Stopkey(ROWNUM) 패턴 -->
   <select id="doRetrieve"
           parameterType="com.pcwk.ehr.report.domain.ReportSearchDTO"
           resultType="com.pcwk.ehr.report.domain.ReportDTO">
-    SELECT 
-        REPORT_CODE, 
-        CHAT_CODE, 
-        USER_ID, 
-        CT_ID, 
-        REASON, 
-        STATUS, 
-        REG_DT
-    FROM (
-      SELECT 
-        R.REPORT_CODE, 
-        R.CHAT_CODE, 
-        R.USER_ID, 
-        R.CT_ID, 
-        R.REASON, 
-        R.STATUS, 
-        R.REG_DT,
-             ROW_NUMBER() OVER (ORDER BY R.REPORT_CODE DESC) RN
-      FROM REPORT R
-      <where>
-        <!-- free-text 검색 -->
-        <if test="searchWord != null and searchWord != ''">
-          AND (
-               CAST(R.REPORT_CODE AS VARCHAR2(50)) LIKE '%' || #{searchWord} || '%'
-            OR R.USER_ID LIKE '%' || #{searchWord} || '%'
-            OR R.CT_ID   LIKE '%' || #{searchWord} || '%'
-          )
-        </if>
 
-        <!-- 숫자/정확 조건: null 또는 0이면 미적용 -->
-        <if test="status != null and status != 0">
-          AND R.STATUS = #{status}
-        </if>
-        <if test="chatCode != null and chatCode != 0">
-          AND R.CHAT_CODE = #{chatCode}
-        </if>
-        <if test="reason != null and reason != 0">
-          AND R.REASON = #{reason}
-        </if>
-        <if test="userId != null and userId != ''">
-          AND R.USER_ID = #{userId}
-        </if>
-        <if test="ctId != null and ctId != ''">
-          AND R.CT_ID = #{ctId}
-        </if>
-      </where>
+    <!-- 대소문자 무시 전방일치 바인딩: 반드시 &amp;&amp; 사용 -->
+    <bind name="kw"
+          value="searchWord != null &amp;&amp; searchWord != '' ? searchWord.toUpperCase() + '%' : null"/>
+
+    SELECT *
+    FROM (
+      SELECT ROWNUM AS no, x.*
+      FROM (
+        SELECT
+          R.REPORT_CODE, 
+          R.CHAT_CODE, 
+          R.USER_ID, 
+          R.CT_ID,
+          R.REASON, 
+          R.STATUS, 
+          R.REG_DT
+        FROM REPORT R
+        <where>
+          <!-- free-text(전방일치). 함수기반 인덱스와 궁합 -->
+          <if test="kw != null">
+            AND ( UPPER(R.USER_ID) LIKE #{kw}
+               OR UPPER(R.CT_ID)   LIKE #{kw} )
+          </if>
+
+          <!-- 숫자/정확 조건: null 또는 0이면 미적용 -->
+          <if test="status != null and status != 0">
+            AND R.STATUS = #{status}
+          </if>
+          <if test="chatCode != null and chatCode != 0">
+            AND R.CHAT_CODE = #{chatCode}
+          </if>
+          <if test="reason != null and reason != 0">
+            AND R.REASON = #{reason}
+          </if>
+          <if test="userId != null and userId != ''">
+            AND R.USER_ID = #{userId}
+          </if>
+          <if test="ctId != null and ctId != ''">
+            AND R.CT_ID = #{ctId}
+          </if>
+        </where>
+        ORDER BY R.REG_DT DESC, R.REPORT_CODE DESC
+      ) x
+      WHERE ROWNUM &lt;= (#{pageNo} * #{pageSize}) <!-- 흔히 StopKey(ROWNUM)페이징 패턴이라고 함 -->
     )
-    WHERE RN BETWEEN #{startRow} AND #{endRow}
+    WHERE no &gt; ((#{pageNo} - 1) * #{pageSize})
   </select>
+
   
   
     <!-- 
@@ -121,7 +122,9 @@
   </delete>
   
     <!-- 테스트 초기화 -->
-  <delete id="deleteAll">DELETE FROM REPORT</delete>
+  <delete id="deleteAll">
+  	DELETE FROM REPORT
+  </delete>
   
   <select id="getCount" resultType="int">
     SELECT COUNT(*) FROM REPORT
