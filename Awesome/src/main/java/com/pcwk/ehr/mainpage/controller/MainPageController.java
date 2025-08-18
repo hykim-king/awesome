@@ -1,5 +1,6 @@
 package com.pcwk.ehr.mainpage.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.pcwk.ehr.keyword.domain.KeywordLink;
 import com.pcwk.ehr.keyword.service.KeywordService;
+import com.pcwk.ehr.weather.domain.WeatherDTO;
+import com.pcwk.ehr.weather.service.WeatherService;
 
 @Controller
 @RequestMapping("/mainPage")
@@ -32,6 +35,9 @@ public class MainPageController {
 
     @Autowired
     KeywordService keywordService;
+    
+    @Autowired
+    WeatherService weatherService;
     
     
     @GetMapping("/main.do")
@@ -71,14 +77,13 @@ public class MainPageController {
         );
         model.addAttribute("recommended", recommended);
 
-        // ── 날씨 (더미) ───────────────────────────────────────────
-        model.addAttribute("weatherSummary", "서울 28℃, 구름 조금");
-        // 필요하면 상세 리스트도:
-        // model.addAttribute("weatherList", Arrays.asList("오전 맑음", "오후 구름"));
-
+  
         // 페이지 메타
         model.addAttribute("pageTitle", "Hot Issue - 메인");
 
         return "mainPage/MainPage";
     }
+    
+    
+    
 }
