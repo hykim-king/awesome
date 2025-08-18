@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
@@ -97,17 +98,17 @@
   </div>
 
   <!-- 오른쪽: 날씨 -->
-  <div class="right">
-    <section id="main-weather">
-      <h2>오늘의 날씨</h2>
-      <p><c:out value="${weatherSummary}" default="기상 정보를 준비 중입니다." /></p>
-      <ul>
-        <c:forEach var="w" items="${weatherList}">
-          <li><c:out value="${w}" /></li>
-        </c:forEach>
-      </ul>
-    </section>
-  </div>
+<div class="right">
+  <section id="main-weather">
+  
+  <h2>오늘의 날씨</h2>
+<jsp:include page="/widget/weather"/>
+  
+  
+  
+  
+  </section>
+</div>
 
 </section>
 
