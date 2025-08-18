@@ -78,8 +78,10 @@
 	</select>
 	
 	<!-- 카운트 세기 -->
-    <select id="getCount" resultType="java.lang.Integer">
-        SELECT count(*) totalCnt from bookmark
+    <select id="getCount" parameterType="BookmarkDTO" resultType="java.lang.Integer">
+        SELECT count(*) totalCnt 
+        FROM bookmark
+        WHERE user_id = #{userId}
     </select>
 	
 	<!-- 삭제 -->

@@ -17,5 +17,7 @@ public interface BookmarkService {
 	int doDelete(BookmarkDTO param);
 	
 	public int toggleBookmark(BookmarkDTO param);
+	
+	int getCount(BookmarkDTO param);
 
 }
