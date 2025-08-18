@@ -32,15 +32,15 @@
   <div class="navbar-right">
   
   <c:choose>
-  <c:when test="${not empty sessionScope.userId}">
-    <!-- 로그인 상태 -->
-    <span>${sessionScope.userId}님</span>
-    <a href="/ehr/login/logout.do">로그아웃</a>
+  <c:when test="${not empty sessionScope.loginUser}">
+<!-- 로그인 상태 -->
+    <span>${sessionScope.loginUser.userId}님</span>
+    <a href="<c:url value='/member/logout.do'/>">로그아웃</a>
   </c:when>
   <c:otherwise>
     <!-- 비로그인 상태 -->
-    <a href="/ehr/login/login.do">로그인</a>
-    <a href="/ehr/membership/doSaveView.do">회원가입</a>
+    <a href="<c:url value='/member/login.do'/>">로그인</a>
+    <a href="<c:url value='/member/register.do'/>">회원가입</a>
   </c:otherwise>
 </c:choose>
   </div>

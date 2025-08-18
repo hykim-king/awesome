@@ -1,8 +1,11 @@
 package com.pcwk.ehr.mapper;
 
 import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
 import com.pcwk.ehr.cmn.WorkDiv;
 import com.pcwk.ehr.member.domain.MemberDTO;
 
@@ -43,7 +46,25 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
             @Param("token") String token);
 
     int updatePasswordByToken(@Param("token") String token,
-                 @Param("hashedPwd") String hashedPwd);
+                 				@Param("pwd") String pwd);
+
+    
+    
+ 
+    int countMembersForAdmin(@Param("type") String type,
+                             @Param("keyword") String keyword,
+                             @Param("grade") Integer grade);
+
+    List<MemberDTO> listMembersForAdmin(@Param("type") String type,
+                                        @Param("keyword") String keyword,
+                                        @Param("grade") Integer grade,
+                                        @Param("offset") int offset,
+                                        @Param("limit") int limit);
+
+    int updateGradeByUserId(@Param("userId") String userId,
+                            @Param("grade") int grade);
+
+    int deleteMembersByIds(@Param("list") List<String> ids);
 
     
 }
