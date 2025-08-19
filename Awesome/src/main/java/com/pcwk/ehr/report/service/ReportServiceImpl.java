@@ -82,8 +82,11 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public int getCount() {
-		return mapper.getCount();
+	public int getCount(ReportSearchDTO cond) throws Exception {
+		return mapper.getCount(cond);
 	}
+
+
+
 
 }
