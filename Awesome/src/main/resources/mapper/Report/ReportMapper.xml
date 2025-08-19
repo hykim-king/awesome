@@ -130,4 +130,10 @@
     SELECT COUNT(*) FROM REPORT
   </select>
   
+  <update id="doUpdateStatus" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
+    UPDATE REPORT
+     SET STATUS = #{status}
+    WHERE REPORT_CODE = #{reportCode}
+  </update>
+  
 </mapper>

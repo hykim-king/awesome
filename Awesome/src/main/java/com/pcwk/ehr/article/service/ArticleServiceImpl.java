@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
-import com.pcwk.ehr.cmn.SearchDTO;
 import com.pcwk.ehr.mapper.ArticleMapper;
 
 @Service
