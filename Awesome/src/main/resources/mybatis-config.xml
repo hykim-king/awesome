@@ -10,6 +10,7 @@
   
   <typeAliases>
     <typeAlias alias="BookmarkDTO" type="com.pcwk.ehr.bookmark.domain.BookmarkDTO"/>
+    <typeAlias alias="UserLogDTO" type="com.pcwk.ehr.userLog.domain.UserLogDTO"/>
   </typeAliases>
  
 </configuration> 
