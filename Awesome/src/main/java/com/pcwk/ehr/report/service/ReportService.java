@@ -21,6 +21,6 @@ public interface ReportService {
 	
 	int deleteAll() throws Exception;
 	
-	int getCount() throws Exception;
+	int getCount(ReportSearchDTO cond) throws Exception;
 
 }

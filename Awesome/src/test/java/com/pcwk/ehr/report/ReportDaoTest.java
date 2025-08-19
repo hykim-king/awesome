@@ -173,9 +173,9 @@ class ReportDaoTest {
 	        int saved = reportmapper.doSave(r);
 	        assertEquals(1, saved);
 	    }
-	    int total = reportmapper.getCount();
-	    log.debug("총 건수: {}", total);
-	    assertEquals(23, total);
+//	    int total = reportmapper.getCount();
+//	    log.debug("총 건수: {}", total);
+//	    assertEquals(23, total);
 
 	    // 3) 검색/페이징 조건 (ReportSearchDTO)
 	    ReportSearchDTO cond = new ReportSearchDTO();

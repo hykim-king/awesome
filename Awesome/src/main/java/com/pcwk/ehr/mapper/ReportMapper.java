@@ -10,7 +10,7 @@ import com.pcwk.ehr.report.domain.ReportSearchDTO;
 @Mapper
 public interface ReportMapper extends WorkDiv<ReportDTO> {
 
-    int getCount();
+    int getCount(ReportSearchDTO cond);
         
     int deleteAll();
     
