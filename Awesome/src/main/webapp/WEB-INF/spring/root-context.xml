@@ -10,6 +10,14 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+<!-- 네이버사전 읽어오기-->
+<context:property-placeholder
+    location="classpath:application.properties"
+    ignore-unresolvable="true"/>
+<bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
+<bean id="DictionaryService" class="com.pcwk.ehr.dict.service.DictionaryService" />    
+
 	<!-- message설정 
 	    등록시 주의 사항 : 이름이 messageSource로 고정되어 있다.
 	  id="messageSource"
@@ -177,6 +185,9 @@
     
     <!-- 삭제X: MainPageService component-scan -->
 <bean id="mainPageService" class="com.pcwk.ehr.mainpage.service.MainPageServiceImpl" />
+
+
+    
     
     
     <bean id="transactionManager"
