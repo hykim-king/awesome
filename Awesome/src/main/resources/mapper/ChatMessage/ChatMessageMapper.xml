@@ -42,7 +42,7 @@
         MESSAGE, 
         SEND_DT
         FROM CHAT_MESSAGE
-     WHERE CHAT_CODE = #{chatCode}
+    WHERE CHAT_CODE = #{chatCode, jdbcType=INTEGER}
   </select>
   
   
@@ -81,5 +81,11 @@
     <delete id="deleteAll">
         DELETE FROM CHAT_MESSAGE
     </delete>
+    
+    <delete id="doDeleteByUser" parameterType="map">
+  DELETE FROM CHAT_MESSAGE 
+  WHERE CHAT_CODE = #{chatCode}
+    AND USER_ID = #{userId}
+	</delete>
   
   </mapper>

@@ -9,7 +9,7 @@
   </settings>
   
   <typeAliases>
-    <typeAlias alias="BookMarkDTO" type="com.pcwk.ehr.bookmark.domain.BookmarkDTO"/>
+    <typeAlias alias="BookmarkDTO" type="com.pcwk.ehr.bookmark.domain.BookmarkDTO"/>
   </typeAliases>
  
 </configuration> 

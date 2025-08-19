@@ -103,18 +103,47 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 </style>
 <script>
 	//새로 고침 시 검색 조건 초기화
-	if (performance
-			&& performance.navigation
-			&& performance.navigation.type === performance.navigation.TYPE_RELOAD) {
-		location.replace("${pageContext.request.contextPath}/article/list.do");
-	}
-	if (performance && performance.getEntriesByType) {
-		var nav = performance.getEntriesByType("navigation")[0];
-		if (nav && nav.type === "reload") {
-			location
-					.replace("${pageContext.request.contextPath}/article/list.do")
-		}
-	}
+	(function (){
+  try {
+    var base = "${pageContext.request.contextPath}/article/list.do";
+    var isListPath = location.pathname.indexOf("/article/list.do") !== -1;
+
+    // 새/구 브라우저의 reload 판별
+    var nav = (performance && performance.getEntriesByType)
+      ? performance.getEntriesByType("navigation")[0] : null;
+
+    var isReload = false;
+    if (nav && typeof nav.type === "string") {
+      isReload = (nav.type === "reload");
+    } else if (performance && performance.navigation) {
+      isReload = (performance.navigation.type === performance.navigation.TYPE_RELOAD);
+    }
+
+    if (isReload && isListPath) {
+      var url = new URL(location.href);
+      var sp = url.searchParams;
+
+      var cat = sp.get("category");
+
+      // 핵심 변경: category만 남았는지 간단히 판별
+      var sp2 = new URLSearchParams(sp.toString()); // ← 사본
+      sp2.delete("category");
+      var hasOtherParams = (sp2.toString() !== ""); // ← 다른 파라미터 있는지 확인
+
+      // 오류 수정: category 유지한 목표 URL
+      var target = cat ? (base + "?category=" + encodeURIComponent(cat)) : base;
+
+      // 이미 깔끔한 상태(category만 있거나 아예 없음)면 리다이렉트 X
+      var onlyCategory = (!hasOtherParams && (sp.has("category") || sp.toString() === ""));
+
+      if (!onlyCategory) {
+        location.replace(target);
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+})();
 </script>
 </head>
 <body>
@@ -206,8 +235,8 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
                             <!-- 요약 80자 넘을시 ... 표시 -->
 							<div class="summary">
 							 <c:choose>
-							     <c:when test="${not empty item.summary and fn:length(item.summary) > 80}">
-							         ${fn:substring(item.summary,0,80)}...
+							     <c:when test="${not empty item.summary and fn:length(item.summary) > 50}">
+							         ${fn:substring(item.summary,0,50)}...
 							     </c:when>
 							     <c:otherwise>
 							         ${item.summary}
