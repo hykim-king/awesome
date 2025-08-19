@@ -12,6 +12,9 @@
         http://www.springframework.org/schema/context      https://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/websocket    http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd">
 
+<context:property-placeholder location="classpath:application.properties,classpath:aes.properties"/>
+
+
     <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
     
     <!-- Enables the Spring MVC @Controller programming model -->

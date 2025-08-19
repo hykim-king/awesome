@@ -13,10 +13,10 @@
 
 <!-- 네이버사전 읽어오기-->
 <context:property-placeholder
-    location="classpath:application.properties"
+    location="classpath:application.properties,classpath:aes.properties"
     ignore-unresolvable="true"/>
 <bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
-<bean id="DictionaryService" class="com.pcwk.ehr.dict.service.DictionaryService" />    
+
 
 	<!-- message설정 
 	    등록시 주의 사항 : 이름이 messageSource로 고정되어 있다.
@@ -47,8 +47,8 @@
 	</bean>
 	
 		
-	<!-- aes.properties 파일 읽기 -->
-	<context:property-placeholder location="classpath:aes.properties"/>
+<!-- 	 aes.properties 파일 읽기  -->
+<!-- 	<context:property-placeholder location="classpath:aes.properties"/> -->
 	<!-- 양방향 암호화 -->
 	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
 	
