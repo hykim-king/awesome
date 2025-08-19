@@ -2,13 +2,38 @@ google.charts.load("current", {packages:["corechart"]});
 google.charts.setOnLoadCallback(drawChart);
 
 function drawChart() {
-  var data = google.visualization.arrayToDataTable([
-    ['category', 'Frequency per Week'],
-    ['정치', 1], ['경제', 2], ['사회/문화', 3],
-    ['스포츠', 4], ['연예', 5], ['IT/과학', 6]
-  ]);
+  fetch('${pageContext.request.contextPath}/api/mypage/chart')
+    .then(response => response.json())
+    .then(data => {
+      if (data.length === 0) {
+        // 데이터 없을 때 메시지 출력
+        document.getElementById('piechart_3d').innerHTML =
+          "이번주 읽은 기사가 없습니다.<br>핫이슈 '오늘의 토픽'을 살펴보세요!";
+        return;
+      }
 
-  var options = { title: '한 주간 읽은 카테고리', is3D: true };
-  var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-  chart.draw(data, options);
+      // 구글 차트 데이터 포맷으로 변환
+      const chartData = [['카테고리', 'Frequency per Week']];
+      data.forEach(item => {
+        chartData.push([item.category, item.clickCount]);
+      });
+
+      // 구글 차트 그리기
+      const dataTable = google.visualization.arrayToDataTable(chartData);
+
+      const options = {
+        title: '한 주간 읽은 카테고리',
+        is3D: true
+      };
+
+      const chart = new google.visualization.PieChart(
+        document.getElementById('piechart_3d')
+      );
+      chart.draw(dataTable, options);
+    })
+    .catch(error => {
+      console.error("차트 데이터를 불러오는 중 오류 발생:", error);
+      document.getElementById('piechart_3d').innerText =
+        "차트 데이터를 불러올 수 없습니다.";
+    });
 }

@@ -24,4 +24,9 @@ public interface UserLogService {
      * 로그 단건 삭제
      */
     int deleteLog(long logCode);
+    
+    /**
+     * 유저별  클릭한 카테고리 조회
+     */
+    List<UserLogDTO> doRetrieveById(UserLogDTO log);
 }

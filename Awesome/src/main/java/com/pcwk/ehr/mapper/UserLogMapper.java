@@ -32,4 +32,8 @@ public interface UserLogMapper {
 
     // 전체 건수
     int getTotalCount();
+    
+    //마이페이지 구글 차트 용 
+    //유저별  클릭한 카테고리 조회
+    List<UserLogDTO> doRetrieveById(UserLogDTO log);
 }

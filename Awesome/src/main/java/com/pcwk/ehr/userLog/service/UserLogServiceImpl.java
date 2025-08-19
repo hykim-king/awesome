@@ -74,4 +74,12 @@ public class UserLogServiceImpl implements UserLogService {
         dto.setLogCode(logCode);
         return userLogMapper.doDelete(dto);
     }
+
+    /**
+     * 유저별  클릭한 카테고리 조회
+     */
+	@Override
+	public List<UserLogDTO> doRetrieveById(UserLogDTO log) {
+		return userLogMapper.doRetrieveByUser(log);
+	}
 }
