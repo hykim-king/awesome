@@ -2,10 +2,12 @@ package com.pcwk.ehr.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.pcwk.ehr.cmn.WorkDiv;
 import com.pcwk.ehr.report.domain.ReportDTO;
 import com.pcwk.ehr.report.domain.ReportSearchDTO;
-
+@Mapper
 public interface ReportMapper extends WorkDiv<ReportDTO> {
 
     int getCount();

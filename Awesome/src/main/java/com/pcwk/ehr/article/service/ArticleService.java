@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
-import com.pcwk.ehr.cmn.SearchDTO;
 
 public interface ArticleService {
 	
