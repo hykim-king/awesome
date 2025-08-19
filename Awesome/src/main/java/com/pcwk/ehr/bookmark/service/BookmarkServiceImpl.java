@@ -65,8 +65,8 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
-	public int getCount(BookmarkDTO param) {
-		return mapper.getCount(param);
+	public int getCountById(BookmarkDTO param) {
+		return mapper.getCountById(param);
 	}
 
 }

@@ -135,7 +135,7 @@ public class BookmarkController {
 		log.debug("북마크 목록 건수: {}", (list != null ? list.size() : 0));
 		
 	    // 전체 건수 (서비스에서 별도로 조회)
-	    int totalCnt = bookmarkService.getCount(param);
+	    int totalCnt = bookmarkService.getCountById(param);
 	    model.addAttribute("totalCnt", totalCnt);
 	    model.addAttribute("pageNo", pageNo);
 	    model.addAttribute("pageSize", pageSize);
