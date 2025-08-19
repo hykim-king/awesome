@@ -10,13 +10,13 @@
     <div style="color:red">${error}</div>
   </c:if>
 
-  <form method="post" action="<c:url value='/member/resetPwd'/>">
-    <input type="hidden" name="token" value="${token}">
-    <div>
-      <label>새 비밀번호</label>
-      <input type="password" name="newPwd" required>
-    </div>
-    <button type="submit">변경</button>
-  </form>
+	  <form method="post" action="<c:url value='/member/resetPwd.do'/>" autocomplete="off">
+	  <input type="hidden" name="token" value="${token}">
+	  <div>
+	    <label>새 비밀번호</label>
+	    <input type="password" name="newPwd" required minlength="8" autocomplete="new-password">
+	  </div>
+	  <button type="submit">변경</button>
+    </form>
 </body>
 </html>

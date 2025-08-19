@@ -36,7 +36,7 @@ public interface BookmarkMapper {
 	 * 전체 등록 건수 조회
 	 * @return 1(True)/ 0(False)
 	 */
-	int getCount();
+	int getCount(BookmarkDTO param);
 	
 	
 	/**

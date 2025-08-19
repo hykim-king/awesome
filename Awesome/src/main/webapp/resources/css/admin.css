@@ -1,0 +1,46 @@
+:root { --sidebar: 240px; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin:0; background:#f5f6fa; font:14px/1.4 "Noto Sans KR", system-ui, sans-serif; color:#222; }
+
+.admin-wrap { display:grid; grid-template-columns: var(--sidebar) 1fr; height:100vh; gap:20px; }
+
+/* Sidebar */
+.sidebar { background:#fff; padding:20px; box-shadow:0 2px 16px rgba(0,0,0,.06); }
+.sidebar .title { font-weight:700; font-size:18px; margin-bottom:16px; }
+.nav { list-style:none; padding:0; margin:0; }
+.nav li { margin-bottom:8px; }
+.nav a { display:block; padding:10px 12px; border-radius:10px; text-decoration:none; color:#333; }
+.nav a:hover { background:#f0f3ff; }
+.nav a.active { background:#2e5bff; color:#fff; }
+
+/* Content */
+.content { padding:24px 24px 40px; overflow:auto; }
+.panel { background:#fff; border-radius:16px; padding:24px; box-shadow:0 6px 24px rgba(30,41,59,.05); }
+
+/* Header row */
+.panel .head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.h1 { font-size:22px; font-weight:800; margin:0; }
+
+/* Actions */
+.actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.select, .input { padding:8px 10px; border:1px solid #d9dce3; border-radius:10px; }
+.input { width:220px; }
+.btn { padding:9px 14px; border:0; border-radius:10px; background:#e9ecf5; cursor:pointer; }
+.btn-primary { background:#2e5bff; color:#fff; }
+.btn-warning { background:#00bcd4; color:#fff; }
+.btn-danger { background:#ff4d4f; color:#fff; }
+
+/* Table */
+.grid { width:100%; border-collapse:collapse; }
+.grid th, .grid td { padding:10px 12px; border-bottom:1px solid #eef0f4; }
+.grid thead th { background:#0f172a; color:#fff; font-weight:700; }
+.grid tbody tr:hover { background:#fafbff; }
+.grid .chk { text-align:center; width:36px; }
+.grid .grade { width:80px; }
+
+/* Pagination */
+.pagination { display:flex; gap:6px; justify-content:center; margin-top:20px; }
+.page { min-width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+  border:1px solid #d9dce3; border-radius:8px; text-decoration:none; color:#333; }
+.page.active { background:#7c3aed; color:#fff; border-color:#7c3aed; }

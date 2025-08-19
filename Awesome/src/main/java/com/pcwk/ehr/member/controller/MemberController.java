@@ -3,12 +3,14 @@ package com.pcwk.ehr.member.controller;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -30,7 +32,17 @@ import com.pcwk.ehr.member.service.MemberService;
 public class MemberController {
 
     private final Logger log = LogManager.getLogger(getClass());
-
+    
+  
+    @Value("${app.devBackdoor:false}")   // ← 프로퍼티 주입(기본값 false)
+    private boolean devBackdoor;
+    
+    @PostConstruct
+    public void init() {
+        log.info("devBackdoor = {}", devBackdoor);
+    }
+    
+    
     @Autowired
     private MemberService memberService;
 
@@ -149,22 +161,41 @@ public class MemberController {
     @PostMapping("/login.do")
     public String login(@ModelAttribute MemberDTO dto,
                         HttpSession session,
-                        RedirectAttributes redirectAttributes) throws SQLException {
+                        RedirectAttributes ra) throws SQLException {
+
+        
+    	// [DEV ONLY] 하드코딩 관리자 로그인: admin / admin123
+    	if (devBackdoor && "admin".equals(dto.getUserId()) && "admin123".equals(dto.getPwd())) {
+    	    MemberDTO admin = new MemberDTO();
+    	    admin.setUserId("admin");
+    	    admin.setUserNm("관리자");
+    	    admin.setUserGradeCd(0); // ★ 관리자
+
+    	    session.setAttribute("loginUser", admin);
+    	    session.setAttribute("userGradeCd", 0);
+
+    	    ra.addFlashAttribute("message", "관리자로 로그인되었습니다.");
+    	    return "redirect:/admin/dashboard.do";
+    	}
+
+
+        // 일반 로그인 로직
         MemberDTO loginUser = memberService.login(dto);
         if (loginUser != null) {
             session.setAttribute("loginUser", loginUser);
-            redirectAttributes.addFlashAttribute("message", loginUser.getUserId() + "님 로그인 성공!");
+            session.setAttribute("userGradeCd", loginUser.getUserGradeCd());
+
+            ra.addFlashAttribute("message", loginUser.getUserId() + "님 로그인 성공!");
+
+            // ★ 관리자면 바로 관리자 대시보드로
+            if (Integer.valueOf(0).equals(loginUser.getUserGradeCd())) {
+                return "redirect:/admin/dashboard.do";
+            }
             return "redirect:/mainPage/main.do";
         } else {
-            redirectAttributes.addFlashAttribute("error", "로그인 실패. 아이디 또는 비밀번호를 확인해주세요.");
+            ra.addFlashAttribute("error", "로그인 실패. 아이디 또는 비밀번호를 확인해주세요.");
             return "redirect:/member/login.do";
         }
-    }
-
-    @GetMapping("/logout.do") // 클래스 레벨 /member 가 붙으므로 실제 경로는 /member/logout.do
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/mainPage/main.do";
     }
 
     /* ================== 아이디/비밀번호 찾기 ================== */

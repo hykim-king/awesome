@@ -1,91 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans
-	xmlns="http://www.springframework.org/schema/mvc"
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:task="http://www.springframework.org/schema/task"
 	xmlns:websocket="http://www.springframework.org/schema/websocket"
 	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
 		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
-	<!-- Websocket and STOMP messaging -->
-	<!-- application-destination-prefix : 클라이언트 -> 서버로 보내는 메시지 주소 접두어 Controller 
-		@MessageMapping("/hello") 같은 메서드를 호출할 때, /ehr/hello -websocket : stomp-endpoint 
-		path ="/ws" : 클라이언트가 최초 연결할 websocket 핸드셰이크 주소를 지정 합니다. let socket = new 
-		SockJS("/ws") let stompClient = Stomp.over(socket) - websocket:sockjs : SockJS 
-		사용을 허용 (일부 브라우저나 네트워크 환경에서 WebSocket을 사용할 수 없는 경우를 대비해, fallback(대체 기술, 예: 
-		XHR) 기능을 제공합니다.) -websocket:simple-broker prefix="/topic" : 서버 - 클라이언트로 메시지를 
-		브로드캐스트할 때 사용하는 경로 접두어 입니다. 클라이언트가 수신을 원할 경우 /topic/notice와 같은 채널을 구독하게 됩니다. -->
-	<websocket:message-broker
-		application-destination-prefix="/ehr">
-		<!-- STOMP endpoint -->
-		<websocket:stomp-endpoint path="/ws">
-			<websocket:sockjs />
-		</websocket:stomp-endpoint>
 
-		<!-- Broker -->
-		<websocket:simple-broker prefix="/topic" />
+    <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+    
+    <!-- Enables the Spring MVC @Controller programming model -->
+    <annotation-driven />
 
-	</websocket:message-broker>
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+    <resources mapping="/resources/**" location="/resources/" />
 
-	<!-- cron scheduler -->
-	<task:scheduler id="cronScheduler" pool-size="3" />
-
-	<!-- Cron 스케줄링 -->
-	<task:scheduled-tasks scheduler="cronScheduler">
-		<task:scheduled ref="userServiceImpl"
-			method="upgradeLevels" cron="0 */3 * * 10 *" />
-
-
-		<task:scheduled ref="pcwkCron" method="runTask"
-			cron="0 */1 * * 10 *" />
-	</task:scheduled-tasks>
-
-	<!-- DispatcherServlet Context: defines this servlet's request-processing 
-		infrastructure -->
-
-	<!-- Enables the Spring MVC @Controller programming model -->
-	<annotation-driven />
-
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
-		up static resources in the ${webappRoot}/resources directory -->
-	<resources mapping="/resources/**" location="/resources/" />
-
-
-
-	<!-- Tiles config -->
-	<beans:bean id="tilesConfigurer"
-		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
-		<beans:property name="definitions">
-			<beans:list>
-				<beans:value>/WEB-INF/views/tiles/tiles.xml</beans:value>
-			</beans:list>
-		</beans:property>
-	</beans:bean>
-
-
-	<!-- Tiles ViewResolver -->
-	<beans:bean id="tilesViewResolver"
-		class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
-		<beans:property name="order" value="1" /> <!--ViewResolver: 읽는 순서 1 -->
-	</beans:bean>
-
-
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
-		in the /WEB-INF/views directory -->
-	<beans:bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<beans:property name="prefix" value="/WEB-INF/views/" />
-		<beans:property name="suffix" value=".jsp" />
-		<beans:property name="order" value="2" />  <!--ViewResolver: 읽는 순서 2 -->
-	</beans:bean>
-
-	<context:component-scan
-		base-package="com.pcwk.ehr" />
-
-
-
+    <!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/views/" />
+        <beans:property name="suffix" value=".jsp" />
+    </beans:bean>
+  
+   <context:component-scan base-package="com.pcwk.ehr" />
+    
+    
 </beans:beans>
