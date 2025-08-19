@@ -18,6 +18,6 @@ public interface BookmarkService {
 	
 	public int toggleBookmark(BookmarkDTO param);
 	
-	int getCount(BookmarkDTO param);
+	int getCountById(BookmarkDTO param);
 
 }
