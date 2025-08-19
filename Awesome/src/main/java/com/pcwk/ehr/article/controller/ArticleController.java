@@ -94,7 +94,7 @@ public class ArticleController {
 
 		return "article/list";
 	}
-	
+	//유효성 검증 후 기사 url로 리다이렉트
 	@GetMapping("/visit.do")
 	public String visit(@RequestParam("articleCode") long articleCode) throws Exception{
 		
@@ -103,10 +103,12 @@ public class ArticleController {
 		
 		ArticleDTO article = service.doSelectOne(req);
 		
+		//기사나 기사url이 없거나 기사url이 null값이면 리스트로 돌아감
 		if(article == null || article.getUrl() == null || article.getUrl().isEmpty()) {
 			return "redirect:/article/list.do";
 		}
 		String url = article.getUrl();
+		//url이 http나 https로 시작하는 게 아니라면 리스트로 돌아감
 		if(!(url.startsWith("http://")||url.startsWith("https://"))) {
 			return "redirect:/article/list.do";
 		}
@@ -114,6 +116,7 @@ public class ArticleController {
 		return "redirect:"+url;
 	}
 	
+	//조회수 증가
 	@PostMapping(value = "/hit.do", produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public Map<String,Object> hit(@RequestParam("articleCode") long articleCode) throws Exception{
