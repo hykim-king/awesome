@@ -211,4 +211,11 @@ public class MemberServiceImpl implements MemberService {
             return null;
         }
     }
+
+	@Override
+	public MemberDTO doSelectOne(MemberDTO param) {
+		return mapper.doSelectOne(param);
+	}
+	
+
 }

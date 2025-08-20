@@ -1,20 +1,15 @@
 package com.pcwk.ehr.chatmessage.controller;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.util.List;
 
-import javax.activation.DataSource;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +33,7 @@ public class ChatMessageController {
 	@Autowired
 	ChatMessageService service;
 
-	@Autowired(required = false)
+	@Autowired(required = true)
 	SimpMessagingTemplate messagingTemplate;
 
 	// GET /ehr/chat/chat.do?category=10 이런 식으로 진입
@@ -74,18 +69,17 @@ public class ChatMessageController {
 	 * 
 	 * @throws Exception
 	 */
-	@MessageMapping("/send")
+	@MessageMapping("/chat")
 	public void doSaveWs(ChatMessageDTO dto) throws Exception {
 		log.debug("┌─────────────────────────────┐");
-		log.debug("│ doSaveWs() - WebSocket      │");
+		log.debug("│ doSaveWs()                  │");
 		log.debug("└─────────────────────────────┘");
-		log.debug("▶ dto : {}", dto);
-
-		service.doSave(dto);
-		if (messagingTemplate != null) { // 서버에 브로커가 있을 때만 브로드캐스트
-			messagingTemplate.convertAndSend("/topic/chat." + dto.getCategory(), dto);
-		}
+	    log.debug("doSaveWs recv: {}", dto);   // ★ 이 로그가 찍혀야 클라 SEND가 서버에 도달한 것
+	    int r =  service.doSave(dto);
+	    messagingTemplate.convertAndSend(
+	    		"/topic/chat." + dto.getCategory(), dto);
 	}
+
 
 	/** (REST) 단건 조회 : doSelectOne */
 	@GetMapping("/{chatCode}")

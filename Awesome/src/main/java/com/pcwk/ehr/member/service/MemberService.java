@@ -95,7 +95,8 @@ public interface MemberService {
     
     int resetPassword(String token, String newPwd) throws SQLException;
 
-   
+	MemberDTO doSelectOne(MemberDTO param);
+
     
     
 }

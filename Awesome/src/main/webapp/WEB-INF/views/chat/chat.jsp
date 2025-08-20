@@ -59,17 +59,19 @@
 <script>
 /* ====== ⑤ 컨텍스트 경로 계산 (JSP 미렌더 대비 안전) ====== */
 (function () {
-  var rendered = '<c:out value="${ctx}"/>';
-  window.CTX = rendered && rendered !== '${ctx}' ? rendered : (function(){
+  var rendered = '${ctx}';
+  window.CTX = (rendered && rendered !== '${ctx}') 
+    ? rendered 
+    : (function(){
     var seg = location.pathname.split('/');
     return seg.length > 1 ? '/' + seg[1] : '';
   })();
 })();
 
 /* ====== ⑥ 엔드포인트/프리픽스 ====== */
-const WS_ENDPOINT  = CTX + '/realtime-chat';  // SockJS 엔드포인트
-const SEND_PREFIX  = '/send';                 // @MessageMapping("/send")
-const TOPIC_PREFIX = '/topic';                // convertAndSend("/topic/...")
+const WS_ENDPOINT  = CTX + '/realtime-chat';
+const SEND_PREFIX  = '/app';    
+const TOPIC_PREFIX = '/topic';
 
 /* ====== ⑦ 페이지 모델 ====== */
 const appEl = document.getElementById('app');
@@ -105,13 +107,12 @@ function appendMessage(m,isNew=false){
 
 /* ====== ⑩ 최근 N건 로드(REST) ====== */
 async function loadRecent(){
-  messageList.innerHTML = '';
   try{
-    const url = `${CTX}/chat/recent?category=${CATEGORY}&limit=30`;
-    const res = await fetch(url, { headers:{ 'Accept':'application/json' }});
+    const url = CTX + `/chat/recent?category=${CATEGORY}&limit=30`;
+    const res = await fetch(url, { headers: { 'Accept':'application/json' }});
     if(!res.ok) throw new Error('[REST] ' + res.status);
     const data = await res.json();
-    data.reverse().forEach(m => appendMessage(m, false));
+    // ...
   }catch(e){ console.error(e); }
 }
 
@@ -122,21 +123,38 @@ function connectWS(){
   const sock = new SockJS(WS_ENDPOINT);
   stomp = Stomp.over(sock);
   stomp.debug = null;
+  stomp.debug = (s)=>console.log('[STOMP]', s);
+  
   stomp.connect({}, () => {
     setStatus(true);
+    
     if(sub){ try{sub.unsubscribe();}catch(_){ } sub=null; }
-    sub = stomp.subscribe(`${TOPIC_PREFIX}/chat.${CATEGORY}`,
-      f => appendMessage(JSON.parse(f.body), true));
+    
+    const dest = `${TOPIC_PREFIX}/chat.${CATEGORY}`;
+    console.log('[WS] SUBSCRIBE ->', dest);
+    sub = stomp.subscribe(dest, (frame) => {
+      console.log('[WS] MESSAGE <-', frame.body); // 디버깅용
+      try {
+        const dto = JSON.parse(frame.body);
+        appendMessage(dto, true);
+      } catch (e) {
+        console.error('parse failed:', e, frame.body);
+      }
+    });
   }, err => { console.error(err); setStatus(false); });
 }
+
 function sendMessage(){
-  const msg = (inputEl.value||'').trim();
-  if(!msg) return;
-  if(!stomp || !stomp.connected){ alert('연결이 끊어졌습니다. 새로고침 해주세요.'); return; }
-  const dto = { category:CATEGORY, userId:LOGIN_USER, message:msg };
-  stomp.send(`${SEND_PREFIX}/send`, {}, JSON.stringify(dto));
-  inputEl.value=''; inputEl.focus();
-}
+	  const msg = (inputEl.value||'').trim();
+	  if(!msg) return;
+	  if(!stomp || !stomp.connected){
+	    alert('연결이 끊어졌습니다. 새로고침 해주세요.'); return;
+	  }
+	  const dto = { category: CATEGORY, userId: LOGIN_USER, message: msg };
+	  // "/app/chat" 으로 보냄 => 서버의 @MessageMapping("/chat") 호출
+	  stomp.send(`/app/chat`, {}, JSON.stringify(dto));
+	  inputEl.value=''; inputEl.focus();
+	}
 
 /* ====== ⑫ 초기화 ====== */
 (async function(){
