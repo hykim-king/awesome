@@ -42,7 +42,7 @@
 	<mvc:resources mapping="/webjars/**" location="/webjars/"/>
 	
 	
-	<websocket:message-broker application-destination-prefix="/send">
+	<websocket:message-broker application-destination-prefix="/app">
 	    <!-- 클라에서 SockJS('/realtime-chat') 로 붙는 주소 -->
 	    <websocket:stomp-endpoint path="/realtime-chat">
 	        <websocket:sockjs/>
