@@ -1,6 +1,8 @@
 package com.pcwk.ehr.userLog.service;
 
 import java.util.List;
+
+import com.pcwk.ehr.userLog.domain.UserChartDTO;
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
 
 public interface UserLogService {
@@ -28,5 +30,5 @@ public interface UserLogService {
     /**
      * 유저별  클릭한 카테고리 조회
      */
-    List<UserLogDTO> doRetrieveById(UserLogDTO log);
+    List<UserChartDTO> doRetrieveById(UserLogDTO log);
 }
