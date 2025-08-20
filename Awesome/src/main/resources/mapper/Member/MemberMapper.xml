@@ -26,6 +26,14 @@
         FROM MEMBER
         WHERE USER_ID = #{userId}
     </select>
+    
+    
+    <select id="existsByEmail" parameterType="string" resultType="int">
+	  SELECT COUNT(1)
+	  FROM MEMBER
+	  WHERE UPPER(TRIM(MAIL_ADDR)) = UPPER(TRIM(#{mailAddr}))
+    </select>
+    
 
     <!-- UPDATE -->
     <update id="doUpdate" parameterType="com.pcwk.ehr.member.domain.MemberDTO">

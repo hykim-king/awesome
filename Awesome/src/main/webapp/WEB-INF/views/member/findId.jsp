@@ -14,16 +14,36 @@
   <style>
     :root{
       --bg:#f7fafc; --card:#fff; --text:#0f172a; --muted:#475569;
-      --line:#e5e7eb; --green:#84cc16; --green-dark:#65a30d;
+      --line:#e5e7eb; --blue-light:#4aa3ff;--blue:#0a45ff;
     }
     *{box-sizing:border-box}
     body{margin:0; background:var(--bg); color:var(--text);
       font-family: Inter,Pretendard,system-ui,-apple-system,Segoe UI,Roboto,
                    "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;}
 
-    /* 이 페이지 전용: 우측 레일이 있으면 숨기고 흰 배경 */
-    .page-find #main, .page-find #main .main-container{background:#fff !important;}
-    .page-find #main aside, .page-find #main .right, .page-find #main .banner{display:none !important;}
+ 
+
+    /* 아이디찾기(page-find)에서만 사이드바/우측레일/배너 숨김 */
+	.page-find #main aside,
+	.page-find #main #sidebar,
+	.page-find #main .sidebar,
+	.page-find #main .left-rail,
+	.page-find #main .right-rail,
+	.page-find #main .left,
+	.page-find #main .right,
+	.page-find #main .banner,
+	.page-find #main .ad {
+	  display: none !important;
+	}
+	
+	/* 사이드바 빠진 만큼 본문을 꽉 채우기 */
+	.page-find #main { padding-left: 0 !important; }
+	.page-find #main .main-container {
+	  margin-left: 0 !important;
+	  width: 100% !important;
+	}
+	    
+
 
     /* 카드 중앙 배치 */
     .wrap{
@@ -41,12 +61,13 @@
       width:100%; height:44px; padding:0 12px; border:1px solid var(--line);
       border-radius:10px; background:#f9fafb; font-size:14px; outline:none;
     }
-    input:focus{border-color:var(--green); box-shadow:0 0 0 4px rgba(132,204,22,.2); background:#fff;}
+    input:focus{border-color:var(--blue);  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 20%, transparent); background:#fff;}
     .btn{
       width:100%; height:46px; border:0; border-radius:12px;
-      background:var(--green); color:#fff; font-weight:700; cursor:pointer;
-    }
-    .btn:hover{background:var(--green-dark)}
+      background:var(--blue-light); color:#fff; font-weight:700; cursor:pointer;}
+    .btn:hover{background:var(--blue)}
+    .btn:active{ transform: translateY(0); }
+    
     .note{margin-top:10px; text-align:center; font-size:12px; color:var(--muted)}
     .note a{text-decoration:underline}
 
@@ -79,6 +100,20 @@
 		    color: #999; /* 구분선 색상 */
 		}
     
+    /* 아이디 찾기 페이지 배경 전부 흰색 */
+	.page-find,
+	.page-find #container,
+	.page-find #main,
+	.page-find #main .main-container{
+	  background:#fff !important;
+	}
+	
+	/* 사이드바 공간 없애기 */
+	.page-find #main { padding-left:0 !important; }
+	.page-find #main .main-container { margin-left:0 !important; width:100% !important; }
+    
+    
+    
   
   
   </style>
@@ -87,7 +122,7 @@
 <body class="page-find">
   <div id="container">
     <jsp:include page="/WEB-INF/views/include/header.jsp"/>
-    <jsp:include page="/WEB-INF/views/include/sidebar.jsp"/>
+   <%--  <jsp:include page="/WEB-INF/views/include/sidebar.jsp"/> --%>
 
     <main id="main">
       <div class="main-container">
