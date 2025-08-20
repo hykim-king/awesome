@@ -1,5 +1,7 @@
 package com.pcwk.ehr.bookmark.domain;
 
+import java.util.Date;
+
 public class BookmarkDTO {
 
 	private int bmCode;      //북마크 코드
@@ -8,7 +10,7 @@ public class BookmarkDTO {
 	private String title;	 //기사 제목
 	private String summary;  //기사 요약
 	private String press;	 //언론사
-	private String regDt;	 //북마크 날짜
+	private Date regDt;	 //북마크 날짜
 	private int totalCnt;	 //총 개수
 	
     private int pageNo;     //페이지 번호
@@ -161,14 +163,14 @@ public class BookmarkDTO {
 	/**
 	 * @return the regDt
 	 */
-	public String getRegDt() {
+	public Date getRegDt() {
 		return regDt;
 	}
 
 	/**
 	 * @param regDt the regDt to set
 	 */
-	public void setRegDt(String regDt) {
+	public void setRegDt(Date regDt) {
 		this.regDt = regDt;
 	}
 

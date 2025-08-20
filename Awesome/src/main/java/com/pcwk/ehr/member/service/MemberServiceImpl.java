@@ -174,8 +174,11 @@ public class MemberServiceImpl implements MemberService {
         String hashed = passwordEncoder.encode(newPwd);
         return mapper.updatePasswordByToken(token, hashed); // 1이면 성공
     }
+
+	@Override
+	public MemberDTO doSelectOne(MemberDTO param) {
+		return mapper.doSelectOne(param);
+	}
 	
-    
-    
     
 }

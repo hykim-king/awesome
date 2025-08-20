@@ -2,7 +2,9 @@ google.charts.load("current", {packages:["corechart"]});
 google.charts.setOnLoadCallback(drawChart);
 
 function drawChart() {
-  fetch('${pageContext.request.contextPath}/api/mypage/chart')
+  console.log("fetch URL:", ctx + "/mypage/api/mypage/chart"); // 디버깅용
+
+  fetch(ctx + "/mypage/api/mypage/chart")
     .then(response => response.json())
     .then(data => {
       if (data.length === 0) {
