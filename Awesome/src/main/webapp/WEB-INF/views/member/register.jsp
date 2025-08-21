@@ -211,7 +211,7 @@
             </div>
 
             <!-- 숨김 필드 -->
-            <input type="hidden" id="emailAuthYn"  name="emailAuthYn"  value="N" />
+            <input type="hidden" id="emailAuthYn"  name="emailAuthYn" />
             <input type="hidden" id="emailAuthToken" name="emailAuthToken" value="" />
             <input type="hidden" name="userGradeCd" value="1" />
 
