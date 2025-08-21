@@ -5,31 +5,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 <c:set var="CP" value="${pageContext.request.contextPath }" />    
 
-<%-- ======================================================================= --%>
-<%-- 중요: 이 부분은 실제로는 Controller에서 Model에 담아 보내주는 데이터입니다. --%>
-<%-- 사용자가 제출한 답과 실제 정답, 해설을 비교하여 생성된 결과 데이터입니다.  --%>
-<c:set var="quizResultList">
-    <jsp:useBean id="result1" class="java.util.HashMap" />
-    <c:set target="${result1}" property="question" value="대한민국의 수도는 서울이다." />
-    <c:set target="${result1}" property="correctAnswer" value="O" />
-    <c:set target="${result1}" property="userAnswer" value="O" />
-    <c:set target="${result1}" property="explanation" value="대한민국의 수도는 헌법에 명시되어 있지는 않지만, 수도 이전 논란이 있기 전까지 서울이 수도라는 점은 관습헌법으로 인정되었습니다. 현재 대한민국의 사실상 수도는 서울입니다." />
-
-    <jsp:useBean id="result2" class="java.util.HashMap" />
-    <c:set target="${result2}" property="question" value="지구는 태양계의 네 번째 행성이다." />
-    <c:set target="${result2}" property="correctAnswer" value="X" />
-    <c:set target="${result2}" property="userAnswer" value="O" />
-    <c:set target="${result2}" property="explanation" value="지구는 태양계의 세 번째 행성입니다. 태양으로부터의 순서는 수성, 금성, 지구, 화성, 목성, 토성, 천왕성, 해왕성 순입니다." />
-
-    <jsp:useBean id="result3" class="java.util.HashMap" />
-    <c:set target="${result3}" property="question" value="물은 섭씨 0도에서 끓는다." />
-    <c:set target="${result3}" property="correctAnswer" value="X" />
-    <c:set target="${result3}" property="userAnswer" value="X" />
-    <c:set target="${result3}" property="explanation" value="물은 표준 대기압(1기압)에서 섭씨 100도에서 끓고, 0도에서 업니다. 기압이 낮아지면 끓는점도 낮아집니다." />
-</c:set>
-<%-- ======================================================================= --%>
-
-
 <!DOCTYPE html>
 <html>
 <head>

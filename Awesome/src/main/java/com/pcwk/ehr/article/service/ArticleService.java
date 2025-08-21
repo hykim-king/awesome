@@ -11,7 +11,7 @@ public interface ArticleService {
 	
 	ArticleDTO doSelectOne(ArticleDTO param) throws Exception;
 	
-	int doDelete(ArticleDTO param);
+	int doDelete(long articleCode);
 	
 	List<ArticleDTO> doRetrieve(ArticleSearchDTO param) throws Exception;
 	

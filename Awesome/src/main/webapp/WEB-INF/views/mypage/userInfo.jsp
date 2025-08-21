@@ -15,16 +15,16 @@
 		  <p>${user.userId}</p>
 		
 		  <h3>이름</h3>
-		  <p>${user.name}</p>
+		  <p>${user.userNm}</p>
 		
 		  <h3>닉네임</h3>
-		  <p>${user.nickname}</p>
+		  <p>${user.nickNm}</p>
 		
 		  <h3>생년월일</h3>
-		  <p><fmt:formatDate value="${user.birth}" pattern="yyyy-MM-dd"/></p>
+		  <p><fmt:formatDate value="${user.birthDt}" pattern="yyyy-MM-dd"/></p>
 		
 		  <h3>이메일</h3>
-		  <p>${user.email}</p>
+		  <p>${user.mailAddr}</p>
 		</div>
 		
 		<div class="button-box">

@@ -135,6 +135,16 @@ public class ArticleController {
 		
 		return body;
 	}
+	
+	@PostMapping("/delete.do")
+	public String delete(@RequestParam("articleCode") long articleCode, Model model) throws Exception{
+		
+		log.debug("delete: articleCode()={}",articleCode);
+		int flag = service.doDelete(articleCode);
+		model.addAttribute("message", flag == 1? "삭제 성공":"삭제 실패");
+		
+		return "redirect:/article/list.do";
+	}
 
 
 }

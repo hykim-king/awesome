@@ -6,6 +6,7 @@
 <html>
 <head>
 <title>뉴스 기사 목록</title>
+<link rel="stylesheet" href="<c:url value='/resources/css/header.css?v=3'/>">
 <style>
 :root {
   --blue:#0d47a1; --blue-weak:#e7efff;
@@ -18,14 +19,6 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 .layout{display:grid;grid-template-columns:1fr 280px;gap:16px;max-width:1100px;margin:16px auto;padding:0 16px;}
 .main{min-width:0}
 .aside{position:sticky; top:16px; align-self:start; border:1px solid var(--border); background:var(--card); border-radius:12px; padding:12px}
-
-/* ----- 카테고리 탭 (파란 바) ----- */
-.nav{background:var(--blue); border-radius:10px; padding:8px; display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
-.nav a{
-  color:#cfe3ff; text-decoration:none; padding:8px 12px; border-radius:8px; transition:.15s;
-}
-.nav a:hover{background:rgba(255,255,255,.12); color:#fff}
-.nav a.active{background:#fff; color:var(--blue); font-weight:700}
 
 /* ----- 검색 바 ----- */
 .search-box{
@@ -98,7 +91,15 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 .login-modal_card{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  box-shadow:0 10px 30px rgba(0,0,0,.2);}
+/* list.jsp 전용: 검색바를 서브메뉴(카테고리) 아래로 내림 */
+.page-article-list #header + .search-box{
+  margin-top: 46px !important;   /* 필요하면 36~60px 사이로 조절 */
+}
+
+/* 모바일에서 여백을 조금 더 주고 싶으면 */
+@media (max-width: 640px){
+  .page-article-list #header + .search-box{ margin-top: 56px !important; }
 }
 </style>
 <script>
@@ -146,44 +147,8 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 })();
 </script>
 </head>
-<body>
-	<div class="container">
-		<!-- 카테고리 네비 -->
-		<div class="nav">
-			<c:url var="allUrl" value="/article/list.do" />
-			<a href="${allUrl}" class="${empty category ? 'active' : ''}">전체</a>
-
-			<c:url var="cate10" value="/article/list.do">
-				<c:param name="category" value="10" />
-			</c:url>
-			<a href="${cate10}" class="${category == 10 ? 'active' : ''}">정치</a>
-
-			<c:url var="cate20" value="/article/list.do">
-				<c:param name="category" value="20" />
-			</c:url>
-			<a href="${cate20}" class="${category == 20 ? 'active' : ''}">경제</a>
-
-			<c:url var="cate30" value="/article/list.do">
-				<c:param name="category" value="30" />
-			</c:url>
-			<a href="${cate30}" class="${category == 30 ? 'active' : ''}">사회</a>
-
-			<c:url var="cate40" value="/article/list.do">
-				<c:param name="category" value="40" />
-			</c:url>
-			<a href="${cate40}" class="${category == 40 ? 'active' : ''}">스포츠</a>
-
-			<c:url var="cate50" value="/article/list.do">
-				<c:param name="category" value="50" />
-			</c:url>
-			<a href="${cate50}" class="${category == 50 ? 'active' : ''}">연예</a>
-
-			<c:url var="cate60" value="/article/list.do">
-				<c:param name="category" value="60" />
-			</c:url>
-			<a href="${cate60}" class="${category == 60 ? 'active' : ''}">IT/과학</a>
-		</div>
-
+<body class="page-article-list">
+ <jsp:include page="/WEB-INF/views/include/header.jsp" />
 		<!-- 검색 폼 -->
 		<c:url var="searchAction" value="/article/list.do" />
 		<form method="get" action="${searchAction}" class="search-box">
