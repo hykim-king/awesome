@@ -1,11 +1,13 @@
 package com.pcwk.ehr.quiz.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pcwk.ehr.mapper.QuizMapper;
 import com.pcwk.ehr.quiz.domain.QuizDTO;
@@ -46,6 +48,26 @@ public class QuizServiceImpl implements QuizService{
 		return mapper.selectQuizResult(dto);
 		
 	}
+	
+	@Override
+    public List<QuizDTO> getTodaysQuiz() throws SQLException {
+        return mapper.selectTodaysQuiz();
+    }
+
+    @Override
+    @Transactional
+    public void submitQuizAnswers(List<QuizDTO> results) throws SQLException {
+        // 모든 답변을 순회하며 DB에 저장
+        for (QuizDTO result : results) {
+            mapper.insertQuizResult(result);   // 먼저 답변을 저장하고
+            mapper.updateScoreIfCorrect(result); // 정답이면 점수를 업데이트
+        }
+    }
+    
+    @Override
+    public boolean hasUserPlayedToday(String userId) throws SQLException {
+        return mapper.checkIfUserPlayedToday(userId) > 0;
+    }
 	
 	
 	

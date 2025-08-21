@@ -11,6 +11,8 @@ import com.pcwk.ehr.member.domain.MemberDTO;
 
 @Mapper
 public interface MemberMapper extends WorkDiv<MemberDTO> {
+	
+	int doDelete(String userId);
 
     int deleteAll() throws SQLException;
 

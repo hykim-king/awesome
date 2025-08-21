@@ -2,38 +2,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>   
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>    
 <c:set var="CP" value="${pageContext.request.contextPath }" />    
-
-<%-- ======================================================================= --%>
-<%-- 중요: 이 부분은 실제로는 Controller에서 Model에 담아 보내주는 데이터입니다. --%>
-<%-- 이전 페이지에서 채점한 결과를 바탕으로 총 문제 수와 맞힌 문제 수를 전달받습니다. --%>
-<c:set var="totalCount" value="8" />      <%-- 총 문항 수 --%>
-<c:set var="correctCount" value="7" />    <%-- 맞힌 문항 수 --%>
-
-<%-- 테스트를 위한 임시 로그인 유저 정보 (실제로는 세션에 이미 존재해야 함) --%>
-<c:if test="${empty sessionScope.loginUser}">
-    <c:set var="loginUser" scope="session">
-        <jsp:useBean id="tempUser" class="java.util.HashMap" />
-        <c:set target="${tempUser}" property="userId" value="test_user" />
-    </c:set>
-</c:if>
-<%-- ======================================================================= --%>
-
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/ehr/resources/css/pcwk_main.css">
-<link rel="stylesheet" href="/ehr/resources/css/header.css">
-<title>핫이슈 - 퀴즈 결과</title>
+<link rel="stylesheet" href="${CP}/resources/css/pcwk_main.css">
+<link rel="stylesheet" href="${CP}/resources/css/header.css">
+<title>최종 퀴즈 결과</title>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
- 
- <style>
-    body {
-        background-color: #f0f2f5;
-    }
+
+<style>
+    /* 최종 결과 페이지 전용 스타일 */
     .quiz-result-container {
         max-width: 600px;
         margin: 40px auto;
@@ -100,45 +82,70 @@
     #goToMainBtn:hover {
         background-color: #5e35b1;
     }
- </style>
+</style>
 </head>
 <body>
-    <div id="container">
+   <div id="container">
     
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
       <main id="main">
       <div class="main-container">
 
-        <div class="quiz-result-container">
-            <div class="result-summary-card">
-                <div class="icon">🏆</div>
-                <h3>축하합니다!</h3>
-                <h2><strong>${sessionScope.loginUser.userId}</strong>님의 점수는?</h2>
-                
-                <%-- 점수 계산 로직 --%>
-                <c:set var="score" value="${100 / totalCount * correctCount}" />
-
-                <h1 class="score-display">
-                    <%-- fmt:formatNumber를 사용하여 소수점 첫째 자리까지 표시 --%>
-                    <fmt:formatNumber value="${score}" pattern="#,##0.0" />점
-                </h1>
-                
-                <div class="result-details">
-                    <%-- jsp:useBean과 fmt:formatDate를 사용하여 현재 날짜를 원하는 형식으로 표시 --%>
-                    <jsp:useBean id="now" class="java.util.Date" />
-                    <h1>퀴즈 풀이 날짜: <fmt:formatDate value="${now}" pattern="yyyy년 MM월 dd일" /></h1>
-                    <h1>총 맞힌 개수: ${correctCount} / ${totalCount}</h1>
-                </div>
-            </div>
+      <div class="quiz-result-container">
+        <div class="result-summary-card">
+            <div class="icon">🏆</div>
+            <h3>수고하셨습니다!</h3>
+            <h2><strong>${sessionScope.loginUser.userId}</strong>님의 최종 점수입니다.</h2>
             
-            <div class="button-container">
-                <a href="${CP}/" id="goToMainBtn" class="btn">>메인으로</a>
+            <%-- 컨트롤러에서 전달받은 correctCount와 totalCount로 점수 계산 --%>
+            <c:if test="${totalCount > 0}">
+                <c:set var="score" value="${100 / totalCount * correctCount}" />
+            </c:if>
+            <c:if test="${totalCount == 0}">
+                <c:set var="score" value="0" />
+            </c:if>
+
+            <h1 class="score-display">
+                <fmt:formatNumber value="${score}" pattern="#,##0" />점
+            </h1>
+            
+            <div class="result-details">
+                <%-- 현재 날짜를 yyyy년 MM월 dd일 형식으로 표시 --%>
+                <jsp:useBean id="now" class="java.util.Date" />
+                <h1>퀴즈 풀이 날짜: <fmt:formatDate value="${now}" pattern="yyyy년 MM월 dd일" /></h1>
+                <h1>총 맞힌 개수: ${correctCount} / ${totalCount}</h1>
             </div>
         </div>
+        
+        <div class="button-container">
+            <a href="${CP}/" id="goToMainBtn" class="btn">메인으로 돌아가기</a>
         </div>
+      </div>
+
+
+        <c:choose>
+     <c:when test="${empty sessionScope.loginUser}">
+        <div style="display:flex; gap:12px;">
+           <a class="btn" href="<c:url value='/member/login.do'/>">로그인</a>
+           <a class="btn" href="<c:url value='/member/register.do'/>">회원가입</a>
+        </div>
+     </c:when>
+    
+     <c:otherwise>
+        <div style="display:flex; gap:12px; align-items:center;">
+           <span><strong>${sessionScope.loginUser.userId}</strong>님 환영합니다!</span>
+           <a class="btn" href="<c:url value='/member/logout.do'/>">로그아웃</a>
+        </div>
+     </c:otherwise>
+   </c:choose>
+
+         
+
+
+      </div>
       </main>
       <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
-    </div> 
+   </div> 
 </body>
 </html>
