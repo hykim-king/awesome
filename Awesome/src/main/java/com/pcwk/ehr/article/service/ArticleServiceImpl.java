@@ -52,7 +52,11 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public int doDelete(ArticleDTO dto) {
+	public int doDelete(long articleCode) {
+		
+		ArticleDTO dto = new ArticleDTO();
+		dto.setArticleCode(articleCode);
+		
 		return mapper.doDelete(dto);
 	}
 
