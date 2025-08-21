@@ -1,21 +1,82 @@
 package com.pcwk.ehr.keyword.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
-import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.pcwk.ehr.keyword.domain.KeywordDTO;
 import com.pcwk.ehr.keyword.domain.KeywordLink;
+import com.pcwk.ehr.mapper.KeywordMapper;
 
 @Service
 public class KeywordServiceImpl implements KeywordService {
-    @Override
-    public List<KeywordLink> getTodayKeywords() {
-        return Arrays.asList(
-            new KeywordLink("정치키워드를 넣을꺼야", "/topic/list.do?keyword=정치"),
-            new KeywordLink("키워드2를 넣는다", "/topic/list.do?keyword=경제"),
-            new KeywordLink("사회적 이슈", "/topic/list.do?keyword=사회"),
-            new KeywordLink("어느정도 길이가 될까", "/topic/list.do?keyword=문화"),
-            new KeywordLink("연예연예", "/topic/list.do?keyword=연예"),
-            new KeywordLink("스포츠~-", "/topic/list.do?keyword=스포츠")
-        );
-    }
+
+	private final KeywordMapper keywordMapper;
+
+	@Autowired
+	public KeywordServiceImpl(KeywordMapper keywordMapper) {
+		this.keywordMapper = keywordMapper;
+	}
+
+	@Override
+	public List<KeywordLink> getTodayKeywords() {
+// 1) 카테고리별 최신 키워드 조회
+		List<KeywordDTO> latestKeywords = keywordMapper.findLatestPerCategory();
+
+// 2) 키워드별 등장 횟수 집계
+		Map<String, Long> keywordCount = latestKeywords.stream()
+				.collect(Collectors.groupingBy(KeywordDTO::getKeyword, Collectors.counting()));
+
+// 3) Link 객체 생성: 중복 키워드는 카테고리명 추가
+		return latestKeywords.stream().map(dto -> toLink(dto, keywordCount)).collect(Collectors.toList());
+	}
+
+	private KeywordLink toLink(KeywordDTO dto, Map<String, Long> keywordCount) {
+		String original = dto.getKeyword();
+		String display = original;
+		long count = keywordCount.getOrDefault(original, 0L);
+
+		if (count > 1) {
+			display += " (" + categoryName(dto.getCategory()) + ")";
+		}
+
+		String url = buildUrl(dto);
+		return new KeywordLink(display, url);
+	}
+
+	private String buildUrl(KeywordDTO dto) {
+	    return "/article/list.do?category=" + dto.getCategory();
+	}
+
+	private String urlEncode(String input) {
+		try {
+			return URLEncoder.encode(input, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return input;
+		}
+	}
+
+	private String categoryName(int code) {
+		switch (code) {
+		case 10:
+			return "정치";
+		case 20:
+			return "경제";
+		case 30:
+			return "사회";
+		case 40:
+			return "스포츠";
+		case 50:
+			return "연예";
+		case 60:
+			return "IT/과학";
+		default:
+			return String.valueOf(code);
+		}
+	}
 }

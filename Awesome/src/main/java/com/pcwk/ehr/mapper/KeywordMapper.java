@@ -28,4 +28,7 @@ public interface KeywordMapper {
 
     // 전체 건수 조회
     int getTotalCount();
+    
+    //최근의 정보 조회 (6개)
+    List<KeywordDTO> findLatestPerCategory(); 
 }
