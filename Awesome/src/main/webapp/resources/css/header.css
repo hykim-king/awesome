@@ -136,6 +136,7 @@ body{ margin:0; font-family:'Nanum Gothic', sans-serif; color:var(--text); }
   /* margin-top: 80px; */
 }
 
+
 @media (max-width: 640px){
   #header .submenu { flex-wrap:wrap; row-gap:8px; }
 }
