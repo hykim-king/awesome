@@ -386,21 +386,16 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 		  // 클릭 시 조회수만 +1, 링크 열기는 브라우저 기본 동작(새 탭)으로 처리
 		  window.hitAndOpen = function(a, ev){
 		    // 기본 동작/전파 막지 않음 → 새 탭 즉시 기사로 열림
-		    // ev && ev.preventDefault();  // ← 삭제
-		    // stopPropagation류도 불필요
-
 		    // (가벼운 중복 클릭 방지)
 		    if (a.__hitting) return true;
 		    a.__hitting = true;
 		    setTimeout(function(){ a.__hitting = false; }, 300);
-
+		    // 태그의 data에서 기사코드/조회수 api 주소 꺼내기
 		    var code = a.getAttribute('data-article-code');
 		    var hitUrl = a.getAttribute('data-hit-url');
-
+		    // 조회수 증가 비동기 호출
 		    fetch(hitUrl, {
 		      method: 'POST'
-		      // credentials: 'same-origin', // 세션/쿠키 쓰면 주석 해제
-		      // headers: { 'X-CSRF-TOKEN': '...' } // CSRF 쓰면 추가
 		    })
 		    .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
 		    .then(function(data){
@@ -411,13 +406,14 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 		    })
 		    .catch(function(err){ console.error('조회수 증가 실패', err); });
 
-		    return true; // ★ 기본 동작 허용 → target="_blank"로 새 탭 즉시 이동
+		    return true; // 링크의 기본 동작 허용 -> 새 탭으로 열기 
 		  };
 		})();
 	    </script>
 	    
 	    <script>
 	    (function(){
+	    	// 서버 응답에서 "성공/실패" 여부를 나타내는 키를 골라내는 함수
 	    	function pickMsgId(data){
 	    		if(data == null){
 	    			return null;
@@ -436,22 +432,22 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 	    		}
 	    		return null;
 	    	}
-	    	
+	    	//북마크 사용자용 북마크 토글
 	    	document.addEventListener('click', function(e){
 	    	      var btn = e.target.closest && e.target.closest('.bm-btn');
-	    	      if(!btn || btn.classList.contains('guest')) return; /* ★ FIX: closest 오타 수정 */
+	    	      if(!btn || btn.classList.contains('guest')) return; 
 
 	    	      e.preventDefault();
 	    	      e.stopPropagation();
-	    	      if(btn._busy) return; /* ★ FIX: 변수명 btn */
+	    	      if(btn._busy) return;   //중복 요청 방지 
 	    	      btn._busy = true;
 
 	    	      var url = btn.getAttribute('data-toggle-url');
 
 	    	      fetch(url, {method:'POST'})
 	    	        .then(function(res){
-	    	          if(!res.ok) throw res; /* ★ FIX: throw (not throws) */
-	    	          return res.text();
+	    	          if(!res.ok) throw res; 
+	    	          return res.text();  //응답을 우선 문자열 받기
 	    	        })
 	    	        .then(function(txt){
 	    	          var data = null;
@@ -459,29 +455,29 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 	    	          var id = pickMsgId(data);
 
 	    	          if(id === -99){ // 세션 만료/비로그인 응답
-	    	            var modal = document.getElementById('login-modal'); /* ★ FIX: getElementById */
+	    	            var modal = document.getElementById('login-modal'); 
 	    	            if(modal){
-	    	              modal.classList.remove('hidden');       /* ★ FIX: show */
+	    	              modal.classList.remove('hidden');       
 	    	              modal.setAttribute('aria-hidden','false');
 	    	            }
 	    	            return;
 	    	          }
 
-	    	          // flag==1 추가, 나머지 삭제
+	    	          // id === 1 기준으로 on/off
 	    	          var on = (id === 1);
 	    	          btn.classList.toggle('on', on);
-	    	          btn.setAttribute('aria-pressed', on ? 'true' : 'false'); /* ★ FIX: true/false */
+	    	          btn.setAttribute('aria-pressed', on ? 'true' : 'false'); 
 	    	          var ic = btn.querySelector('.bm-icon');
-	    	          if (ic) ic.textContent = on ? '★' : '☆'; /* ★ FIX: textContent */
+	    	          if (ic) ic.textContent = on ? '★' : '☆'; 
 	    	          btn.title = on ? '북마크 해제' : '북마크 추가';
 	    	        })
 	    	        .catch(function(err){ console.error('북마크 토글 실패', err); })
 	    	        .then(function(){ btn._busy = false; });
 	    	    }, false);
 
-	    	    // ★ NEW: 비로그인 버튼 → 모달만 띄움
+	    	    //비로그인 버튼 → 모달만 띄움
 	    	    document.addEventListener('click', function(e){
-	    	      var btn = e.target.closest && e.target.closest('.bm-btn.guest'); /* ★ FIX: closest */
+	    	      var btn = e.target.closest && e.target.closest('.bm-btn.guest'); 
 	    	      if(!btn) return;
 
 	    	      e.preventDefault();
@@ -492,15 +488,15 @@ body{background:var(--bg); color:var(--text); font-family:system-ui,-apple-syste
 	    	        alert('로그인이 필요합니다.');
 	    	        return;
 	    	      }
-	    	      modal.classList.remove('hidden');               /* ★ FIX: show */
+	    	      modal.classList.remove('hidden');             
 	    	      modal.setAttribute('aria-hidden','false');
-
+	    	      // 닫기 핸들러 연결
 	    	      var close = function(){
-	    	        modal.classList.add('hidden');                /* ★ FIX: hide */
+	    	        modal.classList.add('hidden');              
 	    	        modal.setAttribute('aria-hidden','true');
 	    	      };
 	    	      var closeBtn = modal.querySelector('[data-action="close"]');
-	    	      var backdrop = modal.querySelector('.login-modal_backdrop'); /* ★ FIX: 클래스명 */
+	    	      var backdrop = modal.querySelector('.login-modal_backdrop'); 
 
 	    	      if (closeBtn) closeBtn.onclick = close;
 	    	      if (backdrop) backdrop.onclick = close;
