@@ -27,7 +27,7 @@
     <c:forEach var="k" items="${keywords}" varStatus="st">
       <c:if test="${st.index lt 3}">
         <a class="keyword" href="${ctx}${k.link}">
-          <c:out value="${k.name}" />
+          <c:out value="${k.keyword}" />
         </a>
       </c:if>
     </c:forEach>
@@ -41,7 +41,7 @@
     <c:forEach var="k" items="${keywords}" varStatus="st">
       <c:if test="${st.index ge 3}">
         <a class="keyword" href="${ctx}${k.link}">
-          <c:out value="${k.name}" />
+          <c:out value="${k.keyword}" />
         </a>
       </c:if>
     </c:forEach>
