@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.mapper.UserLogMapper;
 import com.pcwk.ehr.userLog.domain.UserChartDTO;
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
@@ -17,7 +18,8 @@ import com.pcwk.ehr.userLog.domain.UserLogDTO;
 @Service
 public class UserLogServiceImpl implements UserLogService {
 
-    private final UserLogMapper userLogMapper;
+    @Autowired
+    UserLogMapper userLogMapper;
 
     /**
      * 생성자 주입
@@ -27,7 +29,15 @@ public class UserLogServiceImpl implements UserLogService {
     public UserLogServiceImpl(UserLogMapper userLogMapper) {
         this.userLogMapper = userLogMapper;
     }
+    
+       
 
+    @Override
+    public List<ArticleDTO> getRecommendedArticlesByUser(String userId) {
+        return userLogMapper.getRecommendedArticlesByUser(userId);
+    }
+    
+    
     /**
      * 사용자 클릭 로그 저장
      * @param userId 클릭한 사용자 ID
