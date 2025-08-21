@@ -12,6 +12,9 @@
         http://www.springframework.org/schema/context      https://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/websocket    http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd">
 
+<context:property-placeholder location="classpath:application.properties,classpath:aes.properties"/>
+
+
     <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
     
     <!-- Enables the Spring MVC @Controller programming model -->
@@ -21,30 +24,25 @@
     <mvc:resources mapping="/resources/**" location="/resources/" />
 
     <!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
-    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <beans:property name="prefix" value="/WEB-INF/views/" />
-        <beans:property name="suffix" value=".jsp" />
-    </beans:bean>
+	<!-- servlet-context.xml -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <property name="prefix" value="/WEB-INF/views/"/>
+	    <property name="suffix" value=".jsp"/>
+	</bean>
+
   
-   <context:component-scan base-package="com.pcwk.ehr" />
-   
-   <context:property-placeholder location="classpath:aes.properties"/>
-   
-   
-	<!-- websocket 설정 DispatcherServlet  -->		
-	<mvc:annotation-driven />
+<context:component-scan base-package="com.pcwk.ehr">
+  <!-- 컨트롤러만 포함 (서비스/리포지토리는 root에서 스캔) -->
+  <context:include-filter type="annotation"
+      expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
+
+<mvc:annotation-driven />
+
 	
-	<websocket:message-broker application-destination-prefix="/send">
-	    <!-- 클라에서 SockJS('/realtime-chat') 로 붙는 주소 -->
-	    <websocket:stomp-endpoint path="/realtime-chat">
-	        <websocket:sockjs/>
-	    </websocket:stomp-endpoint>
+	<mvc:resources mapping="/webjars/**" location="/webjars/"/>
 	
-	    <!-- 서버가 convertAndSend 하는 브로커 prefix -->
-	    <websocket:simple-broker prefix="/topic"/>
-	</websocket:message-broker>
-	   
-   
+
    
     
     <!-- 관리자 전용 인터셉터: /admin/** -->

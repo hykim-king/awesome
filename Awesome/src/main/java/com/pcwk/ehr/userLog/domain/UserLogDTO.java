@@ -13,6 +13,7 @@ public class UserLogDTO {
     private String userId;      // USER_ID
     private Long articleCode;   // ARTICLE_CODE
     private Date clickedAt;     // CLICKED_AT
+    
 
     // 기본 생성자
     public UserLogDTO() {}
@@ -25,7 +26,9 @@ public class UserLogDTO {
         this.clickedAt = clickedAt;
     }
 
-    // Getter / Setter
+
+	
+	// Getter / Setter
     public Long getLogCode() { return logCode; }
     public void setLogCode(Long logCode) { this.logCode = logCode; }
 
@@ -38,13 +41,11 @@ public class UserLogDTO {
     public Date getClickedAt() { return clickedAt; }
     public void setClickedAt(Date clickedAt) { this.clickedAt = clickedAt; }
 
-    @Override
-    public String toString() {
-        return "UserLogDTO{" +
-                "logCode=" + logCode +
-                ", userId='" + userId + '\'' +
-                ", articleCode=" + articleCode +
-                ", clickedAt=" + clickedAt +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "UserLogDTO [logCode=" + logCode + ", userId=" + userId + ", articleCode=" + articleCode + ", clickedAt="
+				+ clickedAt + "]";
+	}
+
+
 }

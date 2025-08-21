@@ -19,6 +19,8 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
     int idCheck(String userId);
     
     int existsById(@Param("userId") String userId);
+    
+    int existsByEmail(@org.apache.ibatis.annotations.Param("mailAddr") String mailAddr);
 
     MemberDTO findByUserId(@Param("userId") String userId);
     

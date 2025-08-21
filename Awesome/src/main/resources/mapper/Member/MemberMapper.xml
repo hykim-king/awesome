@@ -21,11 +21,19 @@
     </insert>
 
     <!-- SELECT -->
-    <select id="doSelectOne" parameterType="String" resultType="com.pcwk.ehr.member.domain.MemberDTO">
+    <select id="doSelectOne" parameterType="com.pcwk.ehr.member.domain.MemberDTO" resultType="com.pcwk.ehr.member.domain.MemberDTO">
         SELECT *
         FROM MEMBER
         WHERE USER_ID = #{userId}
     </select>
+    
+    
+    <select id="existsByEmail" parameterType="string" resultType="int">
+	  SELECT COUNT(1)
+	  FROM MEMBER
+	  WHERE UPPER(TRIM(MAIL_ADDR)) = UPPER(TRIM(#{mailAddr}))
+    </select>
+    
 
     <!-- UPDATE -->
     <update id="doUpdate" parameterType="com.pcwk.ehr.member.domain.MemberDTO">

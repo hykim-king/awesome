@@ -39,6 +39,9 @@
         <jackson-databind-version>2.18.2</jackson-databind-version>
         <commonmark-version>0.18.2</commonmark-version>
         <commons-fileupload-version>1.5</commons-fileupload-version>
+        
+        <spring.version>5.3.37</spring.version>
+  		<jackson.version>2.17.2</jackson.version>
     </properties>
     
     
@@ -77,23 +80,24 @@
 		</dependency>
 
 
-
-
-        
-		        <!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-websocket</artifactId>
-		    <version>5.3.37</version>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-messaging</artifactId>
-		    <version>5.3.37</version>
-		</dependency>
-		        
+	  <!-- WebSocket/STOMP 08/21 구별하기 쉽게 버전 붙혀놈-->
+	  <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-websocket</artifactId>
+	    <version>${spring.version}</version>
+	  </dependency>	  
+	  <dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-messaging</artifactId>
+	    <version>${spring.version}</version>
+	  </dependency>
+	    <dependency>
+	    <groupId>javax.websocket</groupId>
+	    <artifactId>javax.websocket-api</artifactId>
+	    <version>1.1</version>
+	    <scope>provided</scope>
+	  </dependency>
+	  
 
         <dependency>
             <groupId>org.commonmark</groupId>

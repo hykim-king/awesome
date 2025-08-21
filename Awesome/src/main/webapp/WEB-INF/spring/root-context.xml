@@ -10,6 +10,24 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+<!-- 네이버사전 읽어오기-->
+<context:property-placeholder
+    location="classpath:application.properties,classpath:aes.properties"
+    ignore-unresolvable="true"/>
+<bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
+
+
+	<!-- 컴포넌트 스캔 중복(컨트롤러/웹소켓 핸들러가 root-context.xml 과 servlet-context.xml 분리) -->
+	<context:component-scan base-package="com.pcwk.ehr">
+	  <context:exclude-filter type="annotation"
+	      expression="org.springframework.stereotype.Controller"/>
+	  <context:exclude-filter type="annotation"
+	      expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+
+
+
 	<!-- message설정 
 	    등록시 주의 사항 : 이름이 messageSource로 고정되어 있다.
 	  id="messageSource"
@@ -39,8 +57,8 @@
 	</bean>
 	
 		
-	<!-- aes.properties 파일 읽기 -->
-	<context:property-placeholder location="classpath:aes.properties"/>
+<!-- 	 aes.properties 파일 읽기  -->
+<!-- 	<context:property-placeholder location="classpath:aes.properties"/> -->
 	<!-- 양방향 암호화 -->
 	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
 	
@@ -177,6 +195,9 @@
     
     <!-- 삭제X: MainPageService component-scan -->
 <bean id="mainPageService" class="com.pcwk.ehr.mainpage.service.MainPageServiceImpl" />
+
+
+    
     
     
     <bean id="transactionManager"
@@ -191,7 +212,9 @@
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
         <property name="username" value="awesome" />
-        <property name="password" value="a4321"></property>
+        <property name="password" value=""></property>
+        
+    
 
 
 

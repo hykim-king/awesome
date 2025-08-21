@@ -10,7 +10,12 @@ import com.pcwk.ehr.member.domain.MemberDTO;
 public interface MemberService {
 	
 	String findUserId(String userNm, String mailAddr) throws SQLException;
+	
+	String sendEmailCode(String mailAddr) throws Exception; // 성공 시 코드 반환(테스트용/로깅용), 실패 시 null
 
+
+	boolean existsByEmail(String mailAddr) throws Exception;
+	
 	boolean sendResetMail(String userId, String mailAddr);
 	
 	boolean existsById(String userId) throws SQLException;
@@ -90,7 +95,8 @@ public interface MemberService {
     
     int resetPassword(String token, String newPwd) throws SQLException;
 
-   
+	MemberDTO doSelectOne(MemberDTO param);
+
     
     
 }
