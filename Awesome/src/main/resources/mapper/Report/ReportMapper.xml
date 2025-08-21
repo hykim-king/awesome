@@ -2,41 +2,45 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pcwk.ehr.mapper.ReportMapper">
 
+    <!-- 신고 저장 -->
   <insert id="doSave" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
     <selectKey keyProperty="reportCode" resultType="int" order="BEFORE">
       SELECT REP_SEQ.NEXTVAL FROM dual
     </selectKey>
     INSERT INTO REPORT (
-      REPORT_CODE, 
-      CHAT_CODE, 
-      USER_ID,  
-      CT_ID, 
-      REASON, 
-      STATUS, 
-      REG_DT
+      REPORT_CODE,
+      CHAT_CODE,
+      USER_ID,
+      CT_ID,
+      REASON,
+      STATUS,
+      REG_DT,
+      MOD_DT
     ) VALUES (
-      #{reportCode}, 
-      #{chatCode}, 
-      #{userId}, 
-      #{ctId}, 
-      #{reason}, 
-      #{status}, 
+      #{reportCode},
+      #{chatCode},
+      #{userId},
+      #{ctId},
+      #{reason},
+      #{status},
+      SYSDATE,
       SYSDATE
     )
   </insert>
 
-  <!--단건 -->
+  <!--단건 조회 -->
   <select id="doSelectOne"
           parameterType="com.pcwk.ehr.report.domain.ReportDTO"
           resultType="com.pcwk.ehr.report.domain.ReportDTO">
     SELECT
-      REPORT_CODE, 
-      CHAT_CODE, 
-      USER_ID, 
-      CT_ID, 
-      REASON, 
-      STATUS, 
-      REG_DT
+      REPORT_CODE,
+      CHAT_CODE,
+      USER_ID,
+      CT_ID,
+      REASON,
+      STATUS,
+      REG_DT,
+      MOD_DT
     FROM REPORT
     WHERE REPORT_CODE = #{reportCode}
   </select>
@@ -57,31 +61,38 @@
       SELECT ROWNUM AS no, x.*
       FROM (
         SELECT
-          R.REPORT_CODE, 
-          R.CHAT_CODE, 
-          R.USER_ID, 
+          R.REPORT_CODE,
+          R.CHAT_CODE,
+          R.USER_ID,
           R.CT_ID,
-          R.REASON, 
-          R.STATUS, 
-          R.REG_DT
+          R.REASON,
+          R.STATUS,
+          R.REG_DT,
+          R.MOD_DT
         FROM REPORT R
         <where>
-          <!-- free-text(전방일치). 함수기반 인덱스와 궁합 -->
+          <!-- free-text 전방일치 : USER_ID / CT_ID -->
           <if test="kw != null">
             AND ( UPPER(R.USER_ID) LIKE #{kw}
                OR UPPER(R.CT_ID)   LIKE #{kw} )
           </if>
 
-          <!-- 숫자/정확 조건: null 또는 0이면 미적용 -->
-          <if test="status != null and status != 0">
+          <!-- 상태(문자), 공백이면 무시 -->
+          <if test="status != null and status != ''">
             AND R.STATUS = #{status}
           </if>
+
+          <!-- 채팅코드(숫자), 0 또는 null이면 무시 -->
           <if test="chatCode != null and chatCode != 0">
             AND R.CHAT_CODE = #{chatCode}
           </if>
-          <if test="reason != null and reason != 0">
+
+          <!-- 사유(문자), 공백이면 무시 -->
+          <if test="reason != null and reason != ''">
             AND R.REASON = #{reason}
           </if>
+
+          <!-- 정확 일치 검색 필드 -->
           <if test="userId != null and userId != ''">
             AND R.USER_ID = #{userId}
           </if>
@@ -91,7 +102,7 @@
         </where>
         ORDER BY R.REG_DT DESC, R.REPORT_CODE DESC
       ) x
-      WHERE ROWNUM &lt;= (#{pageNo} * #{pageSize}) <!-- 흔히 StopKey(ROWNUM)페이징 패턴이라고 함 -->
+      WHERE ROWNUM &lt;= (#{pageNo} * #{pageSize})
     )
     WHERE no &gt; ((#{pageNo} - 1) * #{pageSize})
   </select>
@@ -110,12 +121,21 @@
          <if test="chatCode != null">CHAT_CODE = #{chatCode},</if>
          <if test="userId  != null and userId != ''">USER_ID = #{userId},</if>
          <if test="ctId    != null and ctId   != ''">CT_ID   = #{ctId},</if>
-         <if test="reason  != null">REASON = #{reason},</if>
+         <if test="reason  != null and reason != ''">REASON = #{reason},</if>
          <if test="status  != null and status != ''">STATUS = #{status},</if>
+         MOD_DT = SYSDATE
        </set>
      WHERE REPORT_CODE = #{reportCode}
   </update>
   
+
+  <!-- 상태만 변경(관리자) -->
+  <update id="doUpdateStatus" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
+    UPDATE REPORT
+       SET STATUS = #{status},
+           MOD_DT = SYSDATE
+     WHERE REPORT_CODE = #{reportCode}
+  </update>
 
   <delete id="doDelete" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
     DELETE FROM REPORT WHERE REPORT_CODE = #{reportCode}
@@ -129,11 +149,6 @@
   <select id="getCount" resultType="int">
     SELECT COUNT(*) FROM REPORT
   </select>
-  
-  <update id="doUpdateStatus" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
-    UPDATE REPORT
-     SET STATUS = #{status}
-    WHERE REPORT_CODE = #{reportCode}
-  </update>
+
   
 </mapper>
