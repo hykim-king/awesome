@@ -97,6 +97,7 @@ public interface MemberService {
 
 	MemberDTO doSelectOne(MemberDTO param);
 
+	int updateNickNmByUserId(MemberDTO param);
     
-    
+	int updatePwdByUserId(MemberDTO param);
 }

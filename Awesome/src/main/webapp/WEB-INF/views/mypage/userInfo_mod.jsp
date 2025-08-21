@@ -15,19 +15,19 @@
 		  <input type="text" name="userId" value="${user.userId}" readonly>
 		
 		  <label>이름</label>
-		  <input type="text" name="name" value="${user.name}" readonly>
+		  <input type="text" name="userNm" value="${user.userNm}" readonly>
 		
 		  <label>닉네임</label>
-		  <input type="text" name="nickname" value="${user.nickname}">
+		  <input type="text" name="nickNm" value="${user.nickNm}">
 		
 		  <label>생년월일</label>
-		  <input type="date" name="birth" value="${user.birth}" readonly>
+		  <input type="date" name="birthDt" value="${user.birthDt}" readonly>
 		
 		  <label>이메일</label>
-		  <input type="email" name="email" value="${user.email}">
+		  <input type="email" name="mailAddr" value="${user.mailAddr}" readonly>
 		
 		  <div class="button-box">
-		    <a href="${pageContext.request.contextPath}/mypage/changePassword.do">비밀번호 변경</a>
+		    <a href="${pageContext.request.contextPath}/mypage/password.do">비밀번호 변경</a>
 		    <button type="submit">저장</button>
 		    <a href="${pageContext.request.contextPath}/mypage/userInfo.do">취소</a>
 		  </div>
