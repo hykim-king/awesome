@@ -217,5 +217,6 @@ public class MemberServiceImpl implements MemberService {
 		return mapper.doSelectOne(param);
 	}
 	
-    
+
+
 }
