@@ -28,6 +28,36 @@
     )
   </insert>
   
+  
+<!--   유저별. 카테고리에서 조회수, 최신 기사 3개 -->
+    <select id="getRecommendedArticlesByUser"
+            parameterType="string"
+            resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+      SELECT a.article_code,
+             a.category,
+             a.press,
+             a.title,
+             a.summary,
+             a.url,
+             a.public_dt,
+             a.views,
+             a.reg_dt,
+             a.mod_dt
+        FROM article a
+       WHERE a.category = (
+               SELECT a2.category
+                 FROM user_click_log l
+                 JOIN article a2 ON l.article_code = a2.article_code
+                WHERE l.user_id = #{userId}
+                GROUP BY a2.category
+                ORDER BY COUNT(*) DESC
+                FETCH FIRST 1 ROWS ONLY
+             )
+    ORDER BY a.views DESC, a.reg_dt DESC
+    FETCH FIRST 3 ROWS ONLY
+    </select>  
+  
+  
    <!-- 마이페이지 구글 차트 용 -->
    <!-- 유저별  클릭한 카테고리(횟수)-->
   <select id="doRetrieveById" parameterType="UserLogDTO" resultType="UserChartDTO">

@@ -15,7 +15,7 @@ public interface ReportMapper extends WorkDiv<ReportDTO> {
     int deleteAll();
     
     // 상태만 바꾸는 전용 메서드가 필요하면 유지
-    int doUpdateStatus(ReportDTO param);
+    int doUpdateStatus(ReportDTO dto);
 
 	List<ReportDTO> doRetrieve(ReportSearchDTO cond);
 }

@@ -34,8 +34,9 @@ public class ReportController {
 	public Map<String, Object> create(@RequestBody ReportDTO dto, Principal principal) throws SQLException {
 		Map<String, Object> res = new HashMap<>();
 
+		// 1. 입력 검증
 		if (dto == null) {
-			res.put("Ok", false);
+			res.put("ok", false);
 			res.put("message", "요청 본문이 비었습니다.");
 			return res;
 		}
@@ -51,30 +52,34 @@ public class ReportController {
 		}
 		return res;
 	}
-		
-	    /** 마이페이지: 내 신고 목록 페이징 조회 
-	     * @throws Exception */
-	    @GetMapping(value = "/my/report/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	    @ResponseBody
-	    public Map<String, Object> myReports(ReportSearchDTO cond, Principal principal) throws Exception {
-	        // 내 것만
-	        if (principal != null && principal.getName() != null) {
-	            cond.setUserId(principal.getName());
-	        }
-	        // 컨트롤러에서도 보정(서비스에서도 다시 보정함)
-	        cond.recalc();
+	
 
-	        List<ReportDTO> rows = service.doRetrieve(cond);
-	        int total = service.getCount(cond); // 현재 getCount() 전체 건수. 조건 카운트가 필요하면 전용 쿼리 추가
 
-	        Map<String, Object> res = new HashMap<>();
-	        res.put("rows", rows);
-	        res.put("total", total);
-	        res.put("pageNo", cond.getPageNo());
-	        res.put("pageSize", cond.getPageSize());
-	        return res;
-		
+	/**
+	 * 마이페이지: 내 신고 목록 페이징 조회
+	 * 
+	 * @throws Exception
+	 */
+	@GetMapping(value = "/my/report/list", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Object> myReports(ReportSearchDTO cond, Principal principal) throws Exception {
+		// 내 것만
+		if (principal != null && principal.getName() != null) {
+			cond.setUserId(principal.getName());
+		}
+		// 컨트롤러에서도 보정(서비스에서도 다시 보정함)
+		cond.recalc();
+
+		List<ReportDTO> rows = service.doRetrieve(cond);
+		int total = service.getCount(cond); // 현재 getCount() 전체 건수. 조건 카운트가 필요하면 전용 쿼리 추가
+
+		Map<String, Object> res = new HashMap<>();
+		res.put("rows", rows);
+		res.put("total", total);
+		res.put("pageNo", cond.getPageNo());
+		res.put("pageSize", cond.getPageSize());
+		return res;
+
 	}
-
 
 }
