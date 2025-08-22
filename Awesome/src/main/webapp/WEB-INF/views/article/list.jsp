@@ -464,7 +464,7 @@ body{
 
     <!-- 사이드바 -->
     <aside class="aside">
-      <jsp:include page="/WEB-INF/views/include/sidebar.jsp" />
+      <jsp:include page="/WEB-INF/views/include/sidebar_category.jsp" />
     </aside>
   </div>
 
