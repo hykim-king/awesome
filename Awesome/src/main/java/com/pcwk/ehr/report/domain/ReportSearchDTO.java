@@ -1,50 +1,66 @@
 package com.pcwk.ehr.report.domain;
 
-import com.pcwk.ehr.cmn.DTO;
+public class ReportSearchDTO {
+    // 페이징
+    private int pageNo;     // 요청 페이지 번호
+    private int pageSize;   // 페이지당 건수
+    private int startRow;   // 조회 시작 행
+    private int endRow;     // 조회 끝 행
 
-public class ReportSearchDTO extends DTO {
+    // 검색 조건
+    private String searchWord;  // 검색어
+    
+    private String status;     // 신고 상태 (VARCHAR2 이므로 String이 맞음)
+    private Integer chatCode;  // 채팅 코드 (검색 조건일 경우 null 허용 → Integer)
+    private String reason;     // 사유 (VARCHAR2라서 String)
+    private String userId;     // 사용자 ID
+    private String ctId;       // 대상 ID
 
-	// 페이징 계산 필드
-	private Integer startRow;
-	private Integer endRow;
+    // 생성자
+    public ReportSearchDTO() {
+        this.pageNo = 1;
+        this.pageSize = 10;
+        recalc();
+    }
 
-	// 검색 조건
-	private String searchWord;
-	private Integer status; // 신고 상태(검토중/조치완료)
-	private Integer chatCode; // 채팅 메시지 코드
-	private Integer reason; // 신고 사유
-	private String userId; // 신고자 ID
-	private String ctId; // 신고 대상 ID
+    // startRow / endRow 계산
+    public void recalc() {
+        if (pageNo < 1) pageNo = 1;
+        if (pageSize < 1) pageSize = 10;
 
-	public ReportSearchDTO() {
-		recalc();
+        this.startRow = (pageNo - 1) * pageSize + 1;
+        this.endRow = pageNo * pageSize;
+    }
+
+	public int getPageNo() {
+		return pageNo;
 	}
 
-	// startRow / endRow 계산
-	public void recalc() {
-		if (getPageNo() < 1)
-			setPageNo(1);
-		if (getPageSize() < 1)
-			setPageSize(10);
-
-		this.startRow = (getPageNo() - 1) * getPageSize() + 1;
-		this.endRow = getPageNo() * getPageSize();
+	public void setPageNo(int pageNo) {
+		this.pageNo = pageNo;
 	}
 
-	// getter / setter
-	public Integer getStartRow() {
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getStartRow() {
 		return startRow;
 	}
 
-	public void setStartRow(Integer startRow) {
+	public void setStartRow(int startRow) {
 		this.startRow = startRow;
 	}
 
-	public Integer getEndRow() {
+	public int getEndRow() {
 		return endRow;
 	}
 
-	public void setEndRow(Integer endRow) {
+	public void setEndRow(int endRow) {
 		this.endRow = endRow;
 	}
 
@@ -56,11 +72,11 @@ public class ReportSearchDTO extends DTO {
 		this.searchWord = searchWord;
 	}
 
-	public Integer getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Integer status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -72,11 +88,11 @@ public class ReportSearchDTO extends DTO {
 		this.chatCode = chatCode;
 	}
 
-	public Integer getReason() {
+	public String getReason() {
 		return reason;
 	}
 
-	public void setReason(Integer reason) {
+	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
@@ -95,4 +111,14 @@ public class ReportSearchDTO extends DTO {
 	public void setCtId(String ctId) {
 		this.ctId = ctId;
 	}
+
+	@Override
+	public String toString() {
+		return "ReportSearchDTO [pageNo=" + pageNo + ", pageSize=" + pageSize + ", startRow=" + startRow + ", endRow="
+				+ endRow + ", searchWord=" + searchWord + ", status=" + status + ", chatCode=" + chatCode + ", reason="
+				+ reason + ", userId=" + userId + ", ctId=" + ctId + ", toString()=" + super.toString() + "]";
+	}
+
+
+    
 }

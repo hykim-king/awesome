@@ -52,7 +52,7 @@ public class MypageController {
 		String userId = (String) session.getAttribute("userId");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId(userId);
+		param.setUserId("admin");
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
@@ -60,22 +60,67 @@ public class MypageController {
 		return "mypage/userInfo";
 	}
 	
+	
+	@PostMapping("/changePassword.do")
+	public String changePassword(
+	        @RequestParam String newPwd,
+	        @RequestParam String confirmPwd,
+	        HttpSession session,
+	        RedirectAttributes redirect
+	) {
+	    String userId = (String) session.getAttribute("admin");
+	    if (userId == null) {
+	        redirect.addFlashAttribute("error", "로그인이 필요합니다.");
+	        return "redirect:/login.do";
+	    }
+
+	    // 새 비밀번호 확인
+	    if (newPwd == null || newPwd.trim().isEmpty() || !newPwd.equals(confirmPwd)) {
+	        redirect.addFlashAttribute("error", "비밀번호 확인이 일치하지 않습니다.");
+	        return "redirect:/member/changePasswordForm.do";
+	    }
+
+	    // DTO 하나로 전달
+	    MemberDTO dto = new MemberDTO();
+	    dto.setUserId("admin");     // 세션에서 강제
+	    dto.setPwd(newPwd);        // 평문(서비스에서 해시)
+	    
+	    // 서비스에서 encode + update
+	    memberService.updatePwdByUserId(dto);
+
+	    redirect.addFlashAttribute("msg", "비밀번호가 변경되었습니다.");
+	    return "redirect:/mainpage/main.do";
+	}
+	
+	@GetMapping("/password.do")
+	public String resetPwdView(HttpSession session, Model model) {
+		String userId = (String) session.getAttribute("userId");
+		
+		MemberDTO param = new MemberDTO();
+		param.setUserId("admin");
+		
+		MemberDTO user = memberService.doSelectOne(param);
+		model.addAttribute("user", user);
+		
+		return "mypage/resetPwd";
+	}
+	
 	@GetMapping("/edit.do")
 	public String editUser(HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId(userId);
+		param.setUserId("admin");
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
 		
-		return "mypage/userEdit";
+		return "mypage/userInfo_mod";
 	}
 	
 	@PostMapping("/update.do")
 	public String updateUser(MemberDTO user, RedirectAttributes redirect) throws SQLException {
-		memberService.update(user);
+		memberService.updateNickNmByUserId(user);
 	    redirect.addFlashAttribute("msg", "회원정보가 수정되었습니다.");
 	    return "redirect:/mypage/userInfo.do";
 	}
@@ -87,7 +132,7 @@ public class MypageController {
 	    return "redirect:/mainpage/main.do";
 	}
 	
-	//탈퇴 팝업 비밀번호 수정으로 들어가는 컨트롤러 만들면 됨
+	//각 컨트롤러 마다 로그인 되어있는지 확인
 	
 	/**
 	 * -----------회원정보 END

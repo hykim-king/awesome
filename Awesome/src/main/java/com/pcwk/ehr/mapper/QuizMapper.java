@@ -40,6 +40,16 @@ public interface QuizMapper {
 	 */
 	QuizDTO selectQuizResult(QuizDTO dto) throws SQLException;
 	
+	/**
+	 * 오늘의 퀴즈 목록 조회
+	 */
+	List<QuizDTO> selectTodaysQuiz() throws SQLException;
+
+	/**
+	 * 사용자가 오늘 퀴즈에 참여했는지 확인
+	 */
+	int checkIfUserPlayedToday(String userId) throws SQLException;
+	
 	//======================================================================
 	// 테스트 지원용 메서드 (Test Support Methods)
 	//======================================================================
