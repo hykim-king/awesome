@@ -25,26 +25,6 @@
 
       <!-- 이 사이에 각자 항목 넣으시면 됩니다! -->
 
-        <c:choose>
-	  <!-- 미로그인 -->
-	  <c:when test="${empty sessionScope.loginUser}">
-	    <div style="display:flex; gap:12px;">
-	      <a class="btn" href="<c:url value='/member/login.do'/>">로그인</a>
-	      <a class="btn" href="<c:url value='/member/register.do'/>">회원가입</a>
-	    </div>
-	  </c:when>
-	
-	  <!-- 로그인 상태 -->
-	  <c:otherwise>
-	    <div style="display:flex; gap:12px; align-items:center;">
-	      <span><strong>${sessionScope.loginUser.userId}</strong>님 환영합니다!</span>
-	      <a class="btn" href="<c:url value='/member/logout.do'/>">로그아웃</a>
-	    </div>
-	  </c:otherwise>
-	</c:choose>
-
-        
-
 
       </div>
       </main>
