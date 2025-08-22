@@ -52,7 +52,7 @@ public class MypageController {
 		String userId = (String) session.getAttribute("userId");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId("admin");
+		param.setUserId("user01");
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
@@ -92,25 +92,13 @@ public class MypageController {
 	    return "redirect:/mainpage/main.do";
 	}
 	
-	@GetMapping("/password.do")
-	public String resetPwdView(HttpSession session, Model model) {
-		String userId = (String) session.getAttribute("userId");
-		
-		MemberDTO param = new MemberDTO();
-		param.setUserId("admin");
-		
-		MemberDTO user = memberService.doSelectOne(param);
-		model.addAttribute("user", user);
-		
-		return "mypage/resetPwd";
-	}
 	
 	@GetMapping("/edit.do")
 	public String editUser(HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId("admin");
+		param.setUserId("user01");
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
