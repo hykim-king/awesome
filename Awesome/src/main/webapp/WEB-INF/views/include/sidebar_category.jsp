@@ -5,4 +5,6 @@
 
 <sidebar id="sidebar">
 
+            <jsp:include page = "/WEB-INF/views/chat/chat.jsp" />
+
 </sidebar>
