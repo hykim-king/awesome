@@ -42,7 +42,7 @@
         MESSAGE, 
         SEND_DT
         FROM CHAT_MESSAGE
-    WHERE CHAT_CODE = #{chatCode, jdbcType=INTEGER}
+    WHERE CHAT_CODE = #{chatCode}
   </select>
   
   
