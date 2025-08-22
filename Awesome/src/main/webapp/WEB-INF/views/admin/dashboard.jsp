@@ -10,6 +10,7 @@
 <body>
 <div class="admin-wrap"><!-- 좌측 사이드바 + 우측 컨텐츠 -->
 
+
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="title">관리자 페이지</div>
@@ -18,6 +19,8 @@
       <li><a href="<c:url value='/admin/members.do'/>">회원 관리</a></li>
       <li><a href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
       <li><a href="<c:url value='/admin/reports.do'/>">신고 관리</a></li>
+      <a class="btn btn-outline" href="<c:url value='/member/logout.do'/>">로그아웃</a>
+      
     </ul>
   </aside>
 

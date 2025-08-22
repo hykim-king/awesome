@@ -91,6 +91,43 @@
     .alert-error{ background:#fee2e2; border-color:#fecaca; color:#7f1d1d; }
     .alert-success{ background:#dcfce7; border-color:#bbf7d0; color:#064e3b; }
   
+	  /* form가운데정렬 */
+	    /* 페이지 전체 높이 확보 */
+	html, body { height: 100%; }
+	
+	/* 컨테이너를 세로 플렉스: header(위) + main(가운데) + footer(아래) */
+	.page-resetpwd #container{
+	  min-height: 100vh;
+	  display: flex;
+	  flex-direction: column;
+	}
+	
+	/* main이 남은 공간을 모두 차지하도록 */
+	.page-resetpwd #main{
+	  flex: 1;
+	  display: flex;            /* 자식 중앙 정렬을 위한 래퍼 */
+	}
+	
+	/* 중앙 정렬의 실제 주체 */
+	.page-resetpwd #main .main-container{
+	  flex: 1;
+	  display: flex;
+	  align-items: center;       /* 세로 중앙 */
+	  justify-content: center;   /* 가로 중앙 */
+	  padding: 24px 16px;        /* 여백(원하면 조절) */
+	}
+	
+	/* 카드 자체 여백 제거(있다면) */
+	.page-resetpwd .wrap{
+	  margin: 0;                 /* 위아래 마진으로 밀려나는 것 방지 */
+}
+    
+  
+  
+  
+  
+  
+  
   
   
   

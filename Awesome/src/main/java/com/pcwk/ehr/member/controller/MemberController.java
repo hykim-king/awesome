@@ -3,8 +3,11 @@ package com.pcwk.ehr.member.controller;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +18,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.pcwk.ehr.member.domain.MemberDTO;
 import com.pcwk.ehr.member.service.MemberService;
 
@@ -46,6 +51,16 @@ public class MemberController {
         session.invalidate();
         return "redirect:/mainPage/main.do";
     }
+    
+    /* ===== Logout admin ===== */
+    @RequestMapping(value = "/member/logout.do", method = {RequestMethod.GET, RequestMethod.POST})
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();   // 세션 종료
+        return "redirect:/";                          // 컨텍스트 루트(= 메인)로 이동
+    }
+
+    
 
     /* ===== ID/Nick Duplicate ===== */
     @GetMapping(value="/checkId.do", produces="text/plain; charset=UTF-8")

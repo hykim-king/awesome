@@ -14,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.pcwk.ehr.mapper.MemberMapper;
@@ -216,6 +217,18 @@ public class MemberServiceImpl implements MemberService {
 	public MemberDTO doSelectOne(MemberDTO param) {
 		return mapper.doSelectOne(param);
 	}
+
+	@Override
+	public int updateNickNmByUserId(MemberDTO param) {
+		return mapper.updateNickNmByUserId(param);
+	}
+
+	@Override
+	public int updatePwdByUserId(MemberDTO param) {
+		param.setPwd(passwordEncoder.encode(param.getPwd()));
+		return mapper.updatePwdByUserId(param);
+	}
 	
-    
+
+
 }

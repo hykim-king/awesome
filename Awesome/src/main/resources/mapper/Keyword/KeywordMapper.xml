@@ -13,7 +13,33 @@
         <result column="category"      property="category"/>
         <result column="keyword"       property="keyword"/>
     </resultMap>
-
+    
+    
+    
+    <!-- 최신 키워드: 카테고리별 1건씩 -->
+ <select id="findLatestPerCategory" resultType="com.pcwk.ehr.keyword.domain.KeywordDTO">
+  SELECT category,
+         keyword,
+         dk_dt       AS dkDt,
+         update_period AS updatePeriod,
+         dk_code     AS dkCode
+  FROM (
+      SELECT dk_code,
+             dk_dt,
+             update_period,
+             category,
+             keyword,
+             ROW_NUMBER() OVER(
+               PARTITION BY category
+               ORDER BY dk_code DESC
+             ) AS rn
+      FROM daily_keyword
+  )
+  WHERE rn = 1
+  ORDER BY category
+</select>
+    
+    
     <!-- 1건 저장 -->
     <insert id="doSave" parameterType="com.pcwk.ehr.keyword.domain.KeywordDTO">
         <selectKey keyProperty="dkCode"
@@ -73,5 +99,6 @@
         SELECT COUNT(*)
           FROM daily_keyword
     </select>
+    
 
 </mapper>

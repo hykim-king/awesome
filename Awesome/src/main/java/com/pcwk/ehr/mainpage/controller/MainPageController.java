@@ -45,17 +45,7 @@ public class MainPageController {
         String userId = (String) session.getAttribute("userId");
         log.debug("main.do() userId={}", userId);
 
-        // ── 키워드 6개(각각 링크 확인) 삭제. 키워드 서비스로 따로 뺌─────────
-        // JSP에서 href="${ctx}${k.link}" 로 사용 (ctx = ${pageContext.request.contextPath})
-//        List<KeywordLink> keywords = Arrays.asList(
-//            new KeywordLink("정치",   "/topic/list.do?keyword=%EC%A0%95%EC%B9%98&category=politics"),
-//            new KeywordLink("경제",   "/topic/list.do?keyword=%EA%B2%BD%EC%A0%9C&category=economy"),
-//            new KeywordLink("사회",   "/topic/list.do?keyword=%EC%82%AC%ED%9A%8C&category=society"),
-//            new KeywordLink("문화",   "/topic/list.do?keyword=%EB%AC%B8%ED%99%94&category=culture"),
-//            new KeywordLink("연예",   "/topic/list.do?keyword=%EC%97%B0%EC%98%88&category=entertain"),
-//            new KeywordLink("스포츠", "/topic/list.do?keyword=%EC%8A%A4%ED%8F%AC%EC%B8%A0&category=sports")
-//        );
-       
+
         List<KeywordLink> keywords = keywordService.getTodayKeywords();
         model.addAttribute("keywords", keywords);
 
@@ -84,6 +74,17 @@ public class MainPageController {
         return "mainPage/MainPage";
     }
     
-    
+    @GetMapping("/article/list.do")
+    public String keywordList(String keyword, int category, Model model) {
+        log.debug(">> keywordList(): keyword={}, category={}", keyword, category);
+
+        // 아직 기사 데이터베이스 연동 안됐다고 가정하고,
+        // 일단 keyword와 category만 jsp로 넘김
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+
+        // → /WEB-INF/views/topic/list.jsp 로 포워딩
+        return "article/list";
+    }
     
 }

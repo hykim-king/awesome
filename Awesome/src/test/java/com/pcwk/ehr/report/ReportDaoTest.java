@@ -1,9 +1,6 @@
 package com.pcwk.ehr.report;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -28,239 +25,231 @@ import com.pcwk.ehr.report.domain.ReportDTO;
 import com.pcwk.ehr.report.domain.ReportSearchDTO;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
-		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
-
+@ContextConfiguration(locations = {
+    "file:src/main/webapp/WEB-INF/spring/root-context.xml",
+    "file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml"
+})
 class ReportDaoTest {
-	Logger log = LogManager.getLogger(getClass());
 
-	@Autowired
-	ApplicationContext context;
+    Logger log = LogManager.getLogger(getClass());
 
-	@Autowired
-	ReportMapper reportmapper;
+    @Autowired ApplicationContext context;
+    @Autowired ReportMapper reportmapper;
+    @Autowired ChatMessageMapper chatMessagemapper;
 
-	@Autowired
-	ChatMessageMapper chatMessagemapper; // ★ 실제 매퍼 주입
+    // 카테고리(예: 정치=10)
+    static final int POLITICS = 10;
 
-	// 카테고리(예: 정치=10)
-	static final int POLITICS = 10;
+    // 상태/사유 상수(Mapper.xml: VARCHAR2 기준)
+    static final String ST_RECEIVED  = "RECEIVED";
+    static final String ST_REVIEWING = "REVIEWING";
+    static final String ST_RESOLVED  = "RESOLVED";
 
-	// 매 테스트마다 사용할 chatCode
-	int chatCode;
+    static final String RS_SPAM  = "SPAM";
+    static final String RS_OTHER = "OTHER";
 
-	@BeforeEach
-	void setUp() throws Exception {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ setUp()                         │");
-		log.debug("└─────────────────────────────────┘");
+    int chatCode; // 매 테스트에서 쓰일 채팅 PK
 
-		// 1) FK 제약 때문에 REPORT 먼저 비우고 → CHAT_MESSAGE 비우기
-		reportmapper.deleteAll();
+    @BeforeEach
+    void setUp() throws Exception {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ setUp()                         │");
+        log.debug("└─────────────────────────────────┘");
 
-		chatMessagemapper.deleteAll();
+        // FK 무결성: REPORT -> CHAT_MESSAGE
+        reportmapper.deleteAll();
+        chatMessagemapper.deleteAll();
 
-		// 2) 실제 채팅 1건 저장 → chatCode 확보
-		ChatMessageDTO cm = new ChatMessageDTO();
-		cm.setCategory(POLITICS);
-		cm.setUserId("user01");
-		cm.setMessage("테스트 메시지");
-		cm.setSendDt(new Date());
-		cm.setReason(10);        // 신고 사유 → 두 자리
-		cm.setStatus(1);         // 0=검토중, 1=조치완료
+        // 채팅 1건 저장 → chatCode 확보
+        ChatMessageDTO cm = new ChatMessageDTO();
+        cm.setCategory(POLITICS);
+        cm.setUserId("user01");
+        cm.setMessage("테스트 메시지");
+        cm.setSendDt(new Date());
 
-		int saved = chatMessagemapper.doSave(cm);
-		assertEquals(1, saved, "채팅 저장 1건이어야 함");
-		assertTrue(cm.getChatCode() > 0, "시퀀스로 chatCode가 채워져야 함");
+        int saved = chatMessagemapper.doSave(cm);
+        assertEquals(1, saved, "채팅 저장 1건이어야 함");
+        assertTrue(cm.getChatCode() > 0, "시퀀스로 chatCode가 채워져야 함");
+        chatCode = cm.getChatCode();
+    }
 
-		chatCode = cm.getChatCode();
-	}
+    private ReportDTO buildReport(String reporter, String targetUserId,
+                                  String reasonCode, String status) {
+        ReportDTO dto = new ReportDTO();
+        dto.setChatCode(chatCode);     // FK
+        dto.setUserId(reporter);
+        dto.setCtId(targetUserId);     // 신고대상 ID(필요 시)
+        dto.setReason(reasonCode);     // ex) "SPAM", "OTHER"
+        dto.setStatus(status);         // ex) "RECEIVED"
+        return dto;
+    }
 
-	private ReportDTO buildReport(String reporter, String target, int reason, int status) {
-		ReportDTO dto = new ReportDTO();
-		dto.setChatCode(chatCode); // ★ 실제 chatCode 사용
-		dto.setUserId(reporter);
-		dto.setCtId(target);
-		dto.setReason(reason);
-		dto.setStatus(status); // "I"(검토중) / "D"(조치완료)
-		return dto;
-	}
+    @AfterEach
+    void tearDown() {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ tearDown()                      │");
+        log.debug("└─────────────────────────────────┘");
+    }
 
-	@AfterEach
-	void tearDown() throws Exception {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ tearDown()                      │");
-		log.debug("└─────────────────────────────────┘");
-	}
+    //@Disabled
+    @Test
+    void doSave() throws Exception {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ doSave()                        │");
+        log.debug("└─────────────────────────────────┘");
 
-	//@Disabled
-	@Test
-	void doSave() throws Exception {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ doSave()                        │");
-		log.debug("└─────────────────────────────────┘");
+        ReportDTO in = buildReport("user01", "targetY", RS_SPAM, ST_RECEIVED);
+        int flag = reportmapper.doSave(in);
+        assertEquals(1, flag);
 
-		ReportDTO outVO = buildReport("user01", "targetY", 10, 0);
-		reportmapper.doSave(outVO);
+        ReportDTO key = new ReportDTO();
+        key.setReportCode(in.getReportCode());
 
-		ReportDTO key = new ReportDTO();
-		key.setReportCode(outVO.getReportCode());
+        ReportDTO out = reportmapper.doSelectOne(key);
+        assertNotNull(out);
+        assertEquals(in.getReportCode(), out.getReportCode());
+        assertEquals(chatCode, out.getChatCode());
+        assertEquals("user01", out.getUserId());
+        assertEquals(RS_SPAM, out.getReason());
+        assertEquals(ST_RECEIVED, out.getStatus());
 
-		ReportDTO out = reportmapper.doSelectOne(key);
-		assertNotNull(out);
-		assertEquals(outVO.getReportCode(), out.getReportCode());
-		assertEquals(chatCode, out.getChatCode());
-		assertEquals("user01", out.getUserId());
-		assertEquals(10, out.getReason());
-		assertEquals(0, out.getStatus());
+        log.debug("조회 결과: {}", out);
+    }
 
-		log.debug("조회 결과: {}", out);
+    //@Disabled
+    @Test
+    void doSelectOne() throws Exception {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ doSelectOne()                   │");
+        log.debug("└─────────────────────────────────┘");
 
-	}
+        ReportDTO in = buildReport("user01", "targetY", RS_SPAM, ST_RECEIVED);
+        reportmapper.doSave(in);
 
-	//@Disabled
-	@Test
-	void doSelectOne() throws Exception {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ doSelectOne()                   │");
-		log.debug("└─────────────────────────────────┘");
+        ReportDTO key = new ReportDTO();
+        key.setReportCode(in.getReportCode());
 
-		ReportDTO in = buildReport("user01", "targetY", 10, 0);
-		reportmapper.doSave(in);
+        ReportDTO out = reportmapper.doSelectOne(key);
+        log.debug("조회된 데이터: {}", out);
 
-		ReportDTO key = new ReportDTO();
-		key.setReportCode(in.getReportCode());
+        assertEquals(in.getReportCode(), out.getReportCode());
+        assertEquals(chatCode, out.getChatCode());
+        assertEquals("user01", out.getUserId());
+        assertEquals(RS_SPAM, out.getReason());
+        assertEquals(ST_RECEIVED, out.getStatus());
+    }
 
-		ReportDTO out = reportmapper.doSelectOne(key);
-		log.debug("조회된 데이터: {}", out);
+    //@Disabled
+    @Test
+    void doRetrieve() throws SQLException {
+        log.debug("┌────────────────────────────┐");
+        log.debug("│ doRetrieve()               │");
+        log.debug("└────────────────────────────┘");
 
-		assertEquals(in.getReportCode(), out.getReportCode());
-		assertEquals(chatCode, out.getChatCode());
-		assertEquals("user01", out.getUserId());
-		assertEquals(10, out.getReason());
-		assertEquals(0, out.getStatus());
-	}
+        // 초기화
+        reportmapper.deleteAll();
+        chatMessagemapper.deleteAll();
 
-	//@Disabled
-	@Test
-	void doRetrieve() throws SQLException {
-	    log.debug("┌────────────────────────────┐");
-	    log.debug("│ doRetrieve()               │");
-	    log.debug("└────────────────────────────┘");
+        // 채팅 1건 저장
+        ChatMessageDTO cm = new ChatMessageDTO();
+        cm.setCategory(POLITICS);
+        cm.setUserId("user01");
+        cm.setMessage("테스트 메시지");
+        cm.setSendDt(new java.util.Date());
+        chatMessagemapper.doSave(cm);
+        int chatCode = cm.getChatCode();
+        log.debug("chatCode 확보: {}", chatCode);
 
-	    // 0) 초기화 (FK 무결성: REPORT → CHAT_MESSAGE)
-	    reportmapper.deleteAll();
-	    chatMessagemapper.deleteAll();
+        // 신고 23건 저장
+        for (int i = 1; i <= 23; i++) {
+            ReportDTO r = new ReportDTO();
+            r.setChatCode(chatCode);
+            r.setUserId("reporter" + i);
+            r.setCtId("target" + i);
+            r.setReason(RS_SPAM);
+            r.setStatus(ST_RECEIVED);
+            int saved = reportmapper.doSave(r);
+            assertEquals(1, saved);
+        }
 
-	    // 1) 채팅 1건 저장 → chatCode 확보
-	    ChatMessageDTO cm = new ChatMessageDTO();
-	    cm.setCategory(POLITICS);
-	    cm.setUserId("user01");
-	    cm.setMessage("테스트 메시지");
-	    cm.setSendDt(new java.util.Date());
-	    chatMessagemapper.doSave(cm);
-	    int chatCode = cm.getChatCode();
-	    log.debug("chatCode 확보: {}", chatCode);
+        // 검색/페이징 조건
+        ReportSearchDTO cond = new ReportSearchDTO();
+        cond.setPageNo(1);
+        cond.setPageSize(10);
+        cond.recalc(); // (ROWNUM StopKey 사용 시 start/end 계산에 쓰일 수 있음)
+        // cond.setSearchWord("reporter");
+        // cond.setStatus(ST_RECEIVED);
 
-	    // 2) 신고 23건 저장
-	    for (int i = 1; i <= 23; i++) {
-	        ReportDTO r = new ReportDTO();
-	        r.setChatCode(chatCode);
-	        r.setUserId("reporter" + i);
-	        r.setCtId("target" + i);
-	        r.setReason(10);  // 두 자리 코드
-	        r.setStatus(1);   // 0/1
-	        int saved = reportmapper.doSave(r);
-	        assertEquals(1, saved);
-	    }
-//	    int total = reportmapper.getCount();
-//	    log.debug("총 건수: {}", total);
-//	    assertEquals(23, total);
+        List<ReportDTO> page1 = reportmapper.doRetrieve(cond);
+        log.debug("페이지1 size: {}", page1.size());
+        page1.forEach(v -> log.debug("  P1 -> {}", v));
+        assertEquals(10, page1.size());
 
-	    // 3) 검색/페이징 조건 (ReportSearchDTO)
-	    ReportSearchDTO cond = new ReportSearchDTO();
-	    cond.setPageNo(1);
-	    cond.setPageSize(10);
-	    cond.recalc(); // DTO.pageNo/pageSize 기반으로 startRow/endRow 계산
-	    // cond.setSearchWord("reporter");
-	    // cond.setStatus(1);
+        cond.setPageNo(2); cond.recalc();
+        List<ReportDTO> page2 = reportmapper.doRetrieve(cond);
+        log.debug("페이지2 size: {}", page2.size());
+        page2.forEach(v -> log.debug("  P2 -> {}", v));
+        assertEquals(10, page2.size());
 
-	    List<ReportDTO> page1 = reportmapper.doRetrieve(cond);
-	    log.debug("페이지1 size: {}", page1.size());
-	    page1.forEach(v -> log.debug("  P1 -> {}", v));
-	    assertEquals(10, page1.size());
+        cond.setPageNo(3); cond.recalc();
+        List<ReportDTO> page3 = reportmapper.doRetrieve(cond);
+        log.debug("페이지3 size: {}", page3.size());
+        page3.forEach(v -> log.debug("  P3 -> {}", v));
+        assertEquals(3, page3.size());
+    }
 
-	    cond.setPageNo(2);
-	    cond.recalc();
-	    List<ReportDTO> page2 = reportmapper.doRetrieve(cond);
-	    log.debug("페이지2 size: {}", page2.size());
-	    page2.forEach(v -> log.debug("  P2 -> {}", v));
-	    assertEquals(10, page2.size());
+    //@Disabled
+    @Test
+    void doUpdate() throws SQLException {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ doUpdate()                      │");
+        log.debug("└─────────────────────────────────┘");
 
-	    cond.setPageNo(3);
-	    cond.recalc();
-	    List<ReportDTO> page3 = reportmapper.doRetrieve(cond);
-	    log.debug("페이지3 size: {}", page3.size());
-	    page3.forEach(v -> log.debug("  P3 -> {}", v));
-	    assertEquals(3, page3.size());
-	}
-	
-	//@Disabled
-	@Test
-	void doUpdate()throws SQLException {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ doUpdate()                      │");
-		log.debug("└─────────────────────────────────┘");
-		
-		ReportDTO in = buildReport("user01", "targetZ", 30, 0);
-		reportmapper.doSave(in);
+        ReportDTO in = buildReport("user01", "targetZ", RS_OTHER, ST_RECEIVED);
+        reportmapper.doSave(in);
         log.debug("▶ 저장된 reportCode: {}", in.getReportCode());
-        
-        in.setStatus(0);
+
+        // 상태 변경(동적 update)
+        in.setStatus(ST_REVIEWING);
         int u = reportmapper.doUpdate(in);
-        log.debug("doupdate 결과:{}", u);
-        
+        log.debug("doUpdate 결과: {}", u);
+        assertEquals(1, u);
+
         ReportDTO key = new ReportDTO();
         key.setReportCode(in.getReportCode());
         ReportDTO outVO = reportmapper.doSelectOne(key);
-        assertEquals(0, outVO.getStatus());
-               
-	}
-	
-	//@Disabled
-	@Test
-	void doDelete()throws SQLException {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ doDelete()                      │");
-		log.debug("└─────────────────────────────────┘");
-		
-		ReportDTO in = buildReport("user01", "targetZ", 30, 0);
-		reportmapper.doSave(in);
-		
-		ReportDTO key = new ReportDTO();
-		key.setReportCode(in.getReportCode());
-		int flag = reportmapper.doDelete(key);
-		log.debug("dodelete 결과: {}", flag);
+        assertEquals(ST_REVIEWING, outVO.getStatus());
+        // MOD_DT는 Mapper에서 SYSDATE로 갱신(널 아님을 보려면 필요 시 assertNotNull(outVO.getModDt()))
+    }
 
-		
-		ReportDTO outVO = reportmapper.doSelectOne(key);
-		log.debug("삭제 후 조회 결과: {}", outVO);
-		
-		assertNull(outVO);
-	}
-	
-	
+    //@Disabled
+    @Test
+    void doDelete() throws SQLException {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ doDelete()                      │");
+        log.debug("└─────────────────────────────────┘");
 
-	@Disabled
-	@Test
-	void beans() {
-		log.debug("┌─────────────────────────────────┐");
-		log.debug("│ beans()                         │");
-		log.debug("└─────────────────────────────────┘");
+        ReportDTO in = buildReport("user01", "targetZ", RS_SPAM, ST_RECEIVED);
+        reportmapper.doSave(in);
 
-		assertNotNull(context);
+        ReportDTO key = new ReportDTO();
+        key.setReportCode(in.getReportCode());
+        int flag = reportmapper.doDelete(key);
+        log.debug("doDelete 결과: {}", flag);
+        assertEquals(1, flag);
 
-		log.debug("context: {}", context);
-	}
+        ReportDTO outVO = reportmapper.doSelectOne(key);
+        log.debug("삭제 후 조회 결과: {}", outVO);
+        assertNull(outVO);
+    }
 
+    @Disabled
+    @Test
+    void beans() {
+        log.debug("┌─────────────────────────────────┐");
+        log.debug("│ beans()                         │");
+        log.debug("└─────────────────────────────────┘");
+        assertNotNull(context);
+        log.debug("context: {}", context);
+    }
 }
