@@ -69,11 +69,11 @@ class ArticleServiceTest {
 
 
 	@Test
-	void doDelete() throws Exception {
+	void doDelete(Long articleCode) throws Exception {
 		mapper.deleteAll();
 		service.doSave(dto01);
 
-		int deleteCount = service.doDelete(dto01);
+		int deleteCount = service.doDelete(articleCode);
 		log.debug("doDelete 결과: 삭제된 행 수={}", deleteCount);
 		assertEquals(1, deleteCount);
 
