@@ -21,7 +21,7 @@
         <mybatis-version>3.5.16</mybatis-version>
         <mybatis-spring-version>2.1.2</mybatis-spring-version>
         <gson-version>2.10.1</gson-version>
-        
+        <mail-version>1.4.7</mail-version>
 
         <ojdbc8-version>18.3.0.0</ojdbc8-version>
         <HikariCP-version>4.0.3</HikariCP-version>
@@ -37,11 +37,11 @@
         <mockito-all-version>1.10.19</mockito-all-version>
         <guava-version>33.3.1-jre</guava-version>
         <jackson-databind-version>2.18.2</jackson-databind-version>
- 
+        <commonmark-version>0.18.2</commonmark-version>
         <commons-fileupload-version>1.5</commons-fileupload-version>
         
         <spring.version>5.3.37</spring.version>
-  		<jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.17.2</jackson.version>
     </properties>
     
     
@@ -63,43 +63,47 @@
     </dependency>
 
 
-		<!-- JSONPath (MockMvc의 jsonPath 매처가 사용) -->
-		<dependency>
-		  <groupId>com.jayway.jsonpath</groupId>
-		  <artifactId>json-path</artifactId>
-		  <version>2.8.0</version> <!-- 2.7~2.8 권장 -->
-		  <scope>test</scope>
-		</dependency>
-		
-		<!-- (필요 시) 최신 Hamcrest – jsonPath 매처와 함께 자주 씀 -->
-		<dependency>
-		  <groupId>org.hamcrest</groupId>
-		  <artifactId>hamcrest</artifactId>
-		  <version>2.2</version>
-		  <scope>test</scope>
-		</dependency>
+        <!-- JSONPath (MockMvc의 jsonPath 매처가 사용) -->
+        <dependency>
+          <groupId>com.jayway.jsonpath</groupId>
+          <artifactId>json-path</artifactId>
+          <version>2.8.0</version> <!-- 2.7~2.8 권장 -->
+          <scope>test</scope>
+        </dependency>
+        
+        <!-- (필요 시) 최신 Hamcrest – jsonPath 매처와 함께 자주 씀 -->
+        <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest</artifactId>
+          <version>2.2</version>
+          <scope>test</scope>
+        </dependency>
 
 
-	  <!-- WebSocket/STOMP 08/21 구별하기 쉽게 버전 붙혀놈-->
-	  <dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-websocket</artifactId>
-	    <version>${spring.version}</version>
-	  </dependency>	  
-	  <dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-messaging</artifactId>
-	    <version>${spring.version}</version>
-	  </dependency>
-	    <dependency>
-	    <groupId>javax.websocket</groupId>
-	    <artifactId>javax.websocket-api</artifactId>
-	    <version>1.1</version>
-	    <scope>provided</scope>
-	  </dependency>
-	  
+      <!-- WebSocket/STOMP 08/21 구별하기 쉽게 버전 붙혀놈-->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-websocket</artifactId>
+        <version>${spring.version}</version>
+      </dependency>   
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-messaging</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+        <dependency>
+        <groupId>javax.websocket</groupId>
+        <artifactId>javax.websocket-api</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      
 
-       
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.24.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.tiles/tiles-jsp -->
         <dependency>
             <groupId>org.apache.tiles</groupId>
@@ -151,7 +155,13 @@
             <version>${commons-fileupload-version}</version>
         </dependency>
 
-     
+        <!-- https://mvnrepository.com/artifact/org.commonmark/commonmark -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>${commonmark-version}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -238,28 +248,11 @@
             <version>${ojdbc8-version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
-       
-		       <!-- 최신 JavaMail -->
-		<dependency>
-		  <groupId>com.sun.mail</groupId>
-		  <artifactId>javax.mail</artifactId>
-		  <version>1.6.2</version>
-		</dependency>
-		
-		<!-- 첨부/ContentType 처리를 위한 Activation -->
-		<dependency>
-		  <groupId>com.sun.activation</groupId>
-		  <artifactId>javax.activation</artifactId>
-		  <version>1.2.0</version>
-		</dependency>
-		       
-       
-       
-       
-       
-       
-       
-       
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail-version}</version>
+            </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -367,24 +360,23 @@
         </dependency>
 
         <!-- Servlet -->
-   
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet-api-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>${jsp-api-version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>${jstl-version}</version>
         </dependency>
-
-
-        <!-- CommonMark (명시 버전으로) -->
-		<dependency>
-		  <groupId>org.commonmark</groupId>
-		  <artifactId>commonmark</artifactId>
-		  <version>0.24.0</version>
-		</dependency>
-        
-
-
-
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
