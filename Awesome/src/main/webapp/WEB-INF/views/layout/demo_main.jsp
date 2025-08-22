@@ -24,6 +24,7 @@
       <div class="main-container">
 
       <!-- 이 사이에 각자 항목 넣으시면 됩니다! -->
+      <jsp:include page="${contentView}" />
 
         <c:choose>
 	  <!-- 미로그인 -->
