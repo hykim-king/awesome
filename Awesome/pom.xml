@@ -41,7 +41,7 @@
         <commons-fileupload-version>1.5</commons-fileupload-version>
         
         <spring.version>5.3.37</spring.version>
-  		<jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.17.2</jackson.version>
     </properties>
     
     
@@ -63,41 +63,41 @@
     </dependency>
 
 
-		<!-- JSONPath (MockMvc의 jsonPath 매처가 사용) -->
-		<dependency>
-		  <groupId>com.jayway.jsonpath</groupId>
-		  <artifactId>json-path</artifactId>
-		  <version>2.8.0</version> <!-- 2.7~2.8 권장 -->
-		  <scope>test</scope>
-		</dependency>
-		
-		<!-- (필요 시) 최신 Hamcrest – jsonPath 매처와 함께 자주 씀 -->
-		<dependency>
-		  <groupId>org.hamcrest</groupId>
-		  <artifactId>hamcrest</artifactId>
-		  <version>2.2</version>
-		  <scope>test</scope>
-		</dependency>
+        <!-- JSONPath (MockMvc의 jsonPath 매처가 사용) -->
+        <dependency>
+          <groupId>com.jayway.jsonpath</groupId>
+          <artifactId>json-path</artifactId>
+          <version>2.8.0</version> <!-- 2.7~2.8 권장 -->
+          <scope>test</scope>
+        </dependency>
+        
+        <!-- (필요 시) 최신 Hamcrest – jsonPath 매처와 함께 자주 씀 -->
+        <dependency>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest</artifactId>
+          <version>2.2</version>
+          <scope>test</scope>
+        </dependency>
 
 
-	  <!-- WebSocket/STOMP 08/21 구별하기 쉽게 버전 붙혀놈-->
-	  <dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-websocket</artifactId>
-	    <version>${spring.version}</version>
-	  </dependency>	  
-	  <dependency>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-messaging</artifactId>
-	    <version>${spring.version}</version>
-	  </dependency>
-	    <dependency>
-	    <groupId>javax.websocket</groupId>
-	    <artifactId>javax.websocket-api</artifactId>
-	    <version>1.1</version>
-	    <scope>provided</scope>
-	  </dependency>
-	  
+      <!-- WebSocket/STOMP 08/21 구별하기 쉽게 버전 붙혀놈-->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-websocket</artifactId>
+        <version>${spring.version}</version>
+      </dependency>   
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-messaging</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+        <dependency>
+        <groupId>javax.websocket</groupId>
+        <artifactId>javax.websocket-api</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      
 
         <dependency>
             <groupId>org.commonmark</groupId>
