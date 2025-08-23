@@ -19,10 +19,10 @@
     ) VALUES (
       #{reportCode},
       #{chatCode},
-      #{userId},
-      #{ctId},
-      #{reason},
-      #{status},
+      #{userId,jdbcType=VARCHAR},
+      #{ctId,jdbcType=VARCHAR},    
+      #{reason,jdbcType=VARCHAR},   
+      #{status,jdbcType=VARCHAR},   
       SYSDATE,
       SYSDATE
     )

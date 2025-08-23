@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -52,14 +53,18 @@ public class ChatMessageController {
     @MessageMapping("/send/{category}")
     public void onMessage(@DestinationVariable int category,
                           @Payload ChatMessageDTO payload,
-                          Principal principal) {
+                          Principal principal,
+                          @Header("simpSessionId") String sessionId) throws Exception {
     	
-        log.info("onMessage CALLED cat={} msg={}", category, payload.getMessage()); // ★ 추가
-
+        log.info("onMessage CALLED cat={} msg={}", category, payload.getMessage());      
+    
         // 1) 로그인 안했어도 터지지 않도록
-        String uid = (principal != null && principal.getName() != null)
-                   ? principal.getName()
-                   : "guest:" + System.currentTimeMillis();
+        String uid = (principal != null) ? principal.getName() : null;
+        if(uid == null || uid.isEmpty()) {
+        	
+        	//비회원 보호 그냥 리턴함
+        	return;
+        }
 
         // 2) 서버에서 필수 필드 세팅
         payload.setCategory(category);
@@ -67,11 +72,7 @@ public class ChatMessageController {
         payload.setSendDt(new java.util.Date());
 
         // 3) DB 저장 (실패시 로그)
-        try {
-            service.doSave(payload);
-        } catch (Exception e) {
-            log.error("doSave failed", e);
-        }
+        service.doSave(payload);
 
         // 4) 구독자에게 브로드캐스트
         messagingTemplate.convertAndSend("/topic/chat/" + category, payload);

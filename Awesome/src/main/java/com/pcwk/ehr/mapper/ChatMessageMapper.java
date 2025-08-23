@@ -35,5 +35,6 @@ public interface ChatMessageMapper extends WorkDiv<ChatMessageDTO> {
 	ChatMessageDTO doSelectOne(int chatCode);
 	
 	int doDeleteByUser(@Param("chatCode") int chatCode, @Param("userId") String userId);
+	
 
 }

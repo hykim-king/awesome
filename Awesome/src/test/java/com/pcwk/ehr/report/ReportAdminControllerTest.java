@@ -1,21 +1,19 @@
 package com.pcwk.ehr.report;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -33,12 +31,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.pcwk.ehr.chatmessage.domain.ChatMessageDTO;
 import com.pcwk.ehr.mapper.ChatMessageMapper;
 import com.pcwk.ehr.mapper.ReportMapper;
+import com.pcwk.ehr.report.controller.ReportAdminController;
+import com.pcwk.ehr.report.domain.ReportDTO;
 
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/spring/root-context.xml",
 		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml" })
-class ReportControllerTest {
+class ReportAdminControllerTest {
 
 	Logger log = LogManager.getLogger(getClass());
 
@@ -50,107 +50,116 @@ class ReportControllerTest {
 
 	@Autowired
 	ChatMessageMapper chatMessagemapper;
-
+	
 	private MockMvc mockMvc;
 	private MockHttpSession session;
+	
+    private int reportCode; // 테스트용 생성된 신고 코드
 
-	// 테스트용 채팅 메시지 chatcode에 저장
-	private int chatCode;
-
+	
 	@BeforeEach
 	void setUp() throws Exception {
 		log.debug("┌───────────────────────────────────────┐");
 		log.debug("│ setUp()                               │");
 		log.debug("└───────────────────────────────────────┘");
-
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-
-		// 세선에 로그인 사용자ID 주입
-		session = new MockHttpSession();
-		session.setAttribute("USER_ID", "user01");
-		log.debug("세션에 UESR_ID = user01 주입");
-
 		
-		reportmapper.deleteAll(); chatMessagemapper.deleteAll();
-		log.debug("기존 데이터 초기화 : REPORT, CHAT_MESSAGE 비움");
+		ReportAdminController controller = wac.getBean(ReportAdminController.class);
 		
+	    this.mockMvc = MockMvcBuilders
+	            .standaloneSetup(controller)
+	            .alwaysDo(print())
+	            .build();
+	    
+	    // 세션 준비 (필요시)
+	    session = new MockHttpSession();
+	    session.setAttribute("USER_ID", "admin01");
+	    
+	    // 초기화 및 테스트 데이터 준비
+	    reportmapper.deleteAll();
+	    chatMessagemapper.deleteAll();
 
-		// 채팅 1건 저장(신고대상)
-		ChatMessageDTO cm = new ChatMessageDTO();
-		cm.setCategory(10);
-		cm.setUserId("targetUser");
-		cm.setMessage("어쩌구 저쩌구");
-		cm.setSendDt(new Date());
-		int saved = chatMessagemapper.doSave(cm);
-        Assertions.assertEquals(1, saved, "채팅 저장 결과");
-		chatCode = cm.getChatCode();
-        log.debug("테스트용 chatCode={}", chatCode);
+        // 1) 채팅 1건 저장 (신고 대상이 될 글)
+        ChatMessageDTO cm = new ChatMessageDTO();
+        cm.setCategory(10);
+        cm.setUserId("targetUser");              
+        cm.setMessage("관리자 테스트용 메시지");
+        cm.setSendDt(new Date());
+        chatMessagemapper.doSave(cm);
 
-	}
+        // 2) 신고 1건 저장 (관리자 API가 조작할 대상)
+        ReportDTO r = new ReportDTO();
+        r.setChatCode(cm.getChatCode());
+        r.setUserId("홍길동맨");
+        r.setCtId(cm.getUserId());     
+        r.setReason("스팸홍보/도배글입니다.");
+        r.setStatus("RECEIVED");
+        assertEquals(1, reportmapper.doSave(r));
+
+        this.reportCode = r.getReportCode();
+    }
+	
 
 	@AfterEach
 	void tearDown() throws Exception {
-		log.debug("┌───────────────────────────────────────┐");
-		log.debug("│ tearDown()                            │");
-		log.debug("└───────────────────────────────────────┘");
 	}
-	
-	//@Disabled
+
+	@Disabled
 	@Test
-	void Create_report()throws Exception {
+	void Admin_doRetrieve_report() throws Exception {
 		log.debug("┌───────────────────────────────────────┐");
-		log.debug("│ Create_report()                       │");
+		log.debug("│ Admin_doRetrieve_report()             │");
 		log.debug("└───────────────────────────────────────┘");
 		
-        String body = "{ \"chatCode\": "+chatCode+", \"reason\": \"SPAM\" }";
-        
-        mockMvc.perform(post("/report")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .session(session)) // 컨트롤러가 HttpSession에서 USER_ID 읽게 함
-            .andDo(print()) // 응답 본문 확인
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.ok").value(true))
-            .andExpect(jsonPath("$.reportCode").exists())
-            .andExpect(jsonPath("$.message", containsString("접수")));
-
-        log.debug("◀신고생성 OK_세션기반 종료");
-
-	}
-	//@Disabled
-	@Test
-	void doRetrieve_report()throws Exception {
-		log.debug("┌───────────────────────────────────────┐");
-		log.debug("│ doRetrieve_report()                   │");
-		log.debug("└───────────────────────────────────────┘");
-		
-		//한 건 신고 생성
-		String body = "{ \"chatCode\": "+chatCode+", \"reason\": \"SPAM\" }";
-        mockMvc.perform(post("/report")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .session(session))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.ok").value(true));
-        
-        // 내 신고 목록 조회
-        mockMvc.perform(get("/my/report/list")
-                .param("pageNo", "1")
-                .param("pageSize", "10")
+        mockMvc.perform(get("/admin/report/list")
+                .param("pageNo", "1") 
+                .param("pageSize", "20")
+                .param("status", "RECEIVED")
+                // .param("searchType", "ID")
+                // .param("searchWord", "reporter01")
                 .session(session))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.rows").isArray())
-            .andExpect(jsonPath("$.rows.length()", greaterThanOrEqualTo(1)))
-            .andExpect(jsonPath("$.pageNo").value(1))
-            .andExpect(jsonPath("$.pageSize").value(10));
+            .andExpect(jsonPath("$.total", greaterThanOrEqualTo(1)))
+            .andExpect(jsonPath("$.pageNo").value(1));
 
-        log.debug("마이페이지_내_신고목록_OK 종료");
+        log.debug(" 관리자 신고목록 종료");
+	}
+	@Disabled
+	@Test
+	void Admin_status_update_report()throws Exception {
+		log.debug("┌───────────────────────────────────────┐");
+		log.debug("│ Admin_status_update_report()          │");
+		log.debug("└───────────────────────────────────────┘");
+		
+        mockMvc.perform(patch("/admin/report/{reportCode}/status", reportCode)
+                .param("status", "REVIEWING")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .session(session))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.ok").value(true));
+
+        log.debug("◀관리자 상태변경 종료");
+	}
+	@Disabled
+	@Test
+	void Admin_report_Delete()throws Exception {
+		log.debug("┌───────────────────────────────────────┐");
+		log.debug("│ Admin_status_update_report()          │");
+		log.debug("└───────────────────────────────────────┘");
+		
+        mockMvc.perform(delete("/admin/report/{reportCode}", reportCode)
+                .session(session))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.ok").value(true));
+
+        log.debug("관리자신고삭제 종료");
 	}
 	
 	
-
+	
 	//@Disabled
 	@Test
 	void beans() {
@@ -165,7 +174,6 @@ class ReportControllerTest {
 		log.debug("webApplicationContext:{}", wac);
 		log.debug("mapper:{}", reportmapper);
 		log.debug("mapper:{}", chatMessagemapper);
-
 	}
 
 }
