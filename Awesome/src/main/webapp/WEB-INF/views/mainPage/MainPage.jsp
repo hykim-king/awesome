@@ -11,12 +11,40 @@
   <meta charset="UTF-8">
   <title>MainPage</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/MainPage.css"><!--디자인불러옴 -->
+  <link rel="stylesheet" href="<c:url value='/resources/css/header.css?v=3'/>">
 </head>
 <body>
-<!-- #0 헤더  -->
-<section id="main-header">
-  <!-- 필요시 메뉴/로고/로그인 정보 등 들어올 자리 -->
-</section>
+<!--header-->
+<header id="header">
+  <div class="navbar">
+    <div class="menu-bar">
+      <div class="navbar-left">
+<a href="http://localhost:8080/ehr/mainPage/main.do" class="logo">HotIssue</a>
+        <ul class="main-menu">
+          <li><a href="http://localhost:8080/ehr/mainPage/main.do">홈</a></li>
+          <li><a href="http://localhost:8080/ehr/article/list.do">퀴즈</a></li>
+          <li><a href="http://localhost:8080/ehr/article/list.do">전체기사</a></li>
+          <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
+        </ul>
+      </div>
+
+      <div class="navbar-right">
+        <c:choose>
+          <c:when test="${not empty sessionScope.loginUser}">
+            <!-- 로그인 상태 -->
+            <span>${sessionScope.loginUser.userId}님</span>
+            <a href="<c:url value='/member/logout.do'/>">로그아웃</a>
+          </c:when>
+          <c:otherwise>
+            <!-- 비로그인 상태 -->
+            <a href="<c:url value='/member/login.do'/>">로그인</a>
+            <a href="<c:url value='/member/register.do'/>">회원가입</a>
+          </c:otherwise>
+        </c:choose>
+      </div>
+    </div>
+  </div>
+</header>
 
   <!-- #1 Today’s HOT ISSUE + 키워드 6개 -->
 <section id="main-hot-issue">
@@ -101,8 +129,8 @@
 <div class="right">
   <section id="main-weather">
   
-<!--   <h2>오늘의 날씨</h2> -->
-<%-- <jsp:include page="/widget/weather"/> --%>
+  <h2>오늘의 날씨</h2>
+<jsp:include page="/widget/weather"/>
   
   
   
