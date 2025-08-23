@@ -2,12 +2,13 @@ package com.pcwk.ehr.userLog.service;
 
 import java.util.List;
 
-import com.pcwk.ehr.userLog.domain.UserLogDTO;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.mapper.UserLogMapper;
+import com.pcwk.ehr.userLog.domain.UserChartDTO;
+import com.pcwk.ehr.userLog.domain.UserLogDTO;
 
 /**
  * UserLogService 구현체
@@ -17,7 +18,8 @@ import com.pcwk.ehr.mapper.UserLogMapper;
 @Service
 public class UserLogServiceImpl implements UserLogService {
 
-    private final UserLogMapper userLogMapper;
+    @Autowired
+    UserLogMapper userLogMapper;
 
     /**
      * 생성자 주입
@@ -27,7 +29,15 @@ public class UserLogServiceImpl implements UserLogService {
     public UserLogServiceImpl(UserLogMapper userLogMapper) {
         this.userLogMapper = userLogMapper;
     }
+    
+       
 
+    @Override
+    public List<ArticleDTO> getRecommendedArticlesByUser(String userId) {
+        return userLogMapper.getRecommendedArticlesByUser(userId);
+    }
+    
+    
     /**
      * 사용자 클릭 로그 저장
      * @param userId 클릭한 사용자 ID
@@ -79,7 +89,7 @@ public class UserLogServiceImpl implements UserLogService {
      * 유저별  클릭한 카테고리 조회
      */
 	@Override
-	public List<UserLogDTO> doRetrieveById(UserLogDTO log) {
-		return userLogMapper.doRetrieveByUser(log);
+	public List<UserChartDTO> doRetrieveById(UserLogDTO log) {
+		return userLogMapper.doRetrieveById(log);
 	}
 }

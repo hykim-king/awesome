@@ -14,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.pcwk.ehr.mapper.MemberMapper;
@@ -24,46 +25,57 @@ public class MemberServiceImpl implements MemberService {
 
     private static final Logger log = LogManager.getLogger(MemberServiceImpl.class);
 
-    @Autowired
-    private MemberMapper mapper;
+    @Autowired private MemberMapper mapper;
+    @Autowired @Qualifier("javaMailSender") private JavaMailSender mailSender;
+    @Autowired private PasswordEncoder passwordEncoder;
 
-    // 이름 충돌 방지
-    @Autowired @Qualifier("javaMailSender")
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    // 링크 베이스 URL을 외부화 (없으면 기본값 사용)
     @Value("${app.baseUrl:http://localhost:8080/ehr}")
     private String baseUrl;
 
-    // 아이디 중복
+    // ======== 내부 유틸 ========
+    private JavaMailSenderImpl asImpl() {
+        if (!(mailSender instanceof JavaMailSenderImpl)) {
+            throw new IllegalStateException("JavaMailSenderImpl 이 필요합니다 (mailSender bean 확인)");
+        }
+        return (JavaMailSenderImpl) mailSender;
+    }
+
+    private String ensureFrom(JavaMailSenderImpl impl) {
+        String from = impl.getUsername();
+        if (!StringUtils.hasText(from)) {
+            throw new IllegalStateException("MailSender username(발신자 계정)이 비어있습니다");
+        }
+        return from;
+    }
+
+    // ======== 중복 체크 ========
     @Override
     public boolean existsById(String userId) throws SQLException {
         return mapper.existsById(userId) > 0;
     }
-    
-    //닉네임 중복
+
     @Override
     public boolean existsByNick(String nickNm) throws Exception {
         return mapper.existsByNick(nickNm) > 0;
     }
 
+    // 이메일 중복 검사(컨트롤러에서 사용)
+    @Override
+    public boolean existsByEmail(String mailAddr) throws Exception {
+        if (!StringUtils.hasText(mailAddr)) return false;
+        return mapper.existsByEmail(mailAddr) > 0;
+    }
 
+    // ======== 회원 CRUD ========
     @Override
     public int register(MemberDTO dto) throws SQLException {
         dto.setEmailAuthYn("N");
-
-        // ★ 폼에서 온 토큰이 비어있을 때만 새로 생성
-        if (dto.getEmailAuthToken() == null || dto.getEmailAuthToken().isEmpty()) {
+        if (!StringUtils.hasText(dto.getEmailAuthToken())) {
             dto.setEmailAuthToken(UUID.randomUUID().toString());
         }
-
         Date now = new Date();
         dto.setRegDt(now);
         dto.setModDt(now);
-
         dto.setPwd(passwordEncoder.encode(dto.getPwd()));
         return mapper.doSave(dto);
     }
@@ -72,8 +84,7 @@ public class MemberServiceImpl implements MemberService {
     public String findUserId(String userNm, String mailAddr) throws SQLException {
         return mapper.findUserId(userNm, mailAddr);
     }
-    
-    
+
     @Override
     public MemberDTO findById(MemberDTO dto) throws SQLException {
         return mapper.doSelectOne(dto);
@@ -90,27 +101,29 @@ public class MemberServiceImpl implements MemberService {
         return mapper.doDelete(dto);
     }
 
- 
-    /** 인증메일 발송: DB 업데이트 X, 토큰만 만들어 메일 전송 후 반환 */
+    // ======== 이메일 인증(링크) ========
+    /** DB 업데이트 없이 토큰 생성 후 메일 발송 */
     @Override
     public String sendEmailAuth(MemberDTO dto) throws Exception {
         if (dto == null || !StringUtils.hasText(dto.getMailAddr())) return null;
 
         String token = UUID.randomUUID().toString();
         try {
-            SimpleMailMessage msg = new SimpleMailMessage();
-            String from = (mailSender instanceof JavaMailSenderImpl)
-                    ? ((JavaMailSenderImpl) mailSender).getUsername()
-                    : "com0494@naver.com";
+            JavaMailSenderImpl impl = asImpl();
+            String from = ensureFrom(impl);
 
-            msg.setFrom(from);
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom(from);                        // ★ 발신자 = SMTP 계정
             msg.setTo(dto.getMailAddr());
             msg.setSubject("[회원가입 인증] 이메일 인증을 완료해주세요");
             msg.setText("아래 링크를 클릭해 인증을 완료하세요.\n"
                     + baseUrl + "/member/verifyEmail?token=" + token);
 
+            log.info("[MAIL] sendEmailAuth host={}, port={}, from={}, to={}",
+                    impl.getHost(), impl.getPort(), from, dto.getMailAddr());
+
             mailSender.send(msg);
-            return token;                     // ★ 토큰을 반환
+            return token;
         } catch (Exception e) {
             log.error("[MAIL] sendEmailAuth fail", e);
             return null;
@@ -122,7 +135,7 @@ public class MemberServiceImpl implements MemberService {
         return mapper.markEmailVerifiedByToken(token) == 1;
     }
 
-
+    // ======== 로그인/비밀번호 ========
     @Override
     public boolean checkPassword(String inputPwd, String hashedPwd) {
         return passwordEncoder.matches(inputPwd, hashedPwd);
@@ -130,12 +143,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO login(MemberDTO dto) throws SQLException {
-        // 1) 아이디로만 조회
         MemberDTO dbUser = mapper.findByUserId(dto.getUserId());
-
-        // 2) 해시 비교 (원문 vs 해시)
         if (dbUser != null && passwordEncoder.matches(dto.getPwd(), dbUser.getPwd())) {
-            dbUser.setPwd(null); // 노출 방지
+            dbUser.setPwd(null);
             return dbUser;
         }
         return null;
@@ -146,20 +156,22 @@ public class MemberServiceImpl implements MemberService {
         try {
             String token = UUID.randomUUID().toString();
 
-            // 1) 토큰 저장
             int rows = mapper.updateResetToken(userId, mailAddr, token);
             if (rows != 1) return false;
 
-            // 2) 메일 발송 (.do 패턴)
+            JavaMailSenderImpl impl = asImpl();
+            String from = ensureFrom(impl);
+
             SimpleMailMessage msg = new SimpleMailMessage();
-            String from = (mailSender instanceof JavaMailSenderImpl)
-                    ? ((JavaMailSenderImpl) mailSender).getUsername()
-                    : "no-reply@example.com";
-            msg.setFrom(from);
+            msg.setFrom(from);                        // ★ 발신자 = SMTP 계정
             msg.setTo(mailAddr);
             msg.setSubject("[비밀번호 재설정] 안내");
             msg.setText("아래 링크에서 비밀번호를 재설정하세요.\n"
                     + baseUrl + "/member/resetPwd.do?token=" + token);
+
+            log.info("[MAIL] sendResetMail host={}, port={}, from={}, to={}",
+                    impl.getHost(), impl.getPort(), from, mailAddr);
+
             mailSender.send(msg);
             return true;
         } catch (Exception e) {
@@ -168,14 +180,55 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-
     @Override
     public int resetPassword(String token, String newPwd) throws SQLException {
         String hashed = passwordEncoder.encode(newPwd);
-        return mapper.updatePasswordByToken(token, hashed); // 1이면 성공
+        return mapper.updatePasswordByToken(token, hashed);
     }
+
+    // ======== 6자리 코드 메일 ========
+    @Override
+    public String sendEmailCode(String mailAddr) throws Exception {
+        if (!StringUtils.hasText(mailAddr)) return null;
+
+        String code = String.format("%06d", new java.security.SecureRandom().nextInt(1_000_000));
+        try {
+            JavaMailSenderImpl impl = asImpl();
+            String from = ensureFrom(impl);
+
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom(from);                        // ★ 발신자 = SMTP 계정
+            msg.setTo(mailAddr);
+            msg.setSubject("[이메일 인증] 인증 코드 안내");
+            msg.setText("아래 6자리 인증 코드를 입력해 주세요.\n\n인증코드: " + code + "\n\n(유효시간: 10분)");
+
+            log.info("[MAIL] sendEmailCode host={}, port={}, from={}, to={}",
+                    impl.getHost(), impl.getPort(), from, mailAddr);
+
+            mailSender.send(msg);
+            return code;
+        } catch (Exception e) {
+            log.error("[MAIL] sendEmailCode fail", e);
+            return null;
+        }
+    }
+
+	@Override
+	public MemberDTO doSelectOne(MemberDTO param) {
+		return mapper.doSelectOne(param);
+	}
+
+	@Override
+	public int updateNickNmByUserId(MemberDTO param) {
+		return mapper.updateNickNmByUserId(param);
+	}
+
+	@Override
+	public int updatePwdByUserId(MemberDTO param) {
+		param.setPwd(passwordEncoder.encode(param.getPwd()));
+		return mapper.updatePwdByUserId(param);
+	}
 	
-    
-    
-    
+
+
 }

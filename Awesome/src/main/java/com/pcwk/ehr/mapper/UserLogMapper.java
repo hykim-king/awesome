@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.pcwk.ehr.article.domain.ArticleDTO;
+import com.pcwk.ehr.userLog.domain.UserChartDTO;
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
 
 @Mapper
@@ -35,5 +37,9 @@ public interface UserLogMapper {
     
     //마이페이지 구글 차트 용 
     //유저별  클릭한 카테고리 조회
-    List<UserLogDTO> doRetrieveById(UserLogDTO log);
+    List<UserChartDTO> doRetrieveById(UserLogDTO log);
+    
+    
+    List<ArticleDTO> getRecommendedArticlesByUser(String userId);
+    
 }

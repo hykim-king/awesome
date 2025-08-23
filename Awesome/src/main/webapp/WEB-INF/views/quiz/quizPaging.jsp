@@ -5,25 +5,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 <c:set var="CP" value="${pageContext.request.contextPath }" />    
 
-<%-- ======================================================================= --%>
-<%-- 중요: 이 부분은 실제로는 Controller에서 Model에 담아 보내주는 데이터입니다. --%>
-<%-- 테스트를 위해 JSP에서 임시로 생성한 퀴즈 데이터입니다. --%>
-<c:set var="quizList">
-    <jsp:useBean id="quiz1" class="java.util.HashMap" />
-    <c:set target="${quiz1}" property="quizNo" value="101" />
-    <c:set target="${quiz1}" property="quizContent" value="대한민국의 수도는 서울이다." />
-    
-    <jsp:useBean id="quiz2" class="java.util.HashMap" />
-    <c:set target="${quiz2}" property="quizNo" value="102" />
-    <c:set target="${quiz2}" property="quizContent" value="지구는 태양계의 네 번째 행성이다." />
-    
-    <jsp:useBean id="quiz3" class="java.util.HashMap" />
-    <c:set target="${quiz3}" property="quizNo" value="103" />
-    <c:set target="${quiz3}" property="quizContent" value="물은 섭씨 0도에서 끓는다." />
-</c:set>
-<%-- ======================================================================= --%>
-
-
 <!DOCTYPE html>
 <html>
 <head>

@@ -12,10 +12,13 @@
   <link rel="stylesheet" href="<c:url value='/resources/css/header.css'/>">
 
   <style>
-    :root{
-      --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
-      --line:#e5e7eb; --green:#84cc16; --green-dark:#65a30d; --input:#f9fafb;
-    }
+   :root{
+  --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
+  --line:#e5e7eb;
+  --blue-light:#4aa3ff;   /* 기본(연한 파랑) */
+  --blue:#0a45ff;         /* hover/클릭 시 진한 파랑 */
+  --input:#f9fafb;
+}
     *{box-sizing:border-box}
     body{ margin:0; background:var(--bg); color:var(--text);
       font-family: "Inter","Pretendard",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
@@ -31,21 +34,22 @@
       width:100%; height:44px; padding:0 12px; border:1px solid var(--line);
       background:var(--input); border-radius:10px; outline:none; transition:.15s ease; font-size:14px;
     }
-    input:focus{ border-color:var(--green); box-shadow:0 0 0 4px color-mix(in srgb, var(--green) 20%, transparent); background:#fff; }
-    .btn{ height:44px; padding:0 14px; border:0; background:var(--green); color:#fff; border-radius:10px;
-      font-size:14px; font-weight:700; cursor:pointer; transition:.15s ease; white-space:nowrap;
-    }
-    .btn:hover{ background:var(--green-dark); }
-    .btn-ghost{ background:#eef6d0; color:#3f6212; }
-    .btn-ghost:hover{ background:#e3f0b3; }
-    .hint{ font-size:12px; color:var(--muted); margin-top:6px; }
-    .checks{ margin:8px 0 2px; }
-    .checks label{ display:flex; gap:10px; align-items:center; font-size:14px; font-weight:600; color:#111827; margin:10px 0; }
-    .checks input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--green); }
-    .submit{ margin-top:16px; width:100%; height:48px; font-size:15px; border-radius:12px; }
-    .msg{ font-size:12px; margin-top:6px; }
-    .msg.ok{ color:#15803d; }
-    .msg.err{ color:#b91c1c; }
+    
+    input:focus{border-color : var(--blue);box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 20%,  transparent);background:#fff;}
+    /* 버튼 */
+.btn{
+  height:44px; padding:0 14px; border:0;
+  background: var(--blue-light);   /* ✅ 연한 파랑 */
+  color:#fff; border-radius:10px;
+  font-size:14px; font-weight:700;
+  cursor:pointer; transition:.15s ease; white-space:nowrap;
+}
+.btn:hover{
+  background: var(--blue);         /*  hover 시 진한 파랑 */
+}
+.btn:active{
+  background: #072fc7;             /* (선택) 클릭 시 더 어두운 파랑 */
+}
 
     /* modal */
     .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1000;}
@@ -57,33 +61,31 @@
     .modal .close{ position:absolute; top:10px; right:12px; border:0; background:transparent; font-size:22px; cursor:pointer; line-height:1; }
     .modal h2{margin:0 0 10px; font-size:18px}
     .modal .content{font-size:14px; color:#334155}
-    .checks .link{ margin-left:8px; color:#2563eb; text-decoration:underline; cursor:pointer; }
-    .checks .term{ user-select:none; }
+    /* 체크박스 영역 글자 색상 통일 */
+	.checks label,
+	.checks .link {
+	  color: #111827 !important;   /* 진한 검정 */
+	  text-decoration: none !important; /* 밑줄 제거 */
+	  cursor: default;             /* 손가락 대신 기본 커서 */
+	}
   
-    /* 회원가입 페이지에만 적용 */
-	.page-register,
-	.page-register #main,
-	.page-register .main-container { background:#fff !important; }
-	
-	.page-register .wrap { max-width:520px; }
-	.page-register input[type="text"],
-	.page-register input[type="password"],
-	.page-register input[type="email"],
-	.page-register input[type="date"] { height:44px; }
+	    /* 회원가입 페이지에만 적용 */
+		.page-register,
+		.page-register #main,
+		.page-register .main-container { background:#fff !important; }
+		
+		.page-register .wrap { max-width:520px; }
+		.page-register input[type="text"],
+		.page-register input[type="password"],
+		.page-register input[type="email"],
+		.page-register input[type="date"] { height:44px; }
     
         
         /* 회원가입 페이지만 흰 배경 유지 */
 		.page-register #main,
 		.page-register #main .main-container { background:#fff !important; }
 		
-		/* ⚠️ 오른쪽 레일/배너/aside 숨기기(클래스명이 다르면 필요한 것만 남기세요) */
-		.page-register #main aside,
-		.page-register #main .right-rail,
-		.page-register #main .right,
-		.page-register #main .banner,
-		.page-register #main .ad {
-		  display: none !important;
-		}
+		
 		
 		/* 폼 카드(.wrap)를 "뷰포트 기준" 가로 중앙 정렬 */
 		.page-register .wrap{
@@ -94,10 +96,20 @@
 		  transform: translateX(-50%); /* 자기 너비의 절반만큼 되돌려 정확히 가운데 */
 		}
 		
-		/* (선택) 혹시 메인에 남아있는 좌측 패딩/여백이 있으면 제거 */
-		.page-register #main{ padding-left:0 !important; }
-		.page-register .main-container{ margin-left:0 !important; }
+	
   
+  
+    /* 회원가입 버튼 스타일 */
+	  #btnSubmit{
+	  display:block;
+	  width:100%;
+	  height:48px;
+	  margin-top:20px;   /* 위쪽 여백만 */
+	  text-align:center;
+	  border-radius:12px;
+	}
+	    
+ 
   </style>
 </head>
 
@@ -107,7 +119,7 @@
   <div id="container">
     <!-- 공통 레이아웃 -->
     <jsp:include page="/WEB-INF/views/include/header.jsp"/>
-    <jsp:include page="/WEB-INF/views/include/sidebar.jsp"/>
+   <%--  <jsp:include page="/WEB-INF/views/include/sidebar.jsp"/> --%>
 
     <!-- 메인 -->
     <main id="main">
@@ -161,24 +173,28 @@
               <input id="birthDt" name="birthDt" type="date" placeholder="YYYYMMDD" />
             </div>
 
-            <!-- 이메일 + 인증요청 -->
-            <div class="group">
-              <label for="mailAddr">이메일 본인 인증 *</label>
-              <div class="row">
-                <input id="mailAddr" name="mailAddr" type="email" required />
-                <button id="btnSendCode" type="button" class="btn">인증하기</button>
-              </div>
-              <div class="hint">메일에서 인증 링크를 확인하거나, 코드 인증을 사용할 수 있습니다.</div>
-            </div>
-
-            <!-- 인증번호 입력 -->
-            <div class="group">
-              <input id="emailCode" type="text" placeholder="인증번호 6자리를 입력해주세요" />
-              <div class="row" style="margin-top:8px">
-                <button id="btnVerifyCode" type="button" class="btn btn-ghost" style="margin-left:auto">인증확인</button>
-              </div>
-            </div>
-
+           <!-- 이메일 + 인증요청 -->
+		<!-- 이메일 + 인증요청 -->
+		<div class="group">
+		  <label for="mailAddr">이메일 본인 인증 *</label>
+		  <div class="row">
+		    <input id="mailAddr" name="mailAddr" type="email" required />
+		    <button id="btnSendCode" type="button" class="btn">인증하기</button>
+		  </div>
+		  <small id="emailHint" class="hint">메일에서 인증 링크를 확인해주세요.</small>
+		  <div id="emailMsg" class="msg"></div>
+		</div>
+		
+		<!-- 인증번호 입력 -->
+		<div class="group">
+		  <input id="emailCode" type="text" placeholder="인증번호 6자리를 입력해주세요" />
+		  <div class="row" style="margin-top:8px">
+		    <button id="btnVerifyCode" type="button" class="btn btn-ghost" style="margin-left:auto">인증확인</button>
+		  </div>
+		  <div id="codeMsg" class="msg"></div>
+		</div>
+		
+	
             <!-- 약관 -->
             <div class="checks">
               <label><input id="agreeAll" type="checkbox" /> 아래 약관에 모두 동의합니다.</label>
@@ -195,11 +211,14 @@
             </div>
 
             <!-- 숨김 필드 -->
-            <input type="hidden" id="emailAuthYn"  name="emailAuthYn"  value="N" />
+            <input type="hidden" id="emailAuthYn"  name="emailAuthYn" />
             <input type="hidden" id="emailAuthToken" name="emailAuthToken" value="" />
             <input type="hidden" name="userGradeCd" value="1" />
 
             <button id="btnSubmit" class="btn submit" type="submit">회원가입 완료</button>
+          
+      
+          
           </form>
 
           <!-- 이용약관 모달 -->
@@ -233,139 +252,159 @@
     <jsp:include page="/WEB-INF/views/include/footer.jsp"/>
   </div>
 
-  <script>
-    // 컨텍스트 경로 (/ehr 등)
-    const CTX = '<c:url value="/"/>'.replace(/\/$/, '');
-    const qs  = (s) => document.querySelector(s);
+ <script>
+  const CP = '${pageContext.request.contextPath}';
+  const $  = function(s){ return document.querySelector(s); };
 
-    // 전체 동의
-    qs('#agreeAll').addEventListener('change', (e) => {
-      document.querySelectorAll('.agree').forEach(ch => ch.checked = e.target.checked);
+  // 버튼/필드 캐시
+  const btnId   = $('#btnIdCheck');
+  const btnNick = $('#btnNickCheck');
+  const btnSend = $('#btnSendCode');
+  const btnVer  = $('#btnVerifyCode');
+
+  const f = {
+    userId  : $('#userId'),
+    nickNm  : $('#nickNm'),
+    mail    : $('#mailAddr'),
+    code    : $('#emailCode'),
+    pwd     : $('#pwd'),
+    pwd2    : $('#pwd2'),
+    emailOk : $('#emailAuthYn')
+  };
+
+  const emailHint = document.getElementById('emailHint');
+
+  // 공통 POST(x-www-form-urlencoded)
+  async function postForm(url, params){
+    const resp = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+      body:new URLSearchParams(params)
     });
+    if(!resp.ok){
+      const t = await resp.text();
+      throw new Error('HTTP ' + resp.status + ' ' + (t || ''));
+    }
+    return resp.json();
+  }
 
-    // 아이디 중복확인
-    qs('#btnIdCheck').addEventListener('click', async () => {
-      const id  = qs('#userId').value.trim();
-      const msg = qs('#idMsg');
-      if (!id) { msg.className='msg err'; msg.textContent='아이디를 입력하세요.'; return; }
-      try {
-        const res  = await fetch(CTX + '/member/checkId?userId=' + encodeURIComponent(id));
-        const text = (await res.text()).trim(); // "OK" | "DUP"
-        const ok   = (text === 'OK');
-        msg.className  = 'msg ' + (ok ? 'ok' : 'err');
-        msg.textContent= ok ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.';
-      } catch(e) {
-        msg.className='msg err'; msg.textContent='요청 실패: ' + e;
-      }
-    });
+  // ID 중복
+  if (btnId){
+    btnId.addEventListener('click', async function(){
+      const id  = (f.userId.value || '').trim();
+      const box = document.getElementById('idMsg');
+      if(!id){ box.className='msg err'; box.textContent='아이디를 입력하세요.'; return; }
 
-    // 닉네임 중복확인
-    qs('#btnNickCheck').addEventListener('click', async () => {
-      const nick = qs('#nickNm').value.trim();
-      const msg  = qs('#nickMsg');
-      if (!nick) { msg.className='msg err'; msg.textContent='닉네임을 입력하세요.'; return; }
-      try {
-        const res  = await fetch(CTX + '/member/checkNick?nickNm=' + encodeURIComponent(nick));
-        const text = (await res.text()).trim(); // "OK" | "DUP"
-        const ok   = (text === 'OK');
-        msg.className  = 'msg ' + (ok ? 'ok' : 'err');
-        msg.textContent= ok ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.';
-      } catch(e) {
-        msg.className='msg err'; msg.textContent='요청 실패: ' + e;
-      }
-    });
-
-    // 인증코드 발송
-    qs('#btnSendCode').addEventListener('click', async () => {
-      const email  = qs('#mailAddr').value.trim();
-      const userId = qs('#userId').value.trim();
-      if (!email) { alert('이메일을 입력하세요.'); return; }
-      const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailReg.test(email)) { alert('이메일 형식이 올바르지 않습니다.'); return; }
-
-      const res  = await fetch(CTX + '/member/sendEmailAuth.do', {
-        method:'POST',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body:'userId=' + encodeURIComponent(userId) + '&mailAddr=' + encodeURIComponent(email)
-      });
+      const res  = await fetch(CP + '/member/checkId.do?userId=' + encodeURIComponent(id));
       const text = (await res.text()).trim();
-      if (!res.ok || text !== 'SENT') { alert('메일 전송 실패: ' + text); return; }
-      alert('이메일로 인증 안내를 보냈습니다. 메일함을 확인해주세요.');
+      const ok   = (text === 'OK');
+      box.className  = 'msg ' + (ok ? 'ok' : 'err');
+      box.textContent= ok ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.';
     });
+  }
 
-    // 인증코드 확인
-    qs('#btnVerifyCode').addEventListener('click', async () => {
-      const email = qs('#mailAddr').value.trim();
-      const code  = qs('#emailCode').value.trim();
-      if (!email) { alert('이메일을 입력하세요.'); return; }
-      if (!code)  { alert('인증번호를 입력하세요.'); return; }
+  // 닉네임 중복
+  if (btnNick){
+    btnNick.addEventListener('click', async function(){
+      const nick = (f.nickNm.value || '').trim();
+      const box  = document.getElementById('nickMsg');
+      if(!nick){ box.className='msg err'; box.textContent='닉네임을 입력하세요.'; return; }
 
-      try {
-        const res  = await fetch(CTX + '/member/verifyEmailCode', {
-          method:'POST',
-          headers:{'Content-Type':'application/x-www-form-urlencoded'},
-          body:'mailAddr=' + encodeURIComponent(email) + '&code=' + encodeURIComponent(code)
-        });
-        const text = (await res.text()).trim(); // OK | INVALID | EXPIRED | NO_CODE
-        if (text === 'OK') {
-          qs('#emailAuthYn').value = 'Y';
-          qs('#mailAddr').readOnly = true;
-          qs('#btnSendCode').disabled = true;
-          qs('#emailCode').readOnly = true;
-          alert('인증 완료');
-        } else if (text === 'EXPIRED') {
-          alert('유효시간(5분)이 지났습니다. 다시 ‘인증하기’를 눌러 코드를 받으세요.');
-        } else if (text === 'NO_CODE') {
-          alert('인증코드가 없습니다. 먼저 ‘인증하기’로 코드를 받으세요.');
-        } else {
-          alert('인증 실패: 코드가 올바르지 않습니다.');
+      const res  = await fetch(CP + '/member/checkNick.do?nickNm=' + encodeURIComponent(nick));
+      const text = (await res.text()).trim();
+      const ok   = (text === 'OK');
+      box.className  = 'msg ' + (ok ? 'ok' : 'err');
+      box.textContent= ok ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.';
+    });
+  }
+
+  // 이메일 인증 코드 발송
+  if (btnSend){
+    btnSend.addEventListener('click', async function(){
+      const email = (f.mail.value || '').trim();
+      const msg   = document.getElementById('emailMsg');
+
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        msg.className='msg err'; msg.textContent='이메일 형식이 올바르지 않습니다.';
+        if (emailHint) emailHint.style.display = 'none';
+        return;
+      }
+
+      msg.className='msg'; msg.textContent='전송 중…';
+      try{
+        const data = await postForm(CP + '/member/email/sendCode.do', {mailAddr: email});
+        msg.className  = 'msg ' + (data.ok ? 'ok' : 'err');
+        msg.textContent= data.message || (data.ok ? '인증 코드가 발송되었습니다.' : '메일 전송 실패');
+        if (emailHint) emailHint.style.display = 'none';
+
+        // 재전송 쿨다운
+        if (data.ok){
+          var left = 60;
+          btnSend.disabled = true;
+          btnSend.textContent = '재전송(' + left + 's)';
+          var timer = setInterval(function(){
+            left--;
+            btnSend.textContent = '재전송(' + left + 's)';
+            if(left <= 0){
+              clearInterval(timer);
+              btnSend.disabled = false;
+              btnSend.textContent = '인증하기';
+            }
+          }, 1000);
         }
-      } catch(e) {
-        alert('서버 통신 오류: ' + e);
+      }catch(e){
+        msg.className='msg err'; msg.textContent = '요청 실패: ' + e.message;
       }
     });
+  }
 
-    // 모달 열기/닫기
-    function openModal(id){
-      const m = document.getElementById(id);
-      if (!m) return;
-      m.classList.add('open'); m.setAttribute('aria-hidden','false');
-      const p = m.querySelector('.panel'); if (p) p.focus();
-    }
-    function closeModal(el){
-      const m = el.closest('.modal'); if (!m) return;
-      m.classList.remove('open'); m.setAttribute('aria-hidden','true');
-    }
-    document.querySelectorAll('.checks .link').forEach(el=>{
-      el.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); openModal(el.dataset.modal); });
-      el.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openModal(el.dataset.modal); }});
-    });
-    document.querySelectorAll('[data-close]').forEach(el=>{
-      el.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(el); });
-    });
-    document.addEventListener('keydown', (e)=>{
-      if(e.key==='Escape'){
-        document.querySelectorAll('.modal.open').forEach(m=>{
-          m.classList.remove('open'); m.setAttribute('aria-hidden','true');
-        });
-      }
-    });
+  // 인증 코드 확인
+  if (btnVer){
+    btnVer.addEventListener('click', async function(){
+      const email = (f.mail.value || '').trim();
+      const code  = (f.code.value || '').trim();
+      const msg   = document.getElementById('codeMsg');
 
-    // 폼 제출 전 최종 검증
-    qs('#joinForm').addEventListener('submit', (e) => {
-      if (qs('#pwd').value !== qs('#pwd2').value) {
-        alert('비밀번호가 일치하지 않습니다.');
-        e.preventDefault(); return;
-      }
-      if (!document.querySelector('.agree.req').checked) {
-        alert('이용약관(필수)에 동의해주세요.');
-        e.preventDefault(); return;
-      }
-      if (qs('#emailAuthYn').value !== 'Y') {
-        alert('이메일 인증을 완료하세요.');
-        e.preventDefault(); return;
+      if(!email){ msg.className='msg err'; msg.textContent='이메일을 입력하세요.'; return; }
+      if(code.length !== 6){ msg.className='msg err'; msg.textContent='6자리 코드를 입력하세요.'; return; }
+
+      msg.className='msg'; msg.textContent='확인 중…';
+      try{
+        const data = await postForm(CP + '/member/email/verifyCode.do', {mailAddr: email, code: code});
+        msg.className  = 'msg ' + (data.ok ? 'ok' : 'err');
+        msg.textContent= data.message || (data.ok ? '이메일 인증 완료!' : '코드 확인 실패');
+
+        if (data.ok){
+          f.emailOk.value = 'Y';
+          f.mail.readOnly  = true;
+          btnSend.disabled = true;
+          f.code.readOnly  = true;
+        }
+      }catch(e){
+        msg.className='msg err'; msg.textContent = '요청 실패: ' + e.message;
       }
     });
-  </script>
+  }
+
+  // 폼 제출 전 최종 검증
+  var joinForm = document.getElementById('joinForm');
+  if (joinForm){
+    joinForm.addEventListener('submit', function(e){
+      if(f.pwd.value !== f.pwd2.value){
+        alert('비밀번호가 일치하지 않습니다.'); e.preventDefault(); return;
+      }
+      var req = document.querySelector('.agree.req');
+      if(req && !req.checked){
+        alert('이용약관(필수)에 동의해주세요.'); e.preventDefault(); return;
+      }
+      if(f.emailOk.value !== 'Y'){
+        alert('이메일 인증을 완료하세요.'); e.preventDefault(); return;
+      }
+    });
+  }
+</script>
+
+
+
 </body>
 </html>

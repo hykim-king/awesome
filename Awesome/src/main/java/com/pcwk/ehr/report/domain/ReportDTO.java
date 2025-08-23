@@ -7,16 +7,17 @@ public class ReportDTO {
 	private int chatCode; //채팅 메시지 고유 코드	
 	private String userId; //신고자Id	
 	private String ctId; //신고 대상Id
-	private int reason; //신고 사유	
-	private int status; //상태값(검토중/조치완료)	
+	private String reason; //신고 사유	
+	private String status; //상태값(검토중/조치완료)	
 	private Date regDt; //신고일
-
+	private Date modDt; //신고 수정일
 
 	public ReportDTO() {}
-	
-	
 
-	public ReportDTO(int reportCode, int chatCode, String userId, String ctId, int reason, int status, Date regDt) {
+	
+	
+	public ReportDTO(int reportCode, int chatCode, String userId, String ctId, String reason, String status, Date regDt,
+			Date modDt) {
 		super();
 		this.reportCode = reportCode;
 		this.chatCode = chatCode;
@@ -25,6 +26,7 @@ public class ReportDTO {
 		this.reason = reason;
 		this.status = status;
 		this.regDt = regDt;
+		this.modDt = modDt;
 	}
 
 
@@ -61,19 +63,19 @@ public class ReportDTO {
 		this.ctId = ctId;
 	}
 
-	public int getReason() {
+	public String getReason() {
 		return reason;
 	}
 
-	public void setReason(int reason) {
+	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -85,14 +87,21 @@ public class ReportDTO {
 		this.regDt = regDt;
 	}
 
+	public Date getModDt() {
+		return modDt;
+	}
 
+	public void setModDt(Date modDt) {
+		this.modDt = modDt;
+	}
 
 	@Override
 	public String toString() {
 		return "ReportDTO [reportCode=" + reportCode + ", chatCode=" + chatCode + ", userId=" + userId + ", ctId="
-				+ ctId + ", reason=" + reason + ", status=" + status + ", regDt=" + regDt + ", toString()="
-				+ super.toString() + "]";
+				+ ctId + ", reason=" + reason + ", status=" + status + ", regDt=" + regDt + ", modDt=" + modDt
+				+ ", toString()=" + super.toString() + "]";
 	}
+	
 	
 	
 }

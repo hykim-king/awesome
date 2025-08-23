@@ -98,6 +98,39 @@
            USER_ID = #{userId} AND QQ_CODE = #{qqCode}
    </select>
    
+   <select id="selectTodaysQuiz" resultType="com.pcwk.ehr.quiz.domain.QuizDTO">
+	    SELECT
+	        Q.QS_CODE       AS QSCODE,
+	        Q.QQ_CODE       AS QQCODE,
+	        Q.ARTICLE_CODE  AS ARTICLECODE,
+	        Q.QUESTION_NO   AS QUESTIONNO,
+	        Q.QUESTION,
+	        Q.ANSWER,
+	        Q.EXPLANATION
+	    FROM
+	        QUIZ_QUESTIONS Q
+	    JOIN
+	        QUIZ_SETS S ON Q.QS_CODE = S.QS_CODE
+	    WHERE
+	        TRUNC(S.REG_DT) = TRUNC(SYSDATE)
+	    ORDER BY
+	        Q.QUESTION_NO ASC
+	</select>
+	
+	<select id="checkIfUserPlayedToday" parameterType="java.lang.String" resultType="int">
+	    SELECT
+	        COUNT(R.QR_CODE)
+	    FROM
+	        QUIZ_RESULT R
+	    JOIN
+	        QUIZ_QUESTIONS Q ON R.QQ_CODE = Q.QQ_CODE
+	    JOIN
+	        QUIZ_SETS S ON Q.QS_CODE = S.QS_CODE
+	    WHERE
+	        R.USER_ID = #{USERID}
+	        AND TRUNC(S.REG_DT) = TRUNC(SYSDATE)
+	</select>
+   
     <delete id="deleteAllQuizQuestions">
        DELETE FROM QUIZ_QUESTIONS
    </delete>

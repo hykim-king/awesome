@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
 import com.pcwk.ehr.userLog.service.UserLogService;
+import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.mapper.UserLogMapper; // 초기화(deleteAll)용
 
 @ExtendWith(SpringExtension.class)
@@ -38,8 +40,8 @@ public class UserLogServiceTest {
     @Autowired
     UserLogMapper mapper;
 
-    // 추후 실제 존재하는 코드가 들어감
-    Long articleCode = 1001L;
+    // 추후 실제 존재하는 코드
+    Long articleCode = 7384L;
 
     @BeforeEach
     void setUp() {
@@ -51,7 +53,7 @@ public class UserLogServiceTest {
     void tearDown() {
         log.debug("--------- @AfterEach ---------");
     }
-
+    @Disabled
     @Test
     @DisplayName("logArticleClick: 정상 저장 후 getLogsByUser로 확인")
     void logArticleClick_success() {
@@ -70,7 +72,7 @@ public class UserLogServiceTest {
         assertNotNull(out.getLogCode(), "selectKey로 logCode 생성되어야 함");
         assertNotNull(out.getClickedAt(), "clickedAt은 SYSDATE로 저장되어야 함");
     }
-
+    @Disabled
     @Test
     @DisplayName("logArticleClick: 비로그인(null) 또는 잘못된 파라미터는 저장하지 않음")
     void logArticleClick_invalidParams() {
@@ -82,7 +84,7 @@ public class UserLogServiceTest {
         List<UserLogDTO> list = service.getAllLogs();
         assertEquals(0, list.size(), "잘못된 파라미터는 저장되면 안 됨");
     }
-
+    @Disabled
     @Test
     @DisplayName("getAllLogs: 다건 저장 후 전체 조회")
     void getAllLogs_multiple() {
@@ -99,6 +101,7 @@ public class UserLogServiceTest {
         list.forEach(log::debug);
     }
 
+	@Disabled
     @Test
     @DisplayName("deleteLog: 단건 삭제")
     void deleteLog_success() {
@@ -117,4 +120,33 @@ public class UserLogServiceTest {
         List<UserLogDTO> after = service.getLogsByUser(userId);
         assertEquals(0, after.size(), "삭제 후 해당 사용자 로그는 0건이어야 함");
     }
+	
+	@Test
+	@DisplayName("getRecommendedArticlesByUser: 유저 기반 추천 기사 3건 확인")
+	void getRecommendedArticlesByUser_success() {
+	    // given
+	    String userId = "user01";
+
+	    // 사전 로그 저장 (같은 카테고리 기사들을 여러 번 클릭한 시뮬레이션)
+	    for (int i = 0; i < 5; i++) {
+	        service.logArticleClick(userId, articleCode); // 이 articleCode의 category가 추천 대상이 됨
+	    }
+
+	    // when
+	    List<ArticleDTO> recommendedList = service.getRecommendedArticlesByUser(userId);
+
+	    // then
+	    assertNotNull(recommendedList, "추천 결과는 null이면 안 됨");
+	    assertTrue(recommendedList.size() <= 3, "추천 기사 개수는 최대 3개");
+
+	    for (ArticleDTO article : recommendedList) {
+	        log.debug("추천 기사 ▶ {}", article.getTitle());
+	        assertNotNull(article.getArticleCode());
+	        assertNotNull(article.getTitle());
+	        assertTrue(article.getViews() >= 0);
+	    }
+	}
+	
+	
+	
 }

@@ -1,150 +1,224 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<%-- ① 컨텍스트/모델 안전 세팅 --%>
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-<c:set var="cat" value="${empty category ? 10 : category}" />
-<c:set var="uid" value="${empty loginUserId ? '' : loginUserId}" />
+<!-- 컨텍스트 경로/카테고리 -->
+<c:set var="CP" value="${pageContext.request.contextPath}" />
+<c:set var="CATEGORY" value="${empty param.category ? 10 : param.category}" />
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <title>실시간 채팅</title>
+<meta charset="UTF-8">
+<title>실시간 채팅</title>
 
-  <%-- ② 정적 리소스(로컬에 둔 JS) : 404가 나지 않도록 경로 확인 --%>
-  <script src="${ctx}/resources/js/sockjs.min.js"></script>
-  <script src="${ctx}/resources/js/stomp.min.js"></script>
+<!-- (선택) Spring Security CSRF -->
+<c:if test="${not empty _csrf}">
+  <meta name="_csrf_header" content="${_csrf.headerName}"/>
+  <meta name="_csrf" content="${_csrf.token}"/>
+</c:if>
 
-  <%-- ③ 최소 스타일(보기 편하게) --%>
-  <style>
-    body{font-family:system-ui,Segoe UI,Apple SD Gothic Neo,Malgun Gothic,Arial}
-    .wrap{max-width:880px;margin:24px auto;padding:0 12px}
-    .badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#999;color:#fff;font-size:12px}
-    .badge.on{background:#0a7}
-    .panel{display:grid;grid-template-columns:1fr auto;gap:8px}
-    .list{height:320px;overflow:auto;border:1px solid #ddd;border-radius:8px;padding:8px;background:#fafafa}
-    .msg{margin:8px 0;padding:6px 8px;border-radius:6px;background:#fff;border:1px solid #eee}
-    .msg .meta{font-size:12px;color:#666;margin-bottom:4px}
-    .msg.new{border-color:#0a7;box-shadow:0 0 0 2px rgba(0,160,120,.08) inset}
-    .send{display:flex;gap:6px}
-    input[type=text]{flex:1;padding:10px;border-radius:6px;border:1px solid #ccc}
-    button{padding:10px 14px;border:0;border-radius:6px;background:#246bff;color:#fff;cursor:pointer}
-  </style>
+<style>
+:root { --bg:#ffffff; --line:#eee; --muted:#888; --btn:#444; --btn-text:#fff; }
+* { box-sizing: border-box; }
+body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background:#f7f7f7; color:#222; }
+
+.chat-wrap { max-width: 520px; margin: 24px auto; background:var(--bg); border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.06); overflow:hidden; }
+.chat-header { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
+.chat-title { font-weight:700; font-size:16px; }
+.chat-cat { margin-left:auto; color:var(--muted); font-size:12px; }
+
+.chat-list { list-style:none; padding:0; margin:0; max-height:60vh; overflow:auto; background:#fff; }
+.chat-item { display:flex; gap:10px; padding:12px; border-bottom:1px solid var(--line); }
+.avatar { width:36px; height:36px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
+.bubble { flex:1; min-width:0; }
+.meta { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+.meta .uid { font-weight:600; color:#444; }
+.meta .time { margin-left:2px; }
+.meta .report { margin-left:auto; border:none; background:transparent; cursor:pointer; font-size:12px; color:#d9534f; }
+.text { margin-top:4px; font-size:14px; word-break:break-word; white-space:pre-wrap; }
+
+.chat-input { position:sticky; bottom:0; display:flex; gap:8px; padding:10px; background:#fafafa; border-top:1px solid var(--line); }
+.chat-input input { flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
+.chat-input button { padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
+.chat-input button:disabled { opacity:.5; cursor:not-allowed; }
+
+@media (max-width: 540px){
+  .chat-wrap { margin: 0; border-radius: 0; height: 100vh; display:flex; flex-direction:column; }
+  .chat-list { flex:1; max-height:none; }
+}
+</style>
 </head>
 <body>
+  <div class="chat-wrap" id="chatRoot" data-cp="${CP}" data-category="${CATEGORY}">
+    <div class="chat-header">
+      <div class="chat-title">채팅창</div>
+      <div class="chat-cat">카테고리: <b id="catLabel">${CATEGORY}</b></div>
+    </div>
 
-<%-- ④ 화면 모델을 data-* 로 내려줌 (JS에서 그대로 읽기) --%>
-<div class="wrap" id="app"
-     data-ctx="${ctx}"
-     data-category="${cat}"
-     data-user="${uid}">  <h1>실시간 채팅</h1>
-  <p>상태: <span id="statusBadge" class="badge">연결안됨</span></p>
+    <ul id="chatList" class="chat-list"></ul>
 
-  <div class="panel">
-    <div class="list"><ul id="messageList" style="list-style:none;padding:0;margin:0"></ul></div>
-    <div>
-      <div style="font-size:12px;color:#666;margin-bottom:6px">
-        사용자: <b><c:out value="${empty uid ? '게스트' : uid}"/></b>,
-        카테고리: <b><c:out value="${cat}"/></b>
-      </div>
-      <div class="send">
-        <input id="messageInput" type="text" placeholder="메시지를 입력하세요" />
-        <button id="sendBtn">전송</button>
-      </div>
+    <div class="chat-input">
+      <input id="msg" type="text" placeholder="내용을 입력하세요." autocomplete="off"
+             onkeydown="if(event.key==='Enter') sendMessage()">
+      <button id="sendBtn" onclick="sendMessage()">전송</button>
     </div>
   </div>
-</div>
+
+  <!-- SockJS/STOMP (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script>
-/* ====== ⑤ 컨텍스트 경로 계산 (JSP 미렌더 대비 안전) ====== */
-(function () {
-  var rendered = '<c:out value="${ctx}"/>';
-  window.CTX = rendered && rendered !== '${ctx}' ? rendered : (function(){
-    var seg = location.pathname.split('/');
-    return seg.length > 1 ? '/' + seg[1] : '';
-  })();
-})();
+  // ===== 전역 가드 =====
+  // 타일즈/인클루드/뒤로가기 캐시 등으로 스크립트가 중복 실행되는 것을 차단
+  if (window.__chatInit) {
+    console.warn("chat page already initialized; skipping duplicate init");
+  } else {
+    window.__chatInit = true;
 
-/* ====== ⑥ 엔드포인트/프리픽스 ====== */
-const WS_ENDPOINT  = CTX + '/realtime-chat';  // SockJS 엔드포인트
-const SEND_PREFIX  = '/send';                 // @MessageMapping("/send")
-const TOPIC_PREFIX = '/topic';                // convertAndSend("/topic/...")
+    // ===== 기본 환경 =====
+    (function(){
+      var root = document.getElementById('chatRoot');
+      window.CP = root ? (root.getAttribute('data-cp') || '') : '';
+      window.CATEGORY = root ? parseInt(root.getAttribute('data-category') || '10', 10) : 10;
+    })();
 
-/* ====== ⑦ 페이지 모델 ====== */
-const appEl = document.getElementById('app');
-let CATEGORY = Number(appEl.dataset.category || '10');
-if (Number.isNaN(CATEGORY) || CATEGORY <= 0) CATEGORY = 10;
-const LOGIN_USER = (appEl.dataset.user && appEl.dataset.user.length > 0)
-  ? appEl.dataset.user : ('guest-' + Date.now());
+    var CSRF_HEADER = (document.querySelector('meta[name=\"_csrf_header\"]')||{}).content;
+    var CSRF_TOKEN  = (document.querySelector('meta[name=\"_csrf\"]')||{}).content;
 
-/* ====== ⑧ DOM 캐시 ====== */
-const $ = s => document.querySelector(s);
-const statusBadge = $('#statusBadge');
-const messageList = $('#messageList');
-const inputEl     = $('#messageInput');
-const sendBtn     = $('#sendBtn');
+    // ===== WebSocket 상태 =====
+    var stomp = null;
+    var connected = false;
+    var connecting = false;
+    var subscription = null; // 구독 핸들러 보관
 
-/* ====== ⑨ 유틸 ====== */
-function setStatus(on){
-  statusBadge.className = 'badge ' + (on ? 'on' : '');
-  statusBadge.textContent = on ? '연결됨' : '연결안됨';
-}
-function escapeHtml(s){
-  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c]));
-}
-function appendMessage(m,isNew=false){
-  const li = document.createElement('li');
-  li.className = 'msg' + (isNew ? ' new' : '');
-  li.innerHTML =
-    '<div class="meta">#'+(m.chatCode!=null?m.chatCode:'-')+' · '+escapeHtml(m.userId||'')+'</div>'+
-    '<div class="text">'+escapeHtml(m.message||'')+'</div>';
-  messageList.appendChild(li);
-  messageList.parentElement.scrollTop = messageList.parentElement.scrollHeight;
-}
+    function safeSubscribe() {
+      // 혹시 이전 구독이 살아있다면 해제
+      try { if (subscription && subscription.id) { subscription.unsubscribe(); } } catch(e) {}
+      subscription = stomp.subscribe("/topic/chat/" + CATEGORY, function(frame){
+        var m = JSON.parse(frame.body);
+        appendMessage(m);
+      });
+    }
 
-/* ====== ⑩ 최근 N건 로드(REST) ====== */
-async function loadRecent(){
-  messageList.innerHTML = '';
-  try{
-    const url = `${CTX}/chat/recent?category=${CATEGORY}&limit=30`;
-    const res = await fetch(url, { headers:{ 'Accept':'application/json' }});
-    if(!res.ok) throw new Error('[REST] ' + res.status);
-    const data = await res.json();
-    data.reverse().forEach(m => appendMessage(m, false));
-  }catch(e){ console.error(e); }
-}
+    function connectWS() {
+      if (connecting || (stomp && stomp.connected)) {
+        console.log("skip connect: already connecting/connected");
+        return;
+      }
+      connecting = true;
 
-/* ====== ⑪ STOMP 연결/전송 ====== */
-let stomp=null, sub=null;
-function connectWS(){
-  if(stomp && stomp.connected){ setStatus(true); return; }
-  const sock = new SockJS(WS_ENDPOINT);
-  stomp = Stomp.over(sock);
-  stomp.debug = null;
-  stomp.connect({}, () => {
-    setStatus(true);
-    if(sub){ try{sub.unsubscribe();}catch(_){ } sub=null; }
-    sub = stomp.subscribe(`${TOPIC_PREFIX}/chat.${CATEGORY}`,
-      f => appendMessage(JSON.parse(f.body), true));
-  }, err => { console.error(err); setStatus(false); });
-}
-function sendMessage(){
-  const msg = (inputEl.value||'').trim();
-  if(!msg) return;
-  if(!stomp || !stomp.connected){ alert('연결이 끊어졌습니다. 새로고침 해주세요.'); return; }
-  const dto = { category:CATEGORY, userId:LOGIN_USER, message:msg };
-  stomp.send(`${SEND_PREFIX}/send`, {}, JSON.stringify(dto));
-  inputEl.value=''; inputEl.focus();
-}
+      var sock = new SockJS(CP + "/ws-chat");
+      stomp = Stomp.over(sock);
+      stomp.debug = null; // 필요시 주석 처리하여 로그 확인
 
-/* ====== ⑫ 초기화 ====== */
-(async function(){
-  await loadRecent();
-  connectWS();
-  sendBtn.addEventListener('click', sendMessage);
-  inputEl.addEventListener('keydown', e => { if(e.key === 'Enter') sendMessage(); });
-})();
+      stomp.connect({}, function(){
+        connected = true;
+        connecting = false;
+        document.getElementById('sendBtn').disabled = false;
+
+        safeSubscribe(); // 구독 1개만 유지
+
+        // 초기 로딩
+        fetch(CP + "/chat/recent?category=" + CATEGORY + "&size=30", {credentials:"same-origin"})
+          .then(function(r){ return r.json(); })
+          .then(function(list){ list.reverse().forEach(appendMessage); })
+          .catch(console.error);
+      }, function(err){
+        console.error("STOMP error:", err);
+        connected = false;
+        connecting = false;
+        document.getElementById('sendBtn').disabled = true;
+      });
+    }
+
+    // ===== 메시지 보내기 =====
+    window.sendMessage = function(){
+      var input = document.getElementById('msg');
+      var text = (input.value || '').trim();
+      if(!text || !connected) return;
+
+      var payload = { message: text };
+      stomp.send("/app/send/" + CATEGORY, {}, JSON.stringify(payload));
+      input.value = "";
+      input.focus();
+    };
+
+    // ===== 메시지 렌더링 =====
+    function appendMessage(m){
+      var code = m.chatCode || 0;
+      var userId = m.userId || "user***";
+      var avatarText = (userId.charAt(0) || 'u');
+      var time = formatTime(m.sendDt);
+      var text = escapeHtml(m.message || '');
+
+      var li = document.createElement('li');
+      li.className = 'chat-item';
+      li.setAttribute('data-code', String(code));
+
+      var html = ''
+        + '<div class="avatar">' + escapeHtml(avatarText) + '</div>'
+        + '<div class="bubble">'
+        +   '<div class="meta">'
+        +     '<span class="uid">' + escapeHtml(userId) + '</span>'
+        +     '<span class="time">' + escapeHtml(time) + '</span>'
+        +     '<button class="report" onclick="reportMsg(' + code + ')" title="신고">🚨 신고</button>'
+        +   '</div>'
+        +   '<div class="text">' + text + '</div>'
+        + '</div>';
+
+      li.innerHTML = html;
+      var list = document.getElementById('chatList');
+      list.appendChild(li);
+      li.scrollIntoView({behavior:'smooth', block:'end'});
+    }
+
+    // ===== 신고 =====
+    window.reportMsg = function(chatCode){
+      if(!chatCode){ alert("메시지 코드가 없습니다."); return; }
+      var reason = prompt("신고 사유를 입력하세요.");
+      if(!reason) return;
+
+      var headers = {'Content-Type':'application/json'};
+      if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
+
+      fetch(CP + "/report", {
+        method:'POST',
+        headers: headers,
+        credentials:'same-origin',
+        body: JSON.stringify({ chatCode: chatCode, reason: reason })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){ alert((res && res.message) ? res.message : '신고가 접수되었습니다.'); })
+      .catch(function(err){ console.error(err); alert('신고 전송 중 오류가 발생했습니다.'); });
+    };
+
+    // ===== 유틸 =====
+    function escapeHtml(s){ var d=document.createElement('div'); d.innerText = (s==null? '' : String(s)); return d.innerHTML; }
+    function pad2(n){ n = Number(n); return (n<10?'0':'') + n; }
+    function formatTime(dt){
+      try{
+        if(!dt) return '';
+        var d = new Date(dt);
+        if (isNaN(d.getTime())) return String(dt);
+        return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+      }catch(e){ return String(dt||''); }
+    }
+
+    // ===== 생명주기 =====
+    document.addEventListener('DOMContentLoaded', function(){
+      document.getElementById('sendBtn').disabled = true;
+      connectWS();
+    });
+
+    // 페이지 떠날 때 깔끔히 정리(중복 연결 방지)
+    window.addEventListener('beforeunload', function(){
+      try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e) {}
+      try { if (stomp && stomp.connected) stomp.disconnect(function(){}); } catch(e) {}
+      window.__chatInit = false;
+    });
+  }
 </script>
+
 </body>
 </html>

@@ -1,25 +1,24 @@
 package com.pcwk.ehr.member.controller;
 
-import java.security.SecureRandom;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -32,124 +31,157 @@ import com.pcwk.ehr.member.service.MemberService;
 public class MemberController {
 
     private final Logger log = LogManager.getLogger(getClass());
-    
-  
-    @Value("${app.devBackdoor:false}")   // ← 프로퍼티 주입(기본값 false)
+
+    @Value("${app.devBackdoor:false}")
     private boolean devBackdoor;
-    
+
     @PostConstruct
-    public void init() {
-        log.info("devBackdoor = {}", devBackdoor);
-    }
-    
-    
+    public void init() { log.info("devBackdoor = {}", devBackdoor); }
+
     @Autowired
     private MemberService memberService;
 
-    // 메일 발송에 사용 (root-context.xml 의 bean id 가 "javaMailSender" 여야 함)
-    @Autowired @Qualifier("javaMailSender")
-    private JavaMailSender mailSender;
+    /* ===== Views ===== */
+    @GetMapping("/register.do") public String registerForm() { return "member/register"; }
+    @GetMapping("/login.do")    public String loginForm()    { return "member/login"; }
 
-    /* ================== 뷰 이동 ================== */
-    @GetMapping("/register.do")
-    public String registerForm() { return "member/register"; }
+    /* ===== Logout ===== */
+    @GetMapping("/logout.do")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/mainPage/main.do";
+    }
+    
+    /* ===== Logout admin ===== */
+    @RequestMapping(value = "/member/logout.do", method = {RequestMethod.GET, RequestMethod.POST})
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();   // 세션 종료
+        return "redirect:/";                          // 컨텍스트 루트(= 메인)로 이동
+    }
 
-    @GetMapping("/login.do")
-    public String loginForm() { return "member/login"; }
+    
 
-    /* ================== 아이디/닉네임 중복 ================== */
-    @GetMapping(value = "/checkId", produces = "text/plain; charset=UTF-8")
+    /* ===== ID/Nick Duplicate ===== */
+    @GetMapping(value="/checkId.do", produces="text/plain; charset=UTF-8")
     @ResponseBody
     public String checkId(@RequestParam String userId) throws Exception {
         return memberService.existsById(userId) ? "DUP" : "OK";
     }
 
-    @GetMapping(value = "/checkNick", produces = "text/plain; charset=UTF-8")
+    @GetMapping(value="/checkNick.do", produces="text/plain; charset=UTF-8")
     @ResponseBody
     public String checkNick(@RequestParam String nickNm) throws Exception {
         return memberService.existsByNick(nickNm) ? "DUP" : "OK";
     }
 
-    /* ================== 이메일 인증(코드) ================== */
-    @PostMapping(value="/sendEmailAuth.do", produces="text/plain; charset=UTF-8")
+    /* ===== Email: send code (with duplicate check) ===== */
+    @PostMapping(value="/email/sendCode.do", produces="application/json; charset=UTF-8")
     @ResponseBody
-    public String sendEmailAuth(@RequestParam(required=false) String userId,
-                                @RequestParam String mailAddr,
-                                HttpSession session) {
+    public Map<String,Object> sendEmailCode(@RequestParam String mailAddr,
+                                            HttpSession session) throws Exception {
+        Map<String,Object> res = new HashMap<>();
+        String email = mailAddr == null ? "" : mailAddr.trim();
 
-        if (mailAddr == null || mailAddr.trim().isEmpty()) return "INVALID_EMAIL_EMPTY";
-        if (!mailAddr.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) return "INVALID_EMAIL_FORMAT";
-
-        // 6자리 코드, 5분 만료
-        String code = String.format("%06d", new SecureRandom().nextInt(1_000_000));
-        long   exp  = System.currentTimeMillis() + 5 * 60 * 1000;
-
-        session.setAttribute("emailCode:" + mailAddr, code);
-        session.setAttribute("emailCodeExp:" + mailAddr, exp);
-
-        try {
-            SimpleMailMessage msg = new SimpleMailMessage();
-            String from = (mailSender instanceof JavaMailSenderImpl)
-                    ? ((JavaMailSenderImpl) mailSender).getUsername()
-                    : "com0494@naver.com"; // fallback
-
-            msg.setFrom(from);
-            msg.setTo(mailAddr);
-            msg.setSubject("[회원가입] 이메일 인증코드 (5분 유효)");
-            msg.setText("인증코드: " + code + "\n유효시간: 5분\n※ 타인에게 공유하지 마세요.");
-
-            mailSender.send(msg);
-            log.info("[MAIL] code sent to {} (exp in 5min)", mailAddr);
-            return "SENT";
-        } catch (Exception e) {
-            log.error("[MAIL] send fail: {}", mailAddr, e);
-            return "FAIL_SEND";
+        if (memberService.existsByEmail(email)) {
+            res.put("ok", false);
+            res.put("reason", "DUPLICATE_EMAIL");
+            res.put("message", "이미 가입된 이메일입니다.");
+            return res;
         }
+
+        String code = memberService.sendEmailCode(email);
+        if (code == null) {
+            res.put("ok", false);
+            res.put("reason", "SEND_FAIL");
+            res.put("message", "인증 메일 발송에 실패했습니다.");
+            return res;
+        }
+
+        long exp = System.currentTimeMillis() + 10 * 60 * 1000L;
+        session.setAttribute("emailCode:" + email, code);
+        session.setAttribute("emailCodeExp:" + email, exp);
+
+        res.put("ok", true);
+        res.put("message", "인증 코드가 이메일로 발송되었습니다. 10분 내 입력하세요.");
+        return res;
     }
 
-    @PostMapping(value="/verifyEmailCode", produces="text/plain; charset=UTF-8")
+    /* ===== Email: verify code ===== */
+    @PostMapping(value="/email/verifyCode.do", produces="application/json; charset=UTF-8")
     @ResponseBody
-    public String verifyEmailCode(@RequestParam String mailAddr,
-                                  @RequestParam String code,
-                                  HttpSession session) {
+    public Map<String,Object> verifyEmailCode(@RequestParam String mailAddr,
+                                              @RequestParam String code,
+                                              HttpSession session) {
+        Map<String,Object> res = new HashMap<>();
+        String email = mailAddr == null ? "" : mailAddr.trim();
 
-        String saved = (String) session.getAttribute("emailCode:" + mailAddr);
-        Long   exp   = (Long)   session.getAttribute("emailCodeExp:" + mailAddr);
+        String key = "emailCode:" + email;
+        String keyExp = "emailCodeExp:" + email;
+        Object saved = session.getAttribute(key);
+        Object exp   = session.getAttribute(keyExp);
 
-        if (saved == null || exp == null) return "NO_CODE";
-        if (System.currentTimeMillis() > exp) return "EXPIRED";
-        if (!saved.equals(code)) return "INVALID";
+        if (saved == null || exp == null) {
+            res.put("ok", false); res.put("reason","NO_CODE");
+            res.put("message","인증 코드를 먼저 발송해 주세요.");
+            return res;
+        }
 
-        session.setAttribute("emailVerified", mailAddr);
-        return "OK";
+        long expireAt = (Long) exp;
+        if (System.currentTimeMillis() > expireAt) {
+            session.removeAttribute(key); session.removeAttribute(keyExp);
+            res.put("ok", false); res.put("reason","EXPIRED");
+            res.put("message","인증 코드가 만료되었습니다. 다시 발송해 주세요.");
+            return res;
+        }
+
+        if (!((String) saved).equals(code)) {
+            res.put("ok", false); res.put("reason","MISMATCH");
+            res.put("message","인증 코드가 일치하지 않습니다.");
+            return res;
+        }
+
+        session.setAttribute("emailVerified:" + email, true);
+        res.put("ok", true); res.put("message","이메일 인증이 완료되었습니다.");
+        return res;
     }
 
-    /* ================== 회원가입 처리 ================== */
+    /* ===== Register ===== */
     @PostMapping("/register.do")
-    public String register(@ModelAttribute MemberDTO dto,
-                           RedirectAttributes ra,
-                           HttpSession session) throws Exception {
+    public String registerSubmit(@ModelAttribute MemberDTO dto,
+                                 RedirectAttributes ra,
+                                 HttpSession session) {
+        try {
+            Object ok = session.getAttribute("emailVerified:" + dto.getMailAddr());
+            if (!(ok instanceof Boolean) || !((Boolean) ok)) {
+                ra.addFlashAttribute("error", "이메일 인증을 완료해 주세요.");
+                ra.addFlashAttribute("form", dto);
+                return "redirect:/member/register.do";
+            }
 
-        String verifiedEmail = (String) session.getAttribute("emailVerified");
-        if (verifiedEmail == null || !verifiedEmail.equalsIgnoreCase(dto.getMailAddr())) {
-            ra.addFlashAttribute("message", "이메일 인증을 먼저 완료하세요.");
+            dto.setEmailAuthYn("Y");
+            dto.setEmailAuthToken(null);
+
+            memberService.register(dto);
+
+            session.removeAttribute("emailVerified:" + dto.getMailAddr());
+            session.removeAttribute("emailCode:" + dto.getMailAddr());
+            session.removeAttribute("emailCodeExp:" + dto.getMailAddr());
+
+            ra.addFlashAttribute("message", "회원가입 성공! (이메일 인증 완료)");
+            return "redirect:/member/login.do";
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            ra.addFlashAttribute("form", dto);
+            return "redirect:/member/register.do";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "처리 중 오류가 발생했습니다.");
+            ra.addFlashAttribute("form", dto);
             return "redirect:/member/register.do";
         }
-
-        dto.setEmailAuthYn("Y");
-        dto.setEmailAuthToken(null);
-
-        int result = memberService.register(dto);
-
-        session.removeAttribute("emailCode:" + dto.getMailAddr());
-        session.removeAttribute("emailCodeExp:" + dto.getMailAddr());
-        session.removeAttribute("emailVerified");
-
-        ra.addFlashAttribute("message", result == 1 ? "회원가입 성공!" : "회원가입 실패!");
-        return "redirect:" + (result == 1 ? "/member/login.do" : "/member/register.do");
     }
 
-    /* ================== (옵션) 토큰 방식 이메일 검증 ================== */
+    /* ===== Token verify (optional) ===== */
     @GetMapping("/verifyEmail")
     public String verifyEmail(@RequestParam("token") String token, Model model) throws Exception {
         boolean ok = memberService.verifyEmailToken(token);
@@ -157,37 +189,28 @@ public class MemberController {
         return "member/emailResult";
     }
 
-    /* ================== 로그인/로그아웃 ================== */
+    /* ===== Login ===== */
     @PostMapping("/login.do")
     public String login(@ModelAttribute MemberDTO dto,
                         HttpSession session,
                         RedirectAttributes ra) throws SQLException {
 
-        
-    	// [DEV ONLY] 하드코딩 관리자 로그인: admin / admin123
-    	if (devBackdoor && "admin".equals(dto.getUserId()) && "admin123".equals(dto.getPwd())) {
-    	    MemberDTO admin = new MemberDTO();
-    	    admin.setUserId("admin");
-    	    admin.setUserNm("관리자");
-    	    admin.setUserGradeCd(0); // ★ 관리자
+        if (devBackdoor && "admin".equals(dto.getUserId()) && "admin123".equals(dto.getPwd())) {
+            MemberDTO admin = new MemberDTO();
+            admin.setUserId("admin");
+            admin.setUserNm("관리자");
+            admin.setUserGradeCd(0);
+            session.setAttribute("loginUser", admin);
+            session.setAttribute("userGradeCd", 0);
+            ra.addFlashAttribute("message", "관리자로 로그인되었습니다.");
+            return "redirect:/admin/dashboard.do";
+        }
 
-    	    session.setAttribute("loginUser", admin);
-    	    session.setAttribute("userGradeCd", 0);
-
-    	    ra.addFlashAttribute("message", "관리자로 로그인되었습니다.");
-    	    return "redirect:/admin/dashboard.do";
-    	}
-
-
-        // 일반 로그인 로직
         MemberDTO loginUser = memberService.login(dto);
         if (loginUser != null) {
             session.setAttribute("loginUser", loginUser);
             session.setAttribute("userGradeCd", loginUser.getUserGradeCd());
-
             ra.addFlashAttribute("message", loginUser.getUserId() + "님 로그인 성공!");
-
-            // ★ 관리자면 바로 관리자 대시보드로
             if (Integer.valueOf(0).equals(loginUser.getUserGradeCd())) {
                 return "redirect:/admin/dashboard.do";
             }
@@ -198,47 +221,37 @@ public class MemberController {
         }
     }
 
-    /* ================== 아이디/비밀번호 찾기 ================== */
-    @GetMapping("/findId.do")
-    public String findIdForm() { return "member/findId"; } // /WEB-INF/views/member/findId.jsp
+    /* ===== Find ID/PW ===== */
+    @GetMapping("/findId.do") public String findIdForm() { return "member/findId"; }
 
     @PostMapping("/findId.do")
     public String findId(@RequestParam String userNm,
                          @RequestParam String mailAddr,
                          Model model) throws SQLException {
-
-        String userId = memberService.findUserId(userNm, mailAddr); // 없으면 null
+        String userId = memberService.findUserId(userNm, mailAddr);
         model.addAttribute("foundId", userId == null ? null : mask(userId));
         model.addAttribute("submitted", true);
         return "member/findId";
     }
 
-    @GetMapping("/findPwd.do")
-    public String findPwdForm() { return "member/findPwd"; } // /WEB-INF/views/member/findPwd.jsp
+    @GetMapping("/findPwd.do") public String findPwdForm() { return "member/findPwd"; }
 
     @PostMapping("/findPwd.do")
     public String findPwd(@RequestParam String userId,
                           @RequestParam String mailAddr,
                           RedirectAttributes ra) {
-
-        boolean ok = memberService.sendResetMail(userId, mailAddr); // 임시비번/재설정 메일 발송
-        if (ok) {
-            ra.addFlashAttribute("message", "비밀번호 재설정 메일을 보냈습니다.");
-        } else {
-            ra.addFlashAttribute("error", "일치하는 계정을 찾을 수 없습니다.");
-        }
+        boolean ok = memberService.sendResetMail(userId, mailAddr);
+        if (ok) ra.addFlashAttribute("message", "비밀번호 재설정 메일을 보냈습니다.");
+        else     ra.addFlashAttribute("error", "일치하는 계정을 찾을 수 없습니다.");
         return "redirect:/member/login.do";
     }
-    
-    
- // 비밀번호 재설정 폼 (메일 링크로 진입)
+
     @GetMapping("/resetPwd.do")
     public String resetPwdForm(@RequestParam String token, Model model) {
         model.addAttribute("token", token);
-        return "member/resetPwd";  // /WEB-INF/views/member/resetPwd.jsp
+        return "member/resetPwd";
     }
 
-    // 비밀번호 재설정 처리
     @PostMapping("/resetPwd.do")
     public String resetPwdSubmit(@RequestParam String token,
                                  @RequestParam String newPwd,
@@ -253,16 +266,10 @@ public class MemberController {
         }
     }
 
-    
-    
-    /* ================== 유틸 ================== */
+    /* ===== Util ===== */
     private String mask(String id) {
         if (id == null || id.isEmpty()) return "";
         if (id.length() <= 3) return id.charAt(0) + "***";
         return id.substring(0, 3) + "****";
     }
-
-
-
-
 }

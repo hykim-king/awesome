@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
+
+:root{
+  --title-size: 28px;
+  --field-w: 520px;        /* 입력 박스 최대 너비 */
+  --field-h: 44px;         /* 입력 박스 높이 */
+  --gap-y: 14px;           /* 라벨과 인풋 사이 간격 */
+  --row-gap: 16px;         /* 필드 블록 간 간격 */
+  --radius: 10px;
+  --stroke: #000;
+  --muted: #6b7280;
+  --danger: #e11d48;       /* 저장(강조색) */
+}
+
+*{ box-sizing: border-box; }
+html,body{
+  margin:0; padding:0;
+  background:#fff; color:#000;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+}
+
+/* 여백 축소 + 항상 위쪽 정렬 */
+#main{
+  min-height: auto;           /* 높이 강제하지 않음 */
+  align-content: start;       /* 세로 상단 정렬 */
+  padding: 80px 60px 150px;    /* 위/아래 패딩 축소 */
+}
+
+/* 가운데 정렬 강제하던 미디어쿼리 무력화 */
+@media (min-height: 720px){
+  #main{ align-content: start; }
+}
+
+.main-container{
+  width: min(1100px, 94vw);
+  margin-inline: auto;
+}
+
+/* 제목 */
+.main-container > h2{
+  margin: 0 0 24px;
+  text-align: center;
+  font-weight: 900;
+  font-size: var(--title-size);
+  line-height: 1.2;
+}
+
+/* 폼 중앙 배치 + 폭 제한 */
+.main-container form{
+  width: min(var(--field-w), 92vw);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr;  /* 한 열 */
+}
+
+/* 라벨 위쪽 배치 */
+.main-container form > label{
+  margin-top: var(--row-gap);
+  margin-bottom: var(--gap-y);
+  font-weight: 800;
+  font-size: 14px;
+  color: #111827;
+}
+
+/* 입력박스 공통 */
+.main-container form input[type="text"],
+.main-container form input[type="email"],
+.main-container form input[type="date"]{
+  height: var(--field-h);
+  padding: 0 14px;
+  border: 1.5px solid var(--stroke);
+  border-radius: var(--radius);
+  background: #fff;
+  font-size: 16px;
+  line-height: 1.2;
+  outline: none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+
+/* 포커스 */
+.main-container form input:focus{
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+}
+
+/* 읽기전용(회색) */
+.main-container form input[readonly]{
+  background: #f3f4f6;
+  color: #111;
+}
+
+/* Buttons */
+.button-box{
+  width: var(--field-w);          /* .userInfo-box 중앙열과 동일 폭 */
+  max-width: 92vw;                /* 좁은 화면 안전장치 */
+  margin: 16px auto 0;            /* 가운데 배치 */
+  display: flex;
+  justify-content: flex-start;      /* ← right 말고 flex-end 사용 */
+  gap: 12px;
+  margin-top: 45px;
+}
+
+/* 저장을 오른쪽 끝으로 밀고, 취소는 그 옆에 붙음 */
+.button-box button[type="submit"]{
+  margin-left: auto;
+}
+
+/* 버튼/링크 공통 스타일 */
+.button-box a,
+.button-box button{
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 38px;
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .06s ease, border-color .12s ease, color .12s ease;
+}
+
+.button-box a:hover,
+.button-box button:hover{ transform: translateY(-1px); }
+.button-box a:active,
+.button-box button:active{ transform: translateY(0); box-shadow: none; }
+
+/* 저장 버튼만 포인트 컬러(빨강) */
+.button-box button[type="submit"]{
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* 반응형: 좁은 화면에서는 폭 자동 */
+@media (max-width: 640px){
+  :root{ --field-w: 92vw; }
+  .main-container > h2{ font-size: 24px; }
+}
