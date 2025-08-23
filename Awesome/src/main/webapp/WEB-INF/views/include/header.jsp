@@ -19,7 +19,7 @@ response.setDateHeader("Expires", 0);%>
       <li><a href="#">홈</a></li>
       <li><a href="#">퀴즈</a></li>
       <li><a href="http://localhost:8080/ehr/article/list.do">전체기사</a></li>
-      <li><a href="#">마이페이지</a></li>
+      <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
       <li class="has-submenu">
         <div class="submenu-box">
         <%-- 현재 카테고리 값을 param/category 중 하나로 통일 --%>

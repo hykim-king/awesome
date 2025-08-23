@@ -1,0 +1,123 @@
+/* ===== User Info (Final, CSS only) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
+
+/* Tweaks you can change quickly */
+:root{
+  --title-size: 32px;     /* 제목 크기 */
+  --field-w: 520px;       /* 값 박스 너비 */
+  --field-h: 44px;        /* 값 박스 높이 */
+  --row-gap: 22px;        /* 각 박스 간 간격 */
+  --label-x: 12px;        /* 라벨의 좌측 오프셋 */
+  --label-y: -9px;        /* 라벨의 위쪽(음수) 오프셋 */
+  --stroke: #000;
+  --danger: #e11d48;
+}
+
+*{ box-sizing: border-box; }
+html,body{
+  margin:0; padding:0;
+  background:#fff; color:#000;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+}
+
+/* 여백 축소 + 항상 위쪽 정렬 */
+#main{
+  min-height: auto;           /* 높이 강제하지 않음 */
+  align-content: start;       /* 세로 상단 정렬 */
+  padding: 80px 60px 150px;    /* 위/아래 패딩 축소 */
+}
+
+/* 가운데 정렬 강제하던 미디어쿼리 무력화 */
+@media (min-height: 720px){
+  #main{ align-content: start; }
+}
+.main-container{
+  width: min(1100px, 94vw);
+  margin-inline: auto;
+}
+
+/* Title */
+.main-container > h2{
+  margin: 0 0 28px;
+  text-align: center;
+  font-weight: 900;
+  font-size: var(--title-size);
+  line-height: 1.2;
+}
+
+/* ================================
+   Center the field column exactly
+   Layout: [1fr | FIELD | 1fr]
+   ================================ */
+.userInfo-box{
+  width: 100%;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr var(--field-w) 1fr;
+  row-gap: var(--row-gap);
+  align-items: start;
+}
+
+/* Top-left floating labels for each box */
+.userInfo-box h3{
+  grid-column: 2;                 /* 중앙 열 */
+  margin: 0 0 var(--label-y) var(--label-x);
+  padding: 0 6px;
+  background: #fff;               /* 테두리 위에서 잘 보이게 배경 */
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  color: #555;
+  align-self: end;                /* 박스 상단에 맞추기 */
+  justify-self: start;            /* 좌측 정렬 */
+}
+
+/* Value boxes (look like inputs) */
+.userInfo-box p{
+  grid-column: 2;                 /* 중앙 열 */
+  margin: 0;
+  height: var(--field-h);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: #fff;
+  border: 1.5px solid var(--stroke);
+  border-radius: 10px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+/* Buttons */
+.button-box{
+  width: var(--field-w);          /* .userInfo-box 중앙열과 동일 폭 */
+  max-width: 92vw;                /* 좁은 화면 안전장치 */
+  margin: 16px auto 0;            /* 가운데 배치 */
+  display: flex;
+  justify-content: flex-end;      /* ← right 말고 flex-end 사용 */
+  gap: 12px;
+  margin-top: 45px;
+}
+.button-box a{
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 38px;
+  text-decoration: none;
+  color: #000;
+  transition: transform .06s ease, box-shadow .06s ease;
+}
+.button-box a:hover{ transform: translateY(-1px); }
+.button-box a:active{ transform: translateY(0); box-shadow: none; }
+.button-box a:nth-child(2){ color: var(--danger); border-color: var(--danger); }
+
+/* Responsive */
+@media (max-width: 640px){
+  :root{ --field-w: 92vw; }       /* 좁은 화면에서는 자동으로 줄이기 */
+  .main-container > h2{ font-size: 28px; }
+}

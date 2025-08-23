@@ -1,0 +1,95 @@
+/* ============ Modal (Password) ============ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
+
+.modal-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  display: none;                 /* 기본 숨김 */
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-backdrop.is-open{ display: flex; }
+
+.modal{
+  width: min(709px, 92vw);
+  max-height: 92vh;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 24px 24px 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.25);
+  overflow: auto;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+}
+
+.modal h2{
+  margin: 0 0 12px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 30px;               /* 피그마값 */
+  line-height: 36px;
+}
+
+.modal-form{
+  width: min(454px, 86vw);       /* 피그마 필드폭 */
+  margin: 10px auto 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 10px;
+}
+
+.modal-form label{
+  margin-top: 8px;
+  font-weight: 900;
+  font-size: 16px;               /* 피그마 20px → 웹 16px로 적당히 */
+  color: #000;
+}
+
+.modal-form input[type="password"]{
+  height: 53px;                   /* 피그마값 */
+  padding: 0 14px;
+  border: 2px solid #000;
+  border-radius: 15px;
+  background: #fff;
+  font-size: 16px;
+  outline: none;
+}
+.modal-form input[type="password"]:focus{
+  box-shadow: 0 0 0 3px rgba(0,0,0,.08);
+}
+
+.button-row{
+  display: flex;
+  justify-content: flex-end;      /* 우하단 정렬 */
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;                   /* 피그마 36px */
+  padding: 0 16px;
+  border: 1px solid #000;
+  border-radius: 10px;            /* 피그마 10px */
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,.25);
+  font-weight: 900;
+  font-size: 16px;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .06s ease;
+}
+.btn:hover{ transform: translateY(-1px); }
+.btn:active{ transform: translateY(0); box-shadow: none; }
+.btn-save{ color: #FF0F0F; border-color: #FF0F0F; }  /* 저장 빨강 포인트 */
+
+/* 모바일 보정 */
+@media (max-width: 520px){
+  .modal{ padding: 18px 14px; }
+  .modal h2{ font-size: 24px; }
+  .modal-form{ width: 92vw; }
+}
