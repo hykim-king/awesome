@@ -69,156 +69,223 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script>
-  // ===== 전역 가드 =====
-  // 타일즈/인클루드/뒤로가기 캐시 등으로 스크립트가 중복 실행되는 것을 차단
+/**
+ * 채팅 JS – 회원만 전송 가능 / 비회원은 에러 큐로 안내
+ * - 필요한 data-* :
+ *   <div id="chatRoot" data-cp="${CP}" data-category="${CATEGORY}" data-logged-in="${not empty sessionScope.USER_ID}"></div>
+ */
+(function(){
+  'use strict';
+
+  // ===== 중복 초기화 방지 =====
   if (window.__chatInit) {
-    console.warn("chat page already initialized; skipping duplicate init");
-  } else {
-    window.__chatInit = true;
+    console.warn('[chat] already initialized; skip');
+    return;
+  }
+  window.__chatInit = true;
 
-    // ===== 기본 환경 =====
-    (function(){
-      var root = document.getElementById('chatRoot');
-      window.CP = root ? (root.getAttribute('data-cp') || '') : '';
-      window.CATEGORY = root ? parseInt(root.getAttribute('data-category') || '10', 10) : 10;
-    })();
+  // ===== 환경값 / DOM =====
+  var root = document.getElementById('chatRoot');
+  if (!root) {
+    console.error('[chat] #chatRoot not found');
+    return;
+  }
+  var CP        = root.getAttribute('data-cp') || '';
+  var CATEGORY  = parseInt(root.getAttribute('data-category') || '10', 10);
+  var LOGGED_IN = (String(root.getAttribute('data-logged-in')) === 'true');
 
-    var CSRF_HEADER = (document.querySelector('meta[name=\"_csrf_header\"]')||{}).content;
-    var CSRF_TOKEN  = (document.querySelector('meta[name=\"_csrf\"]')||{}).content;
+  var $list   = document.getElementById('chatList'); // <ul id="chatList">
+  var $input  = document.getElementById('msg');      // <input id="msg">
+  var $send   = document.getElementById('sendBtn');  // <button id="sendBtn">
 
-    // ===== WebSocket 상태 =====
-    var stomp = null;
-    var connected = false;
-    var connecting = false;
-    var subscription = null; // 구독 핸들러 보관
+  var CSRF_HEADER = (document.querySelector('meta[name="_csrf_header"]')||{}).content;
+  var CSRF_TOKEN  = (document.querySelector('meta[name="_csrf"]')||{}).content;
 
-    function safeSubscribe() {
-      // 혹시 이전 구독이 살아있다면 해제
-      try { if (subscription && subscription.id) { subscription.unsubscribe(); } } catch(e) {}
-      subscription = stomp.subscribe("/topic/chat/" + CATEGORY, function(frame){
+  // ===== WebSocket/STOMP 상태 =====
+  var stomp = null;
+  var connected = false;
+  var connecting = false;
+  var subChat = null;   // 채팅 수신 구독 핸들
+  var subError = null;  // 에러(비회원) 구독 핸들
+
+  // 안전 구독 / 해제
+  function unsubscribeSafe(sub){
+    try { if (sub && sub.id) sub.unsubscribe(); } catch(e) {}
+  }
+
+  function safeSubscribeChat(){
+    unsubscribeSafe(subChat);
+    subChat = stomp.subscribe("/topic/chat/" + CATEGORY, function(frame){
+      try {
         var m = JSON.parse(frame.body);
         appendMessage(m);
-      });
-    }
-
-    function connectWS() {
-      if (connecting || (stomp && stomp.connected)) {
-        console.log("skip connect: already connecting/connected");
-        return;
-      }
-      connecting = true;
-
-      var sock = new SockJS(CP + "/ws-chat");
-      stomp = Stomp.over(sock);
-      stomp.debug = null; // 필요시 주석 처리하여 로그 확인
-
-      stomp.connect({}, function(){
-        connected = true;
-        connecting = false;
-        document.getElementById('sendBtn').disabled = false;
-
-        safeSubscribe(); // 구독 1개만 유지
-
-        // 초기 로딩
-        fetch(CP + "/chat/recent?category=" + CATEGORY + "&size=30", {credentials:"same-origin"})
-          .then(function(r){ return r.json(); })
-          .then(function(list){ list.reverse().forEach(appendMessage); })
-          .catch(console.error);
-      }, function(err){
-        console.error("STOMP error:", err);
-        connected = false;
-        connecting = false;
-        document.getElementById('sendBtn').disabled = true;
-      });
-    }
-
-    // ===== 메시지 보내기 =====
-    window.sendMessage = function(){
-      var input = document.getElementById('msg');
-      var text = (input.value || '').trim();
-      if(!text || !connected) return;
-
-      var payload = { message: text };
-      stomp.send("/app/send/" + CATEGORY, {}, JSON.stringify(payload));
-      input.value = "";
-      input.focus();
-    };
-
-    // ===== 메시지 렌더링 =====
-    function appendMessage(m){
-      var code = m.chatCode || 0;
-      var userId = m.userId || "user***";
-      var avatarText = (userId.charAt(0) || 'u');
-      var time = formatTime(m.sendDt);
-      var text = escapeHtml(m.message || '');
-
-      var li = document.createElement('li');
-      li.className = 'chat-item';
-      li.setAttribute('data-code', String(code));
-
-      var html = ''
-        + '<div class="avatar">' + escapeHtml(avatarText) + '</div>'
-        + '<div class="bubble">'
-        +   '<div class="meta">'
-        +     '<span class="uid">' + escapeHtml(userId) + '</span>'
-        +     '<span class="time">' + escapeHtml(time) + '</span>'
-        +     '<button class="report" onclick="reportMsg(' + code + ')" title="신고">🚨 신고</button>'
-        +   '</div>'
-        +   '<div class="text">' + text + '</div>'
-        + '</div>';
-
-      li.innerHTML = html;
-      var list = document.getElementById('chatList');
-      list.appendChild(li);
-      li.scrollIntoView({behavior:'smooth', block:'end'});
-    }
-
-    // ===== 신고 =====
-    window.reportMsg = function(chatCode){
-      if(!chatCode){ alert("메시지 코드가 없습니다."); return; }
-      var reason = prompt("신고 사유를 입력하세요.");
-      if(!reason) return;
-
-      var headers = {'Content-Type':'application/json'};
-      if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
-
-      fetch(CP + "/report", {
-        method:'POST',
-        headers: headers,
-        credentials:'same-origin',
-        body: JSON.stringify({ chatCode: chatCode, reason: reason })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(res){ alert((res && res.message) ? res.message : '신고가 접수되었습니다.'); })
-      .catch(function(err){ console.error(err); alert('신고 전송 중 오류가 발생했습니다.'); });
-    };
-
-    // ===== 유틸 =====
-    function escapeHtml(s){ var d=document.createElement('div'); d.innerText = (s==null? '' : String(s)); return d.innerHTML; }
-    function pad2(n){ n = Number(n); return (n<10?'0':'') + n; }
-    function formatTime(dt){
-      try{
-        if(!dt) return '';
-        var d = new Date(dt);
-        if (isNaN(d.getTime())) return String(dt);
-        return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
-      }catch(e){ return String(dt||''); }
-    }
-
-    // ===== 생명주기 =====
-    document.addEventListener('DOMContentLoaded', function(){
-      document.getElementById('sendBtn').disabled = true;
-      connectWS();
-    });
-
-    // 페이지 떠날 때 깔끔히 정리(중복 연결 방지)
-    window.addEventListener('beforeunload', function(){
-      try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e) {}
-      try { if (stomp && stomp.connected) stomp.disconnect(function(){}); } catch(e) {}
-      window.__chatInit = false;
+      } catch(e){ console.error(e); }
     });
   }
+
+  function safeSubscribeErrors(){
+    unsubscribeSafe(subError);
+    // 서버가 convertAndSendToUser(..., "/queue/errors", ...)로 보냄 → 클라: /user/queue/errors
+    subError = stomp.subscribe("/user/queue/errors", function(frame){
+      try {
+        var msg = JSON.parse(frame.body);
+        alert(msg.message || '로그인이 필요한 기능입니다. 먼저 로그인해 주세요.');
+      } catch(e) {
+        alert('로그인이 필요한 기능입니다. 먼저 로그인해 주세요.');
+      }
+    });
+  }
+
+  // ===== 연결 =====
+  function connectWS(){
+    if (connecting || (stomp && stomp.connected)) {
+      console.log('[chat] skip connect: connecting/connected');
+      return;
+    }
+    connecting = true;
+    $send && ($send.disabled = true);
+
+    var sock = new SockJS(CP + "/ws-chat");
+    stomp = Stomp.over(sock);
+    stomp.debug = null; // 필요시 로그 보고 싶으면 주석 처리
+
+    stomp.connect({}, function(){
+      connected = true;
+      connecting = false;
+
+      // 에러 큐(비회원 전송 시 서버가 여기로 push)
+      safeSubscribeErrors();
+
+      // 채팅 구독
+      safeSubscribeChat();
+
+      // 초기 로딩
+      fetch(CP + "/chat/recent?category=" + CATEGORY + "&size=30", { credentials: "same-origin" })
+        .then(function(r){ return r.json(); })
+        .then(function(list){ (list||[]).reverse().forEach(appendMessage); })
+        .catch(console.error);
+
+      $send && ($send.disabled = false);
+    }, function(err){
+      console.error("[chat] STOMP error:", err);
+      connected = false;
+      connecting = false;
+      $send && ($send.disabled = true);
+    });
+  }
+
+  // ===== 전송 =====
+  function sendMessage(){
+    var text = ($input && $input.value || '').trim();
+    if (!text) return;
+
+    // 로그인 가드 (UX상 서버까지 보내지 않음)
+    if (!LOGGED_IN) {
+      alert('로그인이 필요한 기능입니다. 먼저 로그인해 주세요.');
+      return;
+    }
+    if (!connected || !stomp) {
+      alert('연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+
+    var payload = { message: text };
+    stomp.send("/app/send/" + CATEGORY, {}, JSON.stringify(payload));
+    $input.value = '';
+    $input.focus();
+  }
+  // 전역 노출(HTML onclick/Enter에서 사용)
+  window.sendMessage = sendMessage;
+
+  // ===== 메시지 렌더링 =====
+  function appendMessage(m){
+    if (!$list) return;
+    var code      = m.chatCode || 0;
+    var userId    = m.userId || 'user***';
+    var avatar    = (userId.charAt(0) || 'u');
+    var timeLabel = formatTime(m.sendDt);
+    var textHtml  = escapeHtml(m.message || '');
+
+    var li = document.createElement('li');
+    li.className = 'chat-item';
+    li.setAttribute('data-code', String(code));
+
+    li.innerHTML =
+      '<div class="avatar">' + escapeHtml(avatar) + '</div>' +
+      '<div class="bubble">' +
+      '  <div class="meta">' +
+      '    <span class="uid">' + escapeHtml(userId) + '</span>' +
+      '    <span class="time">' + escapeHtml(timeLabel) + '</span>' +
+      '    <button class="report" onclick="reportMsg(' + code + ')" title="신고">🚨 신고</button>' +
+      '  </div>' +
+      '  <div class="text">' + textHtml + '</div>' +
+      '</div>';
+
+    $list.appendChild(li);
+    li.scrollIntoView({ behavior:'smooth', block:'end' });
+  }
+
+  // ===== 신고 =====
+  window.reportMsg = function(chatCode){
+    if(!chatCode){ alert("메시지 코드가 없습니다."); return; }
+
+    // 간단 프롬프트 → 이후 모달로 교체 가능
+    var reason = prompt("신고 사유를 입력하세요.\n(예: SPAM / ABUSE / 기타 내용)");
+    if(!reason) return;
+
+    var headers = {'Content-Type':'application/json'};
+    if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
+
+    fetch(CP + "/report", {
+      method:'POST',
+      headers: headers,
+      credentials:'same-origin',
+      body: JSON.stringify({ chatCode: chatCode, reason: reason })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      alert((res && res.message) ? res.message : '신고가 접수되었습니다.');
+    })
+    .catch(function(err){
+      console.error(err);
+      alert('신고 전송 중 오류가 발생했습니다.');
+    });
+  };
+
+  // ===== 유틸 =====
+  function escapeHtml(s){
+    var d = document.createElement('div');
+    d.innerText = (s == null ? '' : String(s));
+    return d.innerHTML;
+  }
+  function pad2(n){ n = Number(n); return (n<10 ? '0':'') + n; }
+  function formatTime(dt){
+    try{
+      if(!dt) return '';
+      var d = new Date(dt);
+      if (isNaN(d.getTime())) return String(dt);
+      return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+    }catch(e){
+      return String(dt || '');
+    }
+  }
+
+  // ===== 부트 =====
+  document.addEventListener('DOMContentLoaded', function(){
+    if ($send) $send.disabled = true;
+    connectWS();
+  });
+
+  // ===== 정리 =====
+  window.addEventListener('beforeunload', function(){
+    unsubscribeSafe(subChat);
+    unsubscribeSafe(subError);
+    try { if (stomp && stomp.connected) stomp.disconnect(function(){}); } catch(e) {}
+    window.__chatInit = false;
+  });
+})();
 </script>
+
 
 </body>
 </html>

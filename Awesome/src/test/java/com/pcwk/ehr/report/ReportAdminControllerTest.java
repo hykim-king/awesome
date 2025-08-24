@@ -125,7 +125,7 @@ class ReportAdminControllerTest {
 
         log.debug(" 관리자 신고목록 종료");
 	}
-	@Disabled
+	//@Disabled
 	@Test
 	void Admin_status_update_report()throws Exception {
 		log.debug("┌───────────────────────────────────────┐");
@@ -160,7 +160,7 @@ class ReportAdminControllerTest {
 	
 	
 	
-	//@Disabled
+	@Disabled
 	@Test
 	void beans() {
 		log.debug("┌───────────────────────────────────────┐");
