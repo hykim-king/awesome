@@ -166,6 +166,36 @@
 
 
     <!-- Naver smtp -->
+
+   <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.naver.com"/>
+    <property name="port" value="587"/> 
+    <property name="username" value="com0494@naver.com"/>
+    <property name="password" value=""/>
+     <property name="defaultEncoding" value="UTF-8"/>
+    <property name="javaMailProperties">
+        <props>
+      <prop key="mail.transport.protocol">smtp</prop>
+      <prop key="mail.smtp.auth">true</prop>
+
+      <!-- STARTTLS 모드 -->
+      <prop key="mail.smtp.starttls.enable">true</prop>
+      <prop key="mail.smtp.starttls.required">true</prop>
+      <prop key="mail.smtp.ssl.enable">false</prop>
+
+      <!-- TLS 1.2 강제 -->
+      <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+      <!-- 서버 인증서 호스트 검증 (권장) -->
+      <prop key="mail.smtp.ssl.checkserveridentity">true</prop>
+
+      <!-- 타임아웃 & 디버그 -->
+      <prop key="mail.smtp.ssl.trust">smtp.naver.com</prop>
+      <prop key="mail.smtp.connectiontimeout">10000</prop>
+      <prop key="mail.smtp.timeout">10000</prop>
+      <prop key="mail.smtp.writetimeout">10000</prop>
+      <prop key="mail.debug">true</prop>
+       
+
   <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
   <property name="host" value="${mail.host}"/>
   <property name="port" value="${mail.port}"/>
@@ -187,6 +217,7 @@
       <prop key="mail.smtp.timeout">${mail.timeout}</prop>
       <prop key="mail.smtp.writetimeout">${mail.writetimeout}</prop>
       <prop key="mail.debug">${mail.debug}</prop>
+
            
            
            
@@ -213,7 +244,7 @@
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
         <property name="username" value="awesome" />
-        <property name="password" value="a4321">
+        <property name="password" value="">
         </property>
         
         
