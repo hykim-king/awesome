@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
 <!-- 네이버사전 읽어오기-->
 <context:property-placeholder
@@ -18,54 +18,54 @@
 <bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
 
 
-	<!-- 컴포넌트 스캔 중복(컨트롤러/웹소켓 핸들러가 root-context.xml 과 servlet-context.xml 분리) -->
-	<context:component-scan base-package="com.pcwk.ehr">
-	  <context:exclude-filter type="annotation"
-	      expression="org.springframework.stereotype.Controller"/>
-	  <context:exclude-filter type="annotation"
-	      expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
-	</context:component-scan>
+    <!-- 컴포넌트 스캔 중복(컨트롤러/웹소켓 핸들러가 root-context.xml 과 servlet-context.xml 분리) -->
+    <context:component-scan base-package="com.pcwk.ehr">
+      <context:exclude-filter type="annotation"
+          expression="org.springframework.stereotype.Controller"/>
+      <context:exclude-filter type="annotation"
+          expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
 
 
 
-	<!-- message설정 
-	    등록시 주의 사항 : 이름이 messageSource로 고정되어 있다.
-	  id="messageSource"
-	 -->	
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-	   <property name="basenames">
-	     <list>
-	       <value>message.message</value>
-	     </list>
-	   </property>
-	</bean>	
-	
+    <!-- message설정 
+        등록시 주의 사항 : 이름이 messageSource로 고정되어 있다.
+      id="messageSource"
+     -->    
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+       <property name="basenames">
+         <list>
+           <value>message.message</value>
+         </list>
+       </property>
+    </bean> 
+    
 
 
-	<!-- 로케일 변경 인터셉터 
-	언언 설정 변경 요청을 가로채고 사용자의 Locale을 동적으로 변경해주는 인터셉터
-	-->
-	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-	    <property name="paramName" value="lang"></property>
-	</bean>
-	
-	<!-- LocaleResolver : 웹브라우저가 서버에 요청하면 브라우저의 Locale정보가 Http 요청 메시지 헤더에 자동으로 설정되어 서버로 전송
-	이 때 스프링은 LocaleResolver를 통해 클라이언트의 Locale정보를 추출하고, 이 Locale정보에 해당하는 언어의 메시지를 적용한다.
-	 -->
-	
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
-	</bean>
-	
-		
-<!-- 	 aes.properties 파일 읽기  -->
-<!-- 	<context:property-placeholder location="classpath:aes.properties"/> -->
-	<!-- 양방향 암호화 -->
-	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
-	
-<!-- 	단방향 암호화 -->
- 	<bean id="passwordEncoder"  
-	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean> 
-		
+    <!-- 로케일 변경 인터셉터 
+    언언 설정 변경 요청을 가로채고 사용자의 Locale을 동적으로 변경해주는 인터셉터
+    -->
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"></property>
+    </bean>
+    
+    <!-- LocaleResolver : 웹브라우저가 서버에 요청하면 브라우저의 Locale정보가 Http 요청 메시지 헤더에 자동으로 설정되어 서버로 전송
+    이 때 스프링은 LocaleResolver를 통해 클라이언트의 Locale정보를 추출하고, 이 Locale정보에 해당하는 언어의 메시지를 적용한다.
+     -->
+    
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+    </bean>
+    
+        
+<!--     aes.properties 파일 읽기  -->
+<!--    <context:property-placeholder location="classpath:aes.properties"/> -->
+    <!-- 양방향 암호화 -->
+    <bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
+    
+<!--    단방향 암호화 -->
+    <bean id="passwordEncoder"  
+    class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean> 
+        
     <!-- 예외처리: 최종테스트에 열고 사용 하세요 -->
 <!--     <bean id="exceptionResolver" 
        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
@@ -80,7 +80,7 @@
 
         <property name="defaultErrorView" value="cmn/error"></property>
     </bean> -->
-		
+        
     <!-- fileupload -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="defaultEncoding" value="UTF-8"/>
@@ -166,30 +166,27 @@
 
 
     <!-- Naver smtp -->
-   <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="smtp.naver.com"/>
-    <property name="port" value="465"/> 
-    <property name="username" value="com0494@naver.com"/>
-    <property name="password" value=""/>
-     <property name="defaultEncoding" value="UTF-8"/>
-    <property name="javaMailProperties">
-        <props>
-            <prop key="mail.transport.protocol">smtp</prop>
-            <prop key="mail.smtp.auth">true</prop>
+  <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  <property name="host" value="${mail.host}"/>
+  <property name="port" value="${mail.port}"/>
+  <property name="username" value="${mail.username}"/>
+  <property name="password" value="${mail.password}"/>
+  <property name="defaultEncoding" value="UTF-8"/>
+  <property name="javaMailProperties">
+    <props>
+      <prop key="mail.transport.protocol">smtp</prop>
+      <prop key="mail.smtp.auth">true</prop>
 
-           <!-- STARTTLS -->
-            <prop key="mail.smtp.starttls.enable">true</prop>
-            <prop key="mail.smtp.starttls.required">true</prop>
+      <prop key="mail.smtp.starttls.enable">${mail.starttls.enable}</prop>
+      <prop key="mail.smtp.starttls.required">${mail.starttls.required}</prop>
+      <prop key="mail.smtp.ssl.enable">${mail.ssl.enable}</prop>
+      <prop key="mail.smtp.ssl.protocols">${mail.ssl.protocols}</prop>
+      <prop key="mail.smtp.ssl.trust">${mail.ssl.trust}</prop>
 
-            <!-- TLS 강제 & 신뢰 호스트 -->
-            <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
-            <prop key="mail.smtp.ssl.trust">smtp.naver.com</prop>
-
-            <!-- (선택) 타임아웃/디버그 -->
-            <prop key="mail.smtp.connectiontimeout">10000</prop>
-            <prop key="mail.smtp.timeout">10000</prop>
-            <prop key="mail.debug">false</prop>
-       
+      <prop key="mail.smtp.connectiontimeout">${mail.connectiontimeout}</prop>
+      <prop key="mail.smtp.timeout">${mail.timeout}</prop>
+      <prop key="mail.smtp.writetimeout">${mail.writetimeout}</prop>
+      <prop key="mail.debug">${mail.debug}</prop>
            
            
            

@@ -22,7 +22,7 @@
 
     <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
-
+    <mvc:resources mapping="/webjars/**" location="/webjars/"/>
     <!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<!-- servlet-context.xml -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -31,21 +31,31 @@
 	</bean>
 
   
-<context:component-scan base-package="com.pcwk.ehr">
-  <!-- 컨트롤러만 포함 (서비스/리포지토리는 root에서 스캔) -->
+<!-- <context:component-scan base-package="com.pcwk.ehr">
+  컨트롤러만 포함 (서비스/리포지토리는 root에서 스캔)
   <context:include-filter type="annotation"
       expression="org.springframework.stereotype.Controller"/>
-</context:component-scan>
+</context:component-scan> -->
 
-<mvc:annotation-driven />
+	<!-- 교체 블록: Controller / ControllerAdvice만 스캔(명확) -->
+	<context:component-scan base-package="com.pcwk.ehr"
+	                        use-default-filters="false">
+	  <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	  <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
 
-	
-	<mvc:resources mapping="/webjars/**" location="/webjars/"/>
-	
 
-   
-    
+
+    <!-- 중복선언 <mvc:annotation-driven /> -->
+
+
     <!-- 관리자 전용 인터셉터: /admin/** -->
+    
+     <!-- 추가: 언어 변경 인터셉터 (예: /path?lang=ko|en) -->
+    <beans:bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+      <beans:property name="paramName" value="lang"/>
+    </beans:bean>
+    
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/admin/**"/>

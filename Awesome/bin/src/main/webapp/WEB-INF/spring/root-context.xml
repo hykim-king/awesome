@@ -22,8 +22,6 @@
 	   </property>
 	</bean>	
 	
-
-
 	<!-- 로케일 변경 인터셉터 
 	언언 설정 변경 요청을 가로채고 사용자의 Locale을 동적으로 변경해주는 인터셉터
 	-->
@@ -44,9 +42,9 @@
 	<!-- 양방향 암호화 -->
 	<bean id="aesUtil" class="com.pcwk.ehr.cmn.AESUtil"></bean>
 	
-<!-- 	단방향 암호화 -->
- 	<bean id="passwordEncoder"  
-	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean> 
+	<!-- 단방향 암호화 -->
+	<bean id="passwordEncoder" 
+	class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
 		
     <!-- 예외처리: 최종테스트에 열고 사용 하세요 -->
 <!--     <bean id="exceptionResolver" 
@@ -135,14 +133,8 @@
         class="com.pcwk.ehr.user.service.DummyMailService"></bean> 
 
     <!-- Naver smtp -->
-   <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="smtp.naver.com"/>
-    <property name="port" value="465"/> <!-- SSL 포트 -->
-    <property name="username" value="com0494@naver.com"/>
-    <property name="password" value=""/>
-    <property name="defaultEncoding" value="UTF-8"/>
-    <property name="javaMailProperties">
-   <!--google smtp
+
+    <!-- google smtp -->
     <bean id="mailSenderImpl"
         class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="smtp.gmail.com" />
@@ -150,33 +142,16 @@
         <property name="username" value="zoqwkdrudfud@gmail.com" />
         <property name="password" value="***" />
         <property name="protocol" value="smtp" />
-        <property name="javaMailProperties"> -->
+        <property name="javaMailProperties">
             <props>
                 <prop key="mail.transport.protocol">smtp</prop>
                 <prop key="mail.smtp.auth">true</prop>
-                
-                 <!-- 465 사용 시 SSL -->
-            <prop key="mail.smtp.ssl.enable">true</prop>
-            <prop key="mail.smtp.starttls.enable">false</prop>
-                
-              <prop key="mail.smtp.ssl.trust">smtp.naver.com</prop>
-              <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
-           
-                 <!-- 타임아웃/디버그 -->
-          <prop key="mail.smtp.connectiontimeout">8000</prop>
-            <prop key="mail.smtp.timeout">8000</prop>
-            <prop key="mail.smtp.writetimeout">8000</prop>
-            <prop key="mail.debug">true</prop>
-       
-           
-           
-           
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+                <prop key="mail.debug">true</prop>
             </props>
         </property>
     </bean>
-    
-    <!-- 삭제X: MainPageService component-scan -->
-<bean id="mainPageService" class="com.pcwk.ehr.mainpage.service.MainPageServiceImpl" />
     
     
     <bean id="transactionManager"
@@ -187,12 +162,11 @@
 
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
         <property name="driverClassName"
-            value="oracle.jdbc.OracleDriver" />
+            value="oracle.jdbc.driver.OracleDriver" />
         <property name="jdbcUrl"
-            value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
-        <property name="username" value="awesome" />
-        <property name="password" value=""></property>
-
+            value="jdbc:oracle:thin:@192.168.100.167:1521:XE" />
+        <property name="username" value="scott" />
+        <property name="password" value="pcwk"></property>
         <!-- Optional settings -->
         <property name="maximumPoolSize" value="10"></property>
         <property name="minimumIdle" value="5"></property>
