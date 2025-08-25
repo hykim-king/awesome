@@ -509,10 +509,23 @@ body{
       </div>
     </main>
 
-    <!-- 사이드바 -->
-    <aside class="aside">
-      <jsp:include page="/WEB-INF/views/include/sidebar_category.jsp" />
-    </aside>
+   <!-- 사이드바 -->
+<aside class="aside">
+  <%-- category 값: request attribute 없으면 쿼리스트링 값 사용 --%>
+  <c:set var="currentCategory" value="${empty category ? param.category : category}" />
+
+  <%-- 전체 기사: 비었거나 'ALL'일 때 기본 사이드바 --%>
+  <c:if test="${empty currentCategory or fn:trim(currentCategory) eq 'ALL'}">
+    <jsp:include page="/WEB-INF/views/include/sidebar.jsp" />
+  </c:if>
+
+  <%-- 카테고리 기사: 값이 있고 'ALL'이 아닐 때 카테고리 사이드바 --%>
+  <c:if test="${not empty currentCategory and fn:trim(currentCategory) ne 'ALL'}">
+    <jsp:include page="/WEB-INF/views/include/sidebar_category.jsp">
+      <jsp:param name="category" value="${fn:trim(currentCategory)}" />
+    </jsp:include>
+  </c:if>
+</aside>
   </div>
 
   <!-- 로그인 안내 모달 -->
