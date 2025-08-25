@@ -2,7 +2,9 @@ package com.pcwk.ehr.mypage.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.gson.Gson;
 import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
 import com.pcwk.ehr.bookmark.service.BookmarkService;
 import com.pcwk.ehr.member.domain.MemberDTO;
@@ -47,12 +50,13 @@ public class MypageController {
 		log.debug("└───────────────────────────────────────┘");	
 	}
 	
+	
 	@GetMapping("/userInfo.do")
 	public String userInfo(HttpSession session, Model model){
-		String userId = (String) session.getAttribute("userId");
+		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId("user01");
+		param.setUserId("userId");
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
@@ -68,7 +72,7 @@ public class MypageController {
 	        HttpSession session,
 	        RedirectAttributes redirect
 	) {
-	    String userId = (String) session.getAttribute("admin");
+		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 	    if (userId == null) {
 	        redirect.addFlashAttribute("error", "로그인이 필요합니다.");
 	        return "redirect:/login.do";
@@ -95,10 +99,10 @@ public class MypageController {
 	
 	@GetMapping("/edit.do")
 	public String editUser(HttpSession session, Model model) {
-		String userId = (String) session.getAttribute("userId");
+		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId("user01");
+		param.setUserId("userId");
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
@@ -141,19 +145,19 @@ public class MypageController {
 		log.debug("└───────────────────────────────────────┘");
 		log.debug("param: {}", param);
 		
-//		String userId = (String) session.getAttribute("userId");
-		String userId = "user01";
+		MemberDTO loginUser  = (MemberDTO) session.getAttribute("loginUser");
+
 		
 		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
-		if(userId == null || userId.trim().isEmpty()) {
+		if(loginUser  == null) {
 			log.warn("로그인 없이 마이페이지 조회 시도 차단됨");
 			model.addAttribute("loginRequired", true);
 			model.addAttribute("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
-			return viewName;
+			return "redirect:/member/login.do";
 		}
 		
 		// 2) 로그인된 경우만 조회
-		param.setUserId(userId); //세션에서 주입
+		param.setUserId(loginUser.getUserId()); //세션에서 주입
 		param.setPageNo(pageNo);
 		param.setPageSize(pageSize);
 		List<BookmarkDTO> list = bookmarkService.doRetriveMy(param);
@@ -168,12 +172,66 @@ public class MypageController {
 		
 
 	    if(list == null || list.isEmpty()) {
-	        model.addAttribute("noBookmarkMsg", "북마크한 기사가 없습니다.<br>핫이슈 '오늘의 토픽'을 살펴보세요!");
+	        model.addAttribute("noBookmarkMsg", "북마크한 기사가 없습니다. 핫이슈 '오늘의 토픽'을 살펴보세요!");
 	    }
 
 	    return viewName;
 	
 	}
+	
+	@GetMapping(value="/checkOne", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String checkOne(@RequestParam("articleCode") int articleCode, HttpSession session) {
+		MemberDTO loginUser  = (MemberDTO) session.getAttribute("loginUser");
+
+	    Map<String, Object> res = new HashMap<>();
+	    if (loginUser  == null) {
+	        res.put("loggedIn", false);
+	        res.put("bookmarked", false);
+	        return new Gson().toJson(res);
+	    }
+
+	    BookmarkDTO param = new BookmarkDTO();
+	    param.setUserId(loginUser.getUserId());
+	    param.setArticleCode(articleCode);
+
+	    BookmarkDTO outVO = bookmarkService.doSelectOne(param);
+	    res.put("loggedIn", true);
+	    res.put("bookmarked", outVO != null);
+	    return new Gson().toJson(res);
+	}
+	
+	
+	@PostMapping(value = "/toggleBookmark.do", produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String toggleBookmark(BookmarkDTO param, HttpSession session) {
+		log.debug("┌───────────────────────────────────────┐");
+		log.debug("│ toggleBookmark()                      │");
+		log.debug("└───────────────────────────────────────┘");
+		String jsonString = "";
+		log.debug("1. param:{}", param);
+		
+		MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+		
+		if(loginUser == null) {
+		    Map<String,Object> res = new HashMap<>();
+		    res.put("flag", -99);
+		    res.put("bookmarked", false);
+		    res.put("message", "로그인이 필요한 기능입니다.");
+		    return new Gson().toJson(res);
+		}
+		
+		param.setUserId(loginUser.getUserId()); //세션에서 주입
+		
+		int flag = bookmarkService.toggleBookmark(param);
+		boolean bookmarked = (flag == 1);
+		Map<String, Object> res = new HashMap<>();
+	    res.put("flag", flag);
+	    res.put("bookmarked", bookmarked);
+	    res.put("message", bookmarked ? "북마크가 추가되었습니다." : "북마크가 삭제되었습니다.");
+	    return new Gson().toJson(res);
+	}
+
 	
 	@GetMapping(value = "/api/mypage/summary", produces = "text/plain; charset=UTF-8")
 	@ResponseBody
@@ -182,18 +240,19 @@ public class MypageController {
 	    log.debug("│ getSummary()                          │");
 	    log.debug("└───────────────────────────────────────┘");
 		
-		//테스트용 임시 ID
+	    MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
+
 	    UserLogDTO param = new UserLogDTO();
-	    param.setUserId("user01");
+	    param.setUserId("userId");
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
 
 	    if (list == null || list.isEmpty()) {
-	        return "이번 주에는 기사를 보지 않으셨네요!";
+	        return "";
 	    }
 
 	    UserChartDTO top = list.get(0);
-	    return "이번 주 " + top.getCategory() + " 분야를 유심히 보셨네요.";
+	    return "안녕하세요 " + param.getUserId()+"님" + "\n이번 주 " + top.getCategory() + " 분야를 유심히 보셨네요.";
 	}
 	
 	@GetMapping("/api/mypage/chart")
@@ -203,11 +262,11 @@ public class MypageController {
 	    log.debug("│ getUserChartData()                    │");
 	    log.debug("└───────────────────────────────────────┘");
 
-//	    String userId = (String) session.getAttribute("userId");
+	    MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 	    
 
 	    UserLogDTO param = new UserLogDTO();
-	    param.setUserId("user01");
+	    param.setUserId("userId");
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
 
