@@ -45,6 +45,21 @@
 	</context:component-scan>
 
 
+<!-- 웹소켓 던들지마세요 -->
+<websocket:message-broker application-destination-prefix="/app">
+  <websocket:stomp-endpoint path="/ws-chat">
+    <websocket:handshake-interceptors>
+      <beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
+    </websocket:handshake-interceptors>
+    <websocket:sockjs session-cookie-needed="true"/>
+  </websocket:stomp-endpoint>
+
+  <websocket:simple-broker prefix="/topic"/>
+</websocket:message-broker>
+
+
+
+
 
     <!-- 중복선언 <mvc:annotation-driven /> -->
 
