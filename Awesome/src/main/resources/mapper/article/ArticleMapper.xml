@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pcwk.ehr.mapper.ArticleMapper">
+
 	<delete id="deleteAll">
 		DELETE FROM article
 	</delete>
@@ -134,5 +135,50 @@
     )
     WHERE RN BETWEEN #{startRow} AND #{endRow}
   </select>
+  
+  
+         <!--   가민경 메인페이지 사용 8/25 -->
+          <!-- 최근  클릭수 기준 Top1 (최소 클릭수 추가) -->
+         <select id="findTopByCategoryWithinDaysWithMin"
+                 parameterType="map"
+                 resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+           SELECT * FROM (
+              SELECT
+                a.article_code AS articleCode,
+                a.category     AS category,
+                a.title        AS title,
+                a.url          AS url,
+                a.public_dt    AS publicDt,
+                NVL(a.views,0) AS views
+              FROM article a
+              WHERE a.category = #{category}
+                AND a.public_dt >= TRUNC(SYSDATE) - #{windowDays}
+              ORDER BY NVL(a.views,0) DESC, a.public_dt DESC
+            )
+            WHERE ROWNUM = 1
+                   </select>
+       
+       <!--   가민경 메인페이지 사용 8/25 -->
+         <!-- fallback용: 해당 카테고리 최신 기사 Top1 -->
+         <select id="findLatestByCategory"
+                 parameterType="int"
+                 resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+           SELECT * FROM (
+             SELECT 
+               a.article_code AS articleCode,
+               a.category     AS category,
+               a.title        AS title,
+               a.url          AS url,
+               a.public_dt    AS publicDt,
+               NVL(a.views, 0) AS views
+             FROM article a
+             WHERE a.category = #{category}
+             ORDER BY a.public_dt DESC
+           )
+           WHERE ROWNUM = 1
+         </select>
+ 
+  
+  
 </mapper>
 
