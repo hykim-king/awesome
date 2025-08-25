@@ -65,7 +65,7 @@ public class ChatMessageController {
 	        Object lu = attrs.get("loginUser");
 	        if (lu instanceof MemberDTO) {
 	            uid = ((MemberDTO) lu).getUserId();
-	        } else if (attrs.get("USER_ID") != null) { // 선택사항(B 플랜)
+	        } else if (attrs.get("USER_ID") != null) {
 	            uid = String.valueOf(attrs.get("USER_ID"));
 	        }
 	    }

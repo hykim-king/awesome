@@ -20,5 +20,9 @@ public interface ArticleService {
 	int getCountAll() throws Exception;
 	
 	int updateReadCnt(ArticleDTO param) throws Exception;
-		
+	
+	
+	//가민경 메인사용
+	  ArticleDTO getTopArticleByCategory(int category);
+	    List<ArticleDTO> getPopularTop1PerCategory();
 }

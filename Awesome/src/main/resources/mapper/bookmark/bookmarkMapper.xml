@@ -63,7 +63,7 @@
 	          bm.user_id,
 	          bm.reg_dt,
 	          ar.title,
-	          ar.summary,
+	          SUBSTR(ar.summary, 1, 50) AS summary,
 	          ar.press
 	        FROM bookmark bm
 	        JOIN article ar
