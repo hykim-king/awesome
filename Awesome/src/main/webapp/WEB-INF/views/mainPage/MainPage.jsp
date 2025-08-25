@@ -46,7 +46,7 @@
   </div>
 </header>
 
-  <!-- #1 Today’s HOT ISSUE + 키워드 6개 -->
+  <!---------------------- #1 Today’s HOT ISSUE + 키워드 6개 -->
 <section id="main-hot-issue">
 <!-- 배경이랑 키워드 섹션분리 -->
   <div class="hot-issue-inner">
@@ -60,11 +60,9 @@
       </c:if>
     </c:forEach>
   </div>
-
   <div class="hot-title">
 <!--  텍스트 삭제 GIF로 대체 -->
   </div>
-
   <div class="keywords-right">
     <c:forEach var="k" items="${keywords}" varStatus="st">
       <c:if test="${st.index ge 3}">
@@ -74,7 +72,6 @@
       </c:if>
     </c:forEach>
 
-
   <c:if test="${empty keywords}">
     <p>키워드를 불러오는 중입니다.</p>
   </c:if>
@@ -82,27 +79,58 @@
 </div> 
   </section>
 
-  <!-- #2 조회수 기반 인기 기사 -->
-  <section id="main-popular">
-    <div class="section-box">
+  <!--------------------------------------- #2 조회수 기반 인기 기사 -->
+<section id="main-popular">
+  <div class="section-box">
     <h2>조회수 기반 인기 기사</h2>
 
-    <!-- popularArticles : List<?> -->
-    <ul>
+    <ul class="popular-grid">
       <c:forEach var="item" items="${popularArticles}">
-        <!-- 안전하게 전체 객체 toString 출력 -->
-        <li><c:out value="${item}" /></li>
+        <li class="popular-card">
+          <a href="${item.url}" target="_blank">
+            
+            <!-- 아이콘 영역 -->
+            <div class="icon">
+              <c:choose>
+                <c:when test="${item.category == 10}">
+                  <img src="${ctx}/resources/img/politics.png" alt="정치" />
+                </c:when>
+                <c:when test="${item.category == 20}">
+                  <img src="${ctx}/resources/img/economy.png" alt="경제" />
+                </c:when>
+                <c:when test="${item.category == 30}">
+                  <img src="${ctx}/resources/img/society.png" alt="사회/문화" />
+                </c:when>
+                <c:when test="${item.category == 40}">
+                  <img src="${ctx}/resources/img/sports.png" alt="스포츠" />
+                </c:when>
+                <c:when test="${item.category == 50}">
+                  <img src="${ctx}/resources/img/ent.png" alt="연예" />
+                </c:when>
+                <c:when test="${item.category == 60}">
+                  <img src="${ctx}/resources/img/it.png" alt="IT/과학" />
+                </c:when>
+                <c:otherwise>
+                  <img src="${ctx}/resources/img/etc.png" alt="기타" />
+                </c:otherwise>
+              </c:choose>
+            </div>
+
+            <!-- 기사 제목 -->
+            <div class="title"><c:out value="${item.title}"/></div>
+          </a>
+        </li>
       </c:forEach>
+
       <c:if test="${empty popularArticles}">
         <li>인기 기사 수집 중…</li>
       </c:if>
     </ul>
   </div>
-  </section>
+</section>
   
   
-  
-<!-- #3 + #4 묶기 -->
+<!----------------------------------------------- #3 + #4 묶기 -->
 <section id="main-bottom-section">
 
   <!-- 왼쪽: 추천 기사 -->
@@ -130,8 +158,8 @@
   <section id="main-weather">
   
   <h2>오늘의 날씨</h2>
-<jsp:include page="/widget/weather"/>
-  
+<%-- <jsp:include page="/widget/weather"/> --%>
+  <%@ include file="/WEB-INF/views/widget/weather.jsp" %>
   
   
   
