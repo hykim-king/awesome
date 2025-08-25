@@ -46,24 +46,22 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
 @media (max-width: 540px){
   .chat-wrap { margin: 0; border-radius: 0; height: 100vh; display:flex; flex-direction:column; }
   .chat-list { flex:1; max-height:none; }
+}
 
 
 /************************************REPORT CSS*******************************************************/
-/* 오버레이 */
 .rp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:9999;}
-/* 모달 */
-.rp-modal{width:min(560px,92vw);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.25);padding:20px 20px 24px;}
+.rp-modal{width:min(560px,92vw);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.25);padding:20px 20px 24px;position:relative;}
 .rp-close{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:22px;cursor:pointer}
 .rp-title{margin:0 0 10px;font-size:20px;font-weight:700}
 .rp-meta{background:#fafafa;border:1px solid #eee;border-radius:10px;padding:10px 12px;margin-bottom:16px}
 .rp-msg{margin-top:4px;white-space:pre-wrap;word-break:break-word;color:#444}
 .rp-sec-title{margin:8px 0 10px;font-size:14px;color:#666}
-/* 사유 카드 */
 .rp-reason{border:1px solid #e5e5e5;border-radius:10px;margin:8px 0;overflow:hidden}
 .rp-reason-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
 .rp-reason-head input{margin-right:6px}
 .rp-toggle{margin-left:auto;border:0;background:transparent;cursor:pointer;width:24px;height:24px;position:relative}
-.rp-toggle::before{content:"";position:absolute;inset:0;margin:auto;border:6px solid transparent;border-top-color:#888;top:8px;transition:transform .2s}
+.rp-toggle::before{content:none;}
 .rp-toggle[aria-expanded="true"]::before{transform:rotate(180deg);top:2px}
 .rp-reason-detail{padding:10px 18px 14px;background:#fcfcfc;border-top:1px solid #eee;color:#666}
 .rp-reason-detail ul{margin:0;padding-left:18px}
@@ -72,7 +70,6 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
 .rp-actions{text-align:right;margin-top:14px}
 .rp-submit{background:#2563eb;color:#fff;border:0;border-radius:10px;padding:10px 16px;cursor:pointer}
 
-}
 </style>
 </head>
 <body>
@@ -82,7 +79,6 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
        data-logged-in="${not empty sessionScope.USER_ID}">
     <div class="chat-header">
       <div class="chat-title">채팅창</div>
-      <div class="chat-cat">카테고리: <b id="catLabel">${CATEGORY}</b></div>
     </div>
 
     <ul id="chatList" class="chat-list"></ul>
@@ -108,13 +104,22 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
 
     <h4 class="rp-sec-title">사유선택</h4>
 
+
+
     <form id="rpForm" onsubmit="return false;">
-      <!-- ✅ [예시 1건] 스팸홍보/도배글입니다. -->
+      <!-- 스팸홍보/도배글입니다. -->
       <div class="rp-reason">
         <label class="rp-reason-head">
           <input type="radio" name="reason" value="SPAM">
           <span>스팸홍보/도배글입니다.</span>
-          <button type="button" class="rp-toggle" aria-expanded="false"></button>
+          <button type="button" class="rp-toggle" aria-expanded="false">  
+          	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+           </button>
         </label>
         <div class="rp-reason-detail" hidden>
           <ul>
@@ -124,7 +129,139 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
         </div>
       </div>
 
-      <!-- (여기에 동일 패턴으로 다른 항목들을 추가) -->
+      <!-- 음란물입니다. -->
+      <div class="rp-reason">
+        <label class="rp-reason-head">
+          <input type="radio" name="reason" value="OBSCENITY">
+          <span>음란물입니다.</span>
+          <button type="button" class="rp-toggle" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+          </button>
+        </label>
+        <div class="rp-reason-detail" hidden>
+          <ul>
+            <li>성적 수치심을 일으키는 내용</li>
+            <li>아동이나 청소년을 성 대상화한 표현</li>
+            <li>과도하거나 의도적인 신체 노출</li>
+            <li>음란한 행위와 관련된 부적절한 내용</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- 불법정보를 포함하고 있습니다. -->
+      <div class="rp-reason">
+        <label class="rp-reason-head">
+          <input type="radio" name="reason" value="INJUSTICE">
+          <span>불법정보를 포함하고 있습니다.</span>
+          <button type="button" class="rp-toggle" aria-expanded="false">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+          </button>
+        </label>
+        <div class="rp-reason-detail" hidden>
+          <ul>
+            <li>불법 행위, 불법 링크에 대한 정보 제공</li>
+            <li>불법 상품을 판매하거나 유도하는 내용</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- 청소년에게 유해한 내용입니다. -->
+      <div class="rp-reason">
+        <label class="rp-reason-head">
+          <input type="radio" name="reason" value="HARMFUL TO YOUTH">
+          <span>청소년에게 유해한 내용입니다.</span>
+          <button type="button" class="rp-toggle" aria-expanded="false">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+          </button>
+        </label>
+        <div class="rp-reason-detail" hidden>
+          <ul>
+            <li>가출/왕따/학교폭력/자살 등 청소년에게 부정적인 영향을 조성하는 내용</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- 욕설/생명경시/혐오/차별적 표현입니다. -->
+      <div class="rp-reason">
+        <label class="rp-reason-head">
+          <input type="radio" name="reason" value="ABUSE">
+          <span>욕설/생명경시/혐오/차별적 표현입니다.</span>
+          <button type="button" class="rp-toggle" aria-expanded="false">
+          	 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+          </button>
+        </label>
+        <div class="rp-reason-detail" hidden>
+          <ul>
+            <li>직·간접적인 욕설을 사용하여 타인에게 모욕감을 주는 내용</li>
+            <li>생명을 경시여기거나 비하하는 내용</li>
+            <li>계층/지역/종교/성별 등을 혐오하거나 비하하는 표현</li>
+            <li>신체/외모/취향 등을 경멸하는 표현</li>            
+          </ul>
+        </div>
+      </div>
+      
+      <!-- 개인정보 노출 게시물입니다. -->
+      <div class="rp-reason">
+        <label class="rp-reason-head">
+          <input type="radio" name="reason" value="PERSONAL INFORMATION">
+          <span>개인정보 노출 게시물입니다.</span>
+          <button type="button" class="rp-toggle" aria-expanded="false">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+          </button>
+        </label>
+        <div class="rp-reason-detail" hidden>
+          <ul>
+            <li>법적으로 중요한 타인의 개인정보를 게재</li>
+            <li>당사자 동의 없는 특정 개인을 인지할 수 있는 정보</li>          
+          </ul>
+        </div>
+      </div>
+      
+      <!-- 불쾌한 표현이 있습니다. -->
+      <div class="rp-reason">
+        <label class="rp-reason-head">
+          <input type="radio" name="reason" value="UNPLEASANT">
+          <span>개인정보 노출 게시물입니다.</span>
+          <button type="button" class="rp-toggle" aria-expanded="false">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+       	  	   	 fill="currentColor" viewBox="0 0 16 16">
+    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
+             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             </svg>
+          </button>
+        </label>
+        <div class="rp-reason-detail" hidden>
+          <ul>
+            <li>불쾌한 표현 포함 (해당 사유는 클린봇 학습에 도움이 될 수 있습니다.)</li>        
+          </ul>
+        </div>
+      </div>
 
       <!-- 기타사항 (선택) -->
       <div class="rp-etc">
@@ -145,254 +282,146 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script>
-  // ===== 전역 가드 =====
-  // 타일즈/인클루드/뒤로가기 캐시 등으로 스크립트가 중복 실행되는 것을 차단
-  if (window.__chatInit) {
-    console.warn("chat page already initialized; skipping duplicate init");
-  } else {
-    window.__chatInit = true;
+/* ------------------- 공통 환경 ------------------- */
+(function initGlobals(){
+  const root = document.getElementById('chatRoot');
+  window.CP = root ? (root.getAttribute('data-cp') || '') : '';
+  window.CATEGORY = root ? parseInt(root.getAttribute('data-category') || '10', 10) : 10;
+  window.LOGGED_IN = !!(root && root.getAttribute('data-logged-in') === 'true');
 
-    // ===== 기본 환경 =====
-    (function(){
-      var root = document.getElementById('chatRoot');
-      window.CP = root ? (root.getAttribute('data-cp') || '') : '';
-      window.CATEGORY = root ? parseInt(root.getAttribute('data-category') || '10', 10) : 10;
-    })();
-
-    var CSRF_HEADER = (document.querySelector('meta[name=\"_csrf_header\"]')||{}).content;
-    var CSRF_TOKEN  = (document.querySelector('meta[name=\"_csrf\"]')||{}).content;
-
-    // ===== WebSocket 상태 =====
-    var stomp = null;
-    var connected = false;
-    var connecting = false;
-    var subscription = null; // 구독 핸들러 보관
-
-    function safeSubscribe() {
-      // 혹시 이전 구독이 살아있다면 해제
-      try { if (subscription && subscription.id) { subscription.unsubscribe(); } } catch(e) {}
-      subscription = stomp.subscribe("/topic/chat/" + CATEGORY, function(frame){
-        var m = JSON.parse(frame.body);
-        appendMessage(m);
-      });
-    }
-
-    function connectWS() {
-      if (connecting || (stomp && stomp.connected)) {
-        console.log("skip connect: already connecting/connected");
-        return;
-      }
-      connecting = true;
-
-      var sock = new SockJS(CP + "/ws-chat");
-      stomp = Stomp.over(sock);
-      stomp.debug = null; // 필요시 주석 처리하여 로그 확인
-
-      stomp.connect({}, function(){
-        connected = true;
-        connecting = false;
-        document.getElementById('sendBtn').disabled = false;
-
-        safeSubscribe(); // 구독 1개만 유지
-
-        // 초기 로딩
-        fetch(CP + "/chat/recent?category=" + CATEGORY + "&size=30", {credentials:"same-origin"})
-          .then(function(r){ return r.json(); })
-          .then(function(list){ list.reverse().forEach(appendMessage); })
-          .catch(console.error);
-      }, function(err){
-        console.error("STOMP error:", err);
-        connected = false;
-        connecting = false;
-        document.getElementById('sendBtn').disabled = true;
-      });
-    }
-
-    // ===== 메시지 보내기 =====
-    window.sendMessage = function(){
-      var input = document.getElementById('msg');
-      var text = (input.value || '').trim();
-      if(!text || !connected) return;
-
-      var payload = { message: text };
-      stomp.send("/app/send/" + CATEGORY, {}, JSON.stringify(payload));
-      input.value = "";
-      input.focus();
-    };
-
-    // ===== 메시지 렌더링 =====
-    function appendMessage(m){
-      var code = m.chatCode || 0;
-      var userId = m.userId || "user***";
-      var avatarText = (userId.charAt(0) || 'u');
-      var time = formatTime(m.sendDt);
-      var text = escapeHtml(m.message || '');
-
-      var li = document.createElement('li');
-      li.className = 'chat-item';
-      li.setAttribute('data-code', String(code));
-
-      var html = ''
-        + '<div class="avatar">' + escapeHtml(avatarText) + '</div>'
-        + '<div class="bubble">'
-        +   '<div class="meta">'
-        +     '<span class="uid">' + escapeHtml(userId) + '</span>'
-        +     '<span class="time">' + escapeHtml(time) + '</span>'
-        +     '<button class="report" onclick="openReport(this)" title="신고">🚨 신고</button>'
-        +   '</div>'
-        +   '<div class="text">' + text + '</div>'
-        + '</div>';
-
-      li.innerHTML = html;
-      var list = document.getElementById('chatList');
-      list.appendChild(li);
-      li.scrollIntoView({behavior:'smooth', block:'end'});
-    }
-
-    // ===== 신고 =====
-    window.reportMsg = function(chatCode){
-      if(!chatCode){ alert("메시지 코드가 없습니다."); return; }
-      var reason = prompt("신고 사유를 입력하세요.");
-      if(!reason) return;
-
-      var headers = {'Content-Type':'application/json'};
-      if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
-
-      fetch(CP + "/report", {
-        method:'POST',
-        headers: headers,
-        credentials:'same-origin',
-        body: JSON.stringify({ chatCode: chatCode, reason: reason })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(res){ alert((res && res.message) ? res.message : '신고가 접수되었습니다.'); })
-      .catch(function(err){ console.error(err); alert('신고 전송 중 오류가 발생했습니다.'); });
-    };
-
-    // ===== 유틸 =====
-    function escapeHtml(s){ var d=document.createElement('div'); d.innerText = (s==null? '' : String(s)); return d.innerHTML; }
-    function pad2(n){ n = Number(n); return (n<10?'0':'') + n; }
-    function formatTime(dt){
-      try{
-        if(!dt) return '';
-        var d = new Date(dt);
-        if (isNaN(d.getTime())) return String(dt);
-        return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
-      }catch(e){ return String(dt||''); }
-    }
-
-    // ===== 생명주기 =====
-    document.addEventListener('DOMContentLoaded', function(){
-      document.getElementById('sendBtn').disabled = true;
-      connectWS();
-    });
-
-    // 페이지 떠날 때 깔끔히 정리(중복 연결 방지)
-    window.addEventListener('beforeunload', function(){
-      try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e) {}
-      try { if (stomp && stomp.connected) stomp.disconnect(function(){}); } catch(e) {}
-      window.__chatInit = false;
-    });
+  // 로그인 아니면 전송 비활성화 & 안내 문구
+  const sendBtn = document.getElementById('sendBtn');
+  const msg = document.getElementById('msg');
+  if (!LOGGED_IN) {
+    sendBtn.disabled = true;
+    msg.disabled = true;
+    msg.placeholder = '로그인 후 이용 가능합니다.';
   }
-  
-    //모달 상태 저장
-  var __rp = { chatCode: 0, writer: '', msg: '' };
+})();
 
-  window.openReport = function(btn){
-    var li = btn.closest('.chat-item');
-    if(!li) return;
+const CSRF_HEADER = (document.querySelector('meta[name="_csrf_header"]')||{}).content;
+const CSRF_TOKEN  = (document.querySelector('meta[name="_csrf"]')||{}).content;
 
-    __rp.chatCode = parseInt(li.dataset.code || '0', 10);
-    __rp.writer   = li.dataset.uid  || 'user***';
-    __rp.msg      = li.dataset.text || '';
+/* ------------------- WebSocket ------------------- */
+let stomp = null;
+let connected = false;
+let connecting = false;
+let subscription = null;
 
-    document.getElementById('rpWriter').textContent = __rp.writer;
-    document.getElementById('rpMsg').textContent    = __rp.msg;
+function safeSubscribe(){
+  try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e){}
+  subscription = stomp.subscribe("/topic/chat/" + CATEGORY, function(frame){
+    appendMessage(JSON.parse(frame.body));
+  });
+}
 
-    // 선택 초기화
-    Array.prototype.forEach.call(document.getElementsByName('rpReason'), function(r){ r.checked=false; });
-    document.getElementById('rpOther').value = '';
+function connectWS(){
+  if (connecting || (stomp && stomp.connected)) return;
+  connecting = true;
 
-    document.getElementById('reportModal').style.display = 'flex';
-  };
+  const sock = new SockJS(CP + "/ws-chat");
+  stomp = Stomp.over(sock);
+  stomp.debug = null;
 
-  window.closeReport = function(){
-    document.getElementById('reportModal').style.display = 'none';
-  };
+  stomp.connect({}, function(){
+    connected = true; connecting = false;
+    if (LOGGED_IN) document.getElementById('sendBtn').disabled = false;
 
-  window.closeDone = function(){
-    document.getElementById('reportDone').style.display = 'none';
-  };
+    safeSubscribe();
 
-  // 신고 제출
-  window.submitReport = function(){
-    if(!__rp.chatCode){ alert("대상 메시지 정보가 없습니다."); return; }
+    fetch(CP + "/chat/recent?category=" + CATEGORY + "&size=30", {credentials:'same-origin'})
+      .then(r => r.json())
+      .then(list => list.reverse().forEach(appendMessage))
+      .catch(console.error);
+  }, function(err){
+    console.error("STOMP error:", err);
+    connected = false; connecting = false;
+    document.getElementById('sendBtn').disabled = true;
+  });
+}
 
-    var selected = null;
-    var radios = document.getElementsByName('rpReason');
-    for (var i=0;i<radios.length;i++) if (radios[i].checked) { selected = radios[i].value; break; }
+/* ------------------- 채팅 보내기 ------------------- */
+function sendMessage(){
+  if(!LOGGED_IN){ alert('로그인 후 이용해 주세요.'); return; }
+  const input = document.getElementById('msg');
+  const text = (input.value || '').trim();
+  if(!text || !connected) return;
 
-    if(!selected){ alert("신고 사유를 선택하세요."); return; }
+  const payload = { message: text };
+  stomp.send("/app/send/" + CATEGORY, {}, JSON.stringify(payload));
+  input.value = '';
+  input.focus();
+}
+window.sendMessage = sendMessage;
 
-    var otherText = document.getElementById('rpOther').value.trim();
-    var reasonPayload = (selected === 'OTHER' && otherText) ? ('OTHER | ' + otherText) : selected;
+/* ------------------- 렌더링 ------------------- */
+function escHtml(s){ const d=document.createElement('div'); d.innerText = (s==null?'':String(s)); return d.innerHTML; }
+function pad2(n){ n = +n; return (n<10?'0':'')+n; }
+function fmt(dt){
+  try{
+    if(!dt) return '';
+    const d = new Date(dt);
+    if(isNaN(d)) return String(dt);
+    return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+  }catch(e){ return String(dt||''); }
+}
 
-    var headers = {'Content-Type':'application/json'};
-    if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
+function appendMessage(m){
+  const li = document.createElement('li');
+  li.className = 'chat-item';
+  li.dataset.code = m.chatCode || 0;
+  li.dataset.uid  = m.userId   || 'user***';
+  li.dataset.text = m.message  || '';
 
-    // 서버: /report  (ReportController#create)
-    fetch(CP + "/report", {
-      method: "POST",
-      headers: headers,
-      credentials: "same-origin",
-      body: JSON.stringify({
-        chatCode: __rp.chatCode,
-        reason:   reasonPayload
-      })
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(res){
-      closeReport();
-      document.getElementById('doneWriter').textContent = __rp.writer;
-      document.getElementById('doneMsg').textContent    = __rp.msg;
-      document.getElementById('reportDone').style.display = 'flex';
-      if(res && res.message){ console.log(res.message); }
-    })
-    .catch(function(err){
-      console.error(err);
-      alert("신고 전송 중 오류가 발생했습니다.");
-    });
-  };
-  
-//모달 열기: 채팅 항목의 신고 버튼에서 호출
-  function openReport(chatCode, author, message){
-	ensureReportModal(); 
-    const ov = document.getElementById('reportOverlay');
-    ov.style.display = 'flex';
-    ov.setAttribute('aria-hidden','false');
+  const html =
+    '<div class="avatar">'+escHtml((li.dataset.uid.charAt(0)||'u'))+'</div>'+
+    '<div class="bubble">'+
+      '<div class="meta">'+
+        '<span class="uid">'+escHtml(li.dataset.uid)+'</span>'+
+        '<span class="time">'+escHtml(fmt(m.sendDt))+'</span>'+
+        '<button class="report" onclick="openReportFrom(this)" title="신고">🚨 신고</button>'+
+      '</div>'+
+      '<div class="text">'+escHtml(li.dataset.text)+'</div>'+
+    '</div>';
+  li.innerHTML = html;
 
-    // 메타 채우기 + chatCode 보관
-    document.getElementById('rpAuthor').textContent = author || '-';
-    document.getElementById('rpMessage').textContent = message || '';
-    ov.dataset.chatCode = String(chatCode||0);
+  const list = document.getElementById('chatList');
+  list.appendChild(li);
+  li.scrollIntoView({behavior:'smooth', block:'end'});
+}
 
-    // 라디오/아코디언 초기화
-    document.querySelectorAll('#rpForm input[name="reason"]').forEach(r => r.checked = false);
-    document.getElementById('rpEtc').value = '';
-    document.querySelectorAll('.rp-reason-detail').forEach(d => d.hidden = true);
-    document.querySelectorAll('.rp-toggle').forEach(b => b.setAttribute('aria-expanded','false'));
-  }
+/* ------------------- 신고 모달 ------------------- */
+function openReportFrom(btn){
+  const li = btn.closest('.chat-item');
+  if(!li) return;
 
-  // 닫기
-  function rpClose(){
+  const chatCode = parseInt(li.dataset.code||'0',10);
+  const author   = li.dataset.uid || '-';
+  const message  = li.dataset.text || '';
+
   const ov = document.getElementById('reportOverlay');
-  if(!ov) return;
+  ov.style.display = 'flex';
+  ov.setAttribute('aria-hidden','false');
+  ov.dataset.chatCode = String(chatCode);
+
+  document.getElementById('rpAuthor').textContent  = author;
+  document.getElementById('rpMessage').textContent = message;
+
+  document.querySelectorAll('#rpForm input[name="reason"]').forEach(r=>r.checked=false);
+  document.getElementById('rpEtc').value = '';
+  document.querySelectorAll('.rp-reason-detail').forEach(d=>d.hidden=true);
+  document.querySelectorAll('.rp-toggle').forEach(b=>b.setAttribute('aria-expanded','false'));
+}
+window.openReportFrom = openReportFrom;
+
+function rpClose(){
+  const ov = document.getElementById('reportOverlay');
   ov.style.display = 'none';
   ov.setAttribute('aria-hidden','true');
-  }
+}
+window.rpClose = rpClose;
 
-  // 아코디언: title 영역 어디를 눌러도 열리게 위임
-  document.addEventListener('click', function(e){
+document.addEventListener('click', function(e){
   const head = e.target.closest('.rp-reason-head');
   if(!head) return;
   const box = head.parentElement;
@@ -401,38 +430,41 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
   const expanded = toggle.getAttribute('aria-expanded') === 'true';
   toggle.setAttribute('aria-expanded', String(!expanded));
   detail.hidden = expanded;
-  const r = head.querySelector('input[type="radio"]');
-  if(r) r.checked = true;
+  const r = head.querySelector('input[type="radio"]'); if(r) r.checked = true;
 });
 
-  // 전송
 async function rpSubmit(){
   const ov = document.getElementById('reportOverlay');
-  const chatCode = parseInt(ov?.dataset.chatCode || '0', 10);
+  const chatCode = parseInt(ov.dataset.chatCode||'0',10);
   const reason   = document.querySelector('#rpForm input[name="reason"]:checked')?.value;
-  const etc      = (document.getElementById('rpEtc')?.value || '').trim();
+  const etc      = document.getElementById('rpEtc').value.trim();
+
+  if(!LOGGED_IN){ alert('로그인 후 신고 가능합니다.'); return; }
   if(!chatCode){ alert('대상 메시지 코드가 없습니다.'); return; }
   if(!reason){   alert('사유를 선택해 주세요.'); return; }
 
   const headers = {'Content-Type':'application/json'};
-  const h = document.querySelector('meta[name="_csrf_header"]')?.content;
-  const t = document.querySelector('meta[name="_csrf"]')?.content;
-  if (h && t) headers[h] = t;
-
-  const payload = { chatCode, reason, reasonDetail: etc };
+  if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
 
   const r = await fetch(CP + '/report', {
-    method: 'POST',
-    headers,
-    credentials: 'same-origin',
-    body: JSON.stringify(payload)
-  }).catch(err => { console.error(err); alert('전송 오류'); });
+    method:'POST',
+    headers, credentials:'same-origin',
+    body: JSON.stringify({ chatCode, reason, reasonDetail: etc })
+  }).catch(e => { console.error(e); alert('전송 오류'); });
   if(!r) return;
 
   const res = await r.json().catch(()=>({}));
   alert(res?.message || (res?.ok ? '신고가 접수되었습니다.' : '신고 실패'));
   if(res?.ok) rpClose();
 }
+window.rpSubmit = rpSubmit;
+
+/* ------------------- 생명주기 ------------------- */
+document.addEventListener('DOMContentLoaded', connectWS);
+window.addEventListener('beforeunload', function(){
+  try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e){}
+  try { if (stomp && stomp.connected) stomp.disconnect(function(){}); } catch(e){}
+});
 </script>
 
 </body>
