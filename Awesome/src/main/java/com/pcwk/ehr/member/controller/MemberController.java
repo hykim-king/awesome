@@ -53,11 +53,11 @@ public class MemberController {
     }
     
     /* ===== Logout admin ===== */
-    @RequestMapping(value = "/logout.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public String logout2(HttpServletRequest request) {
+    @RequestMapping(value="/admin/logout.do", method={RequestMethod.GET, RequestMethod.POST})
+    public String logoutAdmin(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session != null) session.invalidate();   // 세션 종료
-        return "redirect:/";                          // 컨텍스트 루트(= 메인)로 이동
+        if (session != null) session.invalidate();
+        return "redirect:/mainPage/main.do";
     }
 
 
