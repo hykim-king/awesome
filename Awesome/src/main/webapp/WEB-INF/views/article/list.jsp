@@ -316,6 +316,9 @@ body{
 </head>
 
 <body class="page-article-list">
+<c:if test="${empty sessionScope.userId and not empty sessionScope.loginUser}">
+  <c:set var="userId" value="${sessionScope.loginUser.userId}" scope="session"/>
+</c:if>
   <!-- 헤더 -->
   <jsp:include page="/WEB-INF/views/include/header.jsp" />
 
@@ -359,37 +362,39 @@ body{
                 </c:url>
 
         <!-- 1줄: 제목(좌) + 북마크(우) -->
-		<div class="news-header">
-		  <div class="news-title">
-		    <a href="${item.url}" class="hit-open"
-		       data-article-code="${item.articleCode}"
-		       data-hit-url="${hitUrl}"
-		       target="_blank" rel="noopener noreferrer"
-		       onclick="return hitAndOpen(this,event)">
-		       ${item.title}
-		    </a>
-		  </div>
-		
-		  <c:choose>
-		    <c:when test="${not empty sessionScope.userId}">
-		      <button type="button" class="bm-btn ${item.bookmarked ? 'on' : ''}"
-		              data-toggle-url="${bmToggleUrl}" data-article-code="${item.articleCode}"
-		              aria-pressed="${item.bookmarked ? 'true':'false'}"
-		              title="${item.bookmarked ? '북마크 해제' : '북마크 추가'}">
-		        <span class="bm-icon">${item.bookmarked ? '★' : '☆'}</span>
-		      </button>
-		    </c:when>
-		    <c:otherwise>
-  <button type="button"
-          class="bm-btn guest"
-          data-toggle-url="${bmToggleUrl}"
-          data-article-code="${item.articleCode}"
-          title="로그인이 필요합니다.">
-    <span class="bm-icon">☆</span>
-  </button>
-</c:otherwise>
-		  </c:choose>
-		</div>
+<div class="news-header">
+  <div class="news-title">
+    <a href="${item.url}" class="hit-open"
+       data-article-code="${item.articleCode}"
+       data-hit-url="${hitUrl}"
+       target="_blank" rel="noopener noreferrer"
+       onclick="return hitAndOpen(this,event)">
+       ${item.title}
+    </a>
+  </div>
+
+  <c:choose>
+    <c:when test="${not empty sessionScope.loginUser}">
+      <button type="button"
+              class="bm-btn"
+              data-toggle-url="${bmToggleUrl}"
+              data-article-code="${item.articleCode}"
+              aria-pressed="false"
+              title="북마크 추가">
+        <span class="bm-icon">☆</span>
+      </button>
+    </c:when>
+    <c:otherwise>
+      <button type="button"
+              class="bm-btn guest"
+              data-toggle-url="${bmToggleUrl}"
+              data-article-code="${item.articleCode}"
+              title="로그인이 필요합니다.">
+        <span class="bm-icon">☆</span>
+      </button>
+    </c:otherwise>
+  </c:choose>
+</div>
 		
 		<!-- 2줄: 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) -->
 		<div class="news-body">
@@ -552,75 +557,94 @@ body{
   </script>
 
 <script>
-// 북마크 토글 (로그인/비로그인 모두 이 경로로 오고, 서버 응답으로 판단)
 (function () {
+
+  function showLoginModal(){
+    var m = document.getElementById('login-modal');
+    if (!m) { alert('로그인이 필요합니다.'); return; }
+    m.classList.remove('hidden');
+    m.setAttribute('aria-hidden','false');
+  }
+  function hideLoginModal(){
+    var m = document.getElementById('login-modal');
+    if (!m) return;
+    m.classList.add('hidden');
+    m.setAttribute('aria-hidden','true');
+  }
+
+  // ✅ 서버가 어떤 키로 내려줘도 잡히도록 보강
   function pickMsgId(data){
-    if (data == null) return null;
-    if ('msgId'  in data) return data.msgId;
-    if ('code'   in data) return data.code;
-    if ('flag'   in data) return data.flag;
-    if ('status' in data) return data.status;
-    return null;
+    if (!data) return null;
+    return (data.messageId ?? data.msgId ?? data.code ?? data.flag ?? data.status ?? null);
   }
 
   document.addEventListener('click', function(e){
-	  var btn = e.target.closest && e.target.closest('.bm-btn');
-	  if(!btn) return;
+    var btn = e.target.closest && e.target.closest('.bm-btn');
+    if(!btn) return;
 
-	  // 게스트 버튼: 로그인 안내
-	  if(btn.classList.contains('guest')){
-	    e.preventDefault(); e.stopPropagation();
-	    var modal = document.getElementById('login-modal');
-	    if(modal){
-	      modal.classList.remove('hidden');
-	      modal.setAttribute('aria-hidden','false');
-	    }else{
-	      alert('로그인이 필요합니다.');
-	    }
-	    return;
-	  }
+    // 비로그인 버튼: 모달
+    if(btn.classList.contains('guest')){
+      e.preventDefault(); e.stopPropagation();
+      showLoginModal();
+      return;
+    }
 
-	  // 로그인 사용자 버튼
-	  e.preventDefault(); e.stopPropagation();
-	  if(btn._busy) return;
-	  btn._busy = true;
+    // 로그인 사용자
+    e.preventDefault(); e.stopPropagation();
+    if(btn._busy) return;
+    btn._busy = true;
 
-	  var url = btn.getAttribute('data-toggle-url');
-	  if (!url) {
-	    var code = btn.getAttribute('data-article-code');
-	    var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
-	    url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
-	  }
+    var url = btn.getAttribute('data-toggle-url');
+    if (!url) {
+      var code = btn.getAttribute('data-article-code');
+      var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
+      url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
+    }
 
-	  fetch(url, {
-	    method: 'POST',
-	    credentials: 'same-origin',          // 세션 쿠키 보장
-	    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-	  })
-	  .then(function(res){ if(!res.ok) throw res; return res.text(); })
-	  .then(function(txt){
-	    var data=null; try{ data = JSON.parse(txt); }catch(_){}
-	    var id = data && (data.msgId ?? data.code ?? data.flag ?? data.status);
+    fetch(url, {
+      method: 'POST',
+      credentials: 'same-origin',              // 세션 쿠키 보장
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function(res){ if(!res.ok) throw res; return res.text(); })
+    .then(function(txt){
+      var data = null; try { data = JSON.parse(txt); } catch(_) {}
+      var id = pickMsgId(data);
 
-	    if(id === -99){
-	      var modal = document.getElementById('login-modal');
-	      if(modal){
-	        modal.classList.remove('hidden');
-	        modal.setAttribute('aria-hidden','false');
-	      }
-	      return;
-	    }
-	    var on = (id === 1);
-	    btn.classList.toggle('on', on);
-	    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-	    var ic = btn.querySelector('.bm-icon');
-	    if(ic) ic.textContent = on ? '★' : '☆';
-	    btn.title = on ? '북마크 해제' : '북마크 추가';
-	  })
-	  .catch(function(err){ console.error('북마크 토글 실패', err); })
-	  .finally(function(){ btn._busy = false; });
+      // 로그인 필요 신호
+      if (id === -99){ showLoginModal(); return; }
 
-	}, false);
+      // ✅ 서버가 1(추가)/0(삭제)로 주면 그 값 우선, 없으면 현재상태 토글
+      var nowOn  = btn.classList.contains('on');
+      var nextOn = (typeof id === 'number')
+                     ? (id === 1)
+                     : !nowOn;
+
+      btn.classList.toggle('on', nextOn);
+      btn.setAttribute('aria-pressed', nextOn ? 'true' : 'false');
+
+      var ic = btn.querySelector('.bm-icon');
+      if(ic) ic.textContent = nextOn ? '★' : '☆';
+      btn.title = nextOn ? '북마크 해제' : '북마크 추가';
+
+      if (data && data.message) console.log('bookmark:', data.message);
+    })
+    .catch(function(err){ console.error('북마크 토글 실패', err); })
+    .finally(function(){ btn._busy = false; });
+
+  }, false);
+
+  // 모달 닫기(확인 버튼/배경/Esc)
+  document.addEventListener('click', function(e){
+    if (e.target.closest('[data-action="close"]') ||
+        e.target.classList.contains('login-modal_backdrop')) {
+      hideLoginModal();
+    }
+  }, false);
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') hideLoginModal();
+  }, false);
+
 })();
 </script>
 </body>
