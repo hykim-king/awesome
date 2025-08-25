@@ -53,14 +53,13 @@ public class MemberController {
     }
     
     /* ===== Logout admin ===== */
-    @RequestMapping(value = "/member/logout.do", method = {RequestMethod.GET, RequestMethod.POST})
-    public String logout(HttpServletRequest request) {
+    @RequestMapping(value = "/logout.do", method = {RequestMethod.GET, RequestMethod.POST})
+    public String logout2(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();   // 세션 종료
         return "redirect:/";                          // 컨텍스트 루트(= 메인)로 이동
     }
 
-    
 
     /* ===== ID/Nick Duplicate ===== */
     @GetMapping(value="/checkId.do", produces="text/plain; charset=UTF-8")
