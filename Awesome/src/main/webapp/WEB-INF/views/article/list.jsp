@@ -228,8 +228,53 @@ body{
 @media (max-width:640px){
   .page-article-list #header .submenu{ flex-wrap:wrap; row-gap:8px; }
 }
-</style>
+/* 제목(좌) + 북마크(우) 한 줄 */
+.news-header{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+}
+.news-header .news-title{ flex:1; min-width:0; } /* 제목이 남는 폭을 차지 */
+.news-header .bm-btn{ margin-left:8px; }
 
+/* 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) 한 줄 */
+.news-body{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.news-body .summary{ flex:1; min-width:0; }
+
+/* 요약 오른쪽 메타 줄(언론사 | 날짜 | 조회수) */
+.meta-line{
+  display:flex;
+  gap:10px;
+  white-space:nowrap;
+  color:var(--muted);
+  font-size:13px;
+}
+/* 제목+북마크(.news-header)와 요약+메타(.news-body)를 그리드 가로 전체로 배치 */
+.news-header,
+.news-body { grid-column: 1 / -1; }
+.page-article-list .layout{
+  /* 중앙 정렬 + 최대폭 제한으로 좌우 여백 확보 */
+  max-width: 1480px;         /* 필요에 따라 1100~1280px로 조절 */
+  margin: 24px auto;          /* 상하 여백 살짝 넓힘 + 수평 중앙 */
+  padding-left: 40px;         /* 좌우 내부 패딩으로 흰 여백 추가 */
+  padding-right: 40px;
+  gap: 16px;                   /* 메인↔사이드 간격은 그대로 */
+}
+
+/* 화면이 아주 넓을 때는 여백을 조금 더 */
+@media (min-width: 1800px){
+  .page-article-list .layout{
+    max-width: 1480px;        /* 컨테이너를 더 좁게 */
+    padding-left: 56px;       /* 좌우 내부 패딩도 소폭 확대 */
+    padding-right: 56px;
+  }
+}
+</style>
   <script>
   // 새로고침 시 검색 조건 초기화 (category만 유지)
   (function (){
@@ -286,7 +331,6 @@ body{
         <input type="hidden" name="pageSize" value="${pageSize}" />
 
         <select name="searchDiv">
-          <option value="">검색구분</option>
           <option value="10" ${searchDiv == '10' ? 'selected' : ''}>제목</option>
           <option value="20" ${searchDiv == '20' ? 'selected' : ''}>내용</option>
           <option value="30" ${searchDiv == '30' ? 'selected' : ''}>언론사</option>
@@ -314,71 +358,69 @@ body{
                   <c:param name="articleCode" value="${item.articleCode}"/>
                 </c:url>
 
-                <div class="news-title">
-                  <a href="${item.url}" class="hit-open"
-                     data-article-code="${item.articleCode}"
-                     data-hit-url="${hitUrl}"
-                     target="_blank" rel="noopener noreferrer"
-                     onclick="return hitAndOpen(this,event)">
-                     ${item.title}
-                  </a>
-                </div>
-
-                <!-- 요약 50자 넘으면 ... -->
-                <div class="summary">
-                  <c:choose>
-                    <c:when test="${not empty item.summary and fn:length(item.summary) > 50}">
-                      ${fn:substring(item.summary,0,50)}...
-                    </c:when>
-                    <c:otherwise>
-                      ${item.summary}
-                    </c:otherwise>
-                  </c:choose>
-                </div>
-
-                <!-- 메타 영역: 북마크(위) + 아래 줄(좌: 언론사|날짜, 우: 조회수) -->
-                <div class="meta-grid">
-                  <div class="meta-star">
-                    <c:choose>
-                      <c:when test="${not empty sessionScope.userId}">
-                        <button type="button" class="bm-btn ${item.bookmarked ? 'on' : ''}"
-                                data-toggle-url="${bmToggleUrl}" data-article-code="${item.articleCode}"
-                                aria-pressed="${item.bookmarked ? 'true':'false'}"
-                                title="${item.bookmarked ? '북마크 해제' : '북마크 추가'}">
-                          <span class="bm-icon">${item.bookmarked ? '★' : '☆'}</span>
-                        </button>
-                      </c:when>
-                      <c:otherwise>
-                        <button type="button" class="bm-btn guest" title="로그인이 필요합니다.">
-                          <span class="bm-icon">☆</span>
-                        </button>
-                      </c:otherwise>
-                    </c:choose>
-                  </div>
-
-                  <div class="meta-left">
-                    ${item.press} |
-                    <fmt:formatDate value="${item.publicDt}" pattern="yyyy-MM-dd" />
-                  </div>
-
-                  <div class="meta-views">
-                    조회수: <span id="views-${item.articleCode}">${item.views}</span>
-                  </div>
-                </div>
-
-              </div>
+        <!-- 1줄: 제목(좌) + 북마크(우) -->
+		<div class="news-header">
+		  <div class="news-title">
+		    <a href="${item.url}" class="hit-open"
+		       data-article-code="${item.articleCode}"
+		       data-hit-url="${hitUrl}"
+		       target="_blank" rel="noopener noreferrer"
+		       onclick="return hitAndOpen(this,event)">
+		       ${item.title}
+		    </a>
+		  </div>
+		
+		  <c:choose>
+		    <c:when test="${not empty sessionScope.userId}">
+		      <button type="button" class="bm-btn ${item.bookmarked ? 'on' : ''}"
+		              data-toggle-url="${bmToggleUrl}" data-article-code="${item.articleCode}"
+		              aria-pressed="${item.bookmarked ? 'true':'false'}"
+		              title="${item.bookmarked ? '북마크 해제' : '북마크 추가'}">
+		        <span class="bm-icon">${item.bookmarked ? '★' : '☆'}</span>
+		      </button>
+		    </c:when>
+		    <c:otherwise>
+  <button type="button"
+          class="bm-btn guest"
+          data-toggle-url="${bmToggleUrl}"
+          data-article-code="${item.articleCode}"
+          title="로그인이 필요합니다.">
+    <span class="bm-icon">☆</span>
+  </button>
+</c:otherwise>
+		  </c:choose>
+		</div>
+		
+		<!-- 2줄: 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) -->
+		<div class="news-body">
+		  <div class="summary">
+		    <c:choose>
+		      <c:when test="${not empty item.summary and fn:length(item.summary) > 50}">
+		        ${fn:substring(item.summary,0,50)}...
+		      </c:when>
+		      <c:otherwise>${item.summary}</c:otherwise>
+		    </c:choose>
+		  </div>
+		
+		  <div class="meta-line">
+		    <span>${item.press}</span>
+		    <span><fmt:formatDate value="${item.publicDt}" pattern="yyyy-MM-dd" /></span>
+		    <span>조회수: <span id="views-${item.articleCode}">${item.views}</span></span>
+		  </div>
+		</div>
+          </div>
             </c:forEach>
-          </c:when>
-          <c:otherwise>
-            <div class="no-data" style="padding:24px; text-align:center; color:#6b7280; background:#fff; border:1px solid var(--border); border-radius:12px;">
-              <c:choose>
-                <c:when test="${not empty searchWord or not empty dateFilter}">검색한 값이 없습니다.</c:when>
-                <c:otherwise>등록된 기사가 없습니다.</c:otherwise>
-              </c:choose>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </div>
+	          </c:when>
+	          <c:otherwise>
+	            <div class="no-data" style="padding:24px; text-align:center; color:#6b7280; background:#fff; border:1px solid var(--border); border-radius:12px;">
+	              <c:choose>
+	                <c:when test="${not empty searchWord or not empty dateFilter}">검색한 값이 없습니다.</c:when>
+	                <c:otherwise>등록된 기사가 없습니다.</c:otherwise>
+	              </c:choose>
+	            </div>
+	          </c:otherwise>
+	        </c:choose>
+	      </div>
 
       <!-- 페이징 -->
       <div class="paging">
@@ -509,71 +551,77 @@ body{
   })();
   </script>
 
-  <script>
-  // 북마크 토글 + 비로그인 모달
-  (function(){
-    function pickMsgId(data){
-      if(data == null) return null;
-      if('msgId' in data) return data.msgId;
-      if('code'  in data) return data.code;
-      if('flag'  in data) return data.flag;
-      if('status'in data) return data.status;
-      return null;
-    }
+<script>
+// 북마크 토글 (로그인/비로그인 모두 이 경로로 오고, 서버 응답으로 판단)
+(function () {
+  function pickMsgId(data){
+    if (data == null) return null;
+    if ('msgId'  in data) return data.msgId;
+    if ('code'   in data) return data.code;
+    if ('flag'   in data) return data.flag;
+    if ('status' in data) return data.status;
+    return null;
+  }
 
-    document.addEventListener('click', function(e){
-      var btn = e.target.closest && e.target.closest('.bm-btn');
-      if(!btn || btn.classList.contains('guest')) return;
+  document.addEventListener('click', function(e){
+	  var btn = e.target.closest && e.target.closest('.bm-btn');
+	  if(!btn) return;
 
-      e.preventDefault(); e.stopPropagation();
-      if(btn._busy) return;
-      btn._busy = true;
+	  // 게스트 버튼: 로그인 안내
+	  if(btn.classList.contains('guest')){
+	    e.preventDefault(); e.stopPropagation();
+	    var modal = document.getElementById('login-modal');
+	    if(modal){
+	      modal.classList.remove('hidden');
+	      modal.setAttribute('aria-hidden','false');
+	    }else{
+	      alert('로그인이 필요합니다.');
+	    }
+	    return;
+	  }
 
-      var url = btn.getAttribute('data-toggle-url');
+	  // 로그인 사용자 버튼
+	  e.preventDefault(); e.stopPropagation();
+	  if(btn._busy) return;
+	  btn._busy = true;
 
-      fetch(url, {method:'POST'})
-        .then(function(res){ if(!res.ok) throw res; return res.text(); })
-        .then(function(txt){
-          var data=null; try{ data = JSON.parse(txt); }catch(_){}
-          var id = pickMsgId(data);
+	  var url = btn.getAttribute('data-toggle-url');
+	  if (!url) {
+	    var code = btn.getAttribute('data-article-code');
+	    var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
+	    url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
+	  }
 
-          if(id === -99){
-            var modal = document.getElementById('login-modal');
-            if(modal){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
-            return;
-          }
-          var on = (id === 1);
-          btn.classList.toggle('on', on);
-          btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-          var ic = btn.querySelector('.bm-icon');
-          if(ic) ic.textContent = on ? '★' : '☆';
-          btn.title = on ? '북마크 해제' : '북마크 추가';
-        })
-        .catch(function(err){ console.error('북마크 토글 실패', err); })
-        .then(function(){ btn._busy = false; });
-    }, false);
+	  fetch(url, {
+	    method: 'POST',
+	    credentials: 'same-origin',          // 세션 쿠키 보장
+	    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+	  })
+	  .then(function(res){ if(!res.ok) throw res; return res.text(); })
+	  .then(function(txt){
+	    var data=null; try{ data = JSON.parse(txt); }catch(_){}
+	    var id = data && (data.msgId ?? data.code ?? data.flag ?? data.status);
 
-    // 비로그인 버튼 클릭 → 모달
-    document.addEventListener('click', function(e){
-      var btn = e.target.closest && e.target.closest('.bm-btn.guest');
-      if(!btn) return;
-      e.preventDefault(); e.stopPropagation();
+	    if(id === -99){
+	      var modal = document.getElementById('login-modal');
+	      if(modal){
+	        modal.classList.remove('hidden');
+	        modal.setAttribute('aria-hidden','false');
+	      }
+	      return;
+	    }
+	    var on = (id === 1);
+	    btn.classList.toggle('on', on);
+	    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+	    var ic = btn.querySelector('.bm-icon');
+	    if(ic) ic.textContent = on ? '★' : '☆';
+	    btn.title = on ? '북마크 해제' : '북마크 추가';
+	  })
+	  .catch(function(err){ console.error('북마크 토글 실패', err); })
+	  .finally(function(){ btn._busy = false; });
 
-      var modal = document.getElementById('login-modal');
-      if(!modal){ alert('로그인이 필요합니다.'); return; }
-      modal.classList.remove('hidden');
-      modal.setAttribute('aria-hidden','false');
-
-      var close = function(){
-        modal.classList.add('hidden');
-        modal.setAttribute('aria-hidden','true');
-      };
-      var closeBtn = modal.querySelector('[data-action="close"]');
-      var backdrop = modal.querySelector('.login-modal_backdrop');
-      if (closeBtn) closeBtn.onclick = close;
-      if (backdrop) backdrop.onclick = close;
-    }, false);
-  })();
-  </script>
+	}, false);
+})();
+</script>
 </body>
 </html>
