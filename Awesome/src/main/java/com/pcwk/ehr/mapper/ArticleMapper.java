@@ -2,6 +2,7 @@ package com.pcwk.ehr.mapper;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
@@ -21,4 +22,9 @@ public interface ArticleMapper extends WorkDiv<ArticleDTO> {
 	int getCount(ArticleSearchDTO param) throws SQLException;
 	
 	int getCountAll() throws Exception;
+	
+	
+	//가민경 메인사용
+    ArticleDTO findTopByCategoryWithinDaysWithMin(Map<String, Object> params);
+    ArticleDTO findLatestByCategory(int category);
 }
