@@ -14,9 +14,9 @@ response.setDateHeader("Expires", 0);%>
 <div class="navbar">
 <div class="menu-bar">
   <div class="navbar-left">
-    <div class="logo">HotIssue</div>
+    <div class="logo"><a href="http://localhost:8080/ehr/mainPage/main.do">HotIssue</a></div>
     <ul class="main-menu">
-      <li><a href="#">홈</a></li>
+      <li><a href="http://localhost:8080/ehr/mainPage/main.do">홈</a></li>
       <li><a href="#">퀴즈</a></li>
       <li><a href="http://localhost:8080/ehr/article/list.do">전체기사</a></li>
       <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
