@@ -8,12 +8,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.ui.Model;
 
 import com.google.gson.Gson;
 import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
@@ -51,7 +51,7 @@ public class BookmarkController {
 		String jsonString = "";
 		log.debug("1. param:{}", param);
 		
-		String userId = (String) session.getAttribute("userId");
+		String userId = (String) session.getAttribute("loginUser");
 		
 		if(userId == null || userId.trim().isEmpty()) {
 			log.warn("로그인 없이 북마크 등록 시도 차단됨");
@@ -87,7 +87,7 @@ public class BookmarkController {
 		log.debug("└───────────────────────────────────────┘");
 		log.debug("param: {}", param);
 		
-		String userId = (String) session.getAttribute("userId");
+		String userId = (String) session.getAttribute("loginUser");
 		
 		param.setUserId(userId);
 		BookmarkDTO outVO = bookmarkService.doSelectOne(param);
@@ -116,7 +116,7 @@ public class BookmarkController {
 		log.debug("└───────────────────────────────────────┘");
 		log.debug("param: {}", param);
 		
-		String userId = (String) session.getAttribute("userId");
+		String userId = (String) session.getAttribute("loginUser");
 		
 		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
 		if(userId == null || userId.trim().isEmpty()) {
