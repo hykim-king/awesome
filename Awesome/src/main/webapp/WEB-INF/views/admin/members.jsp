@@ -1,12 +1,42 @@
-<%@ page contentType="text/html; charset=UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>회원 관리</title>
+  <title>기사 관리</title>
   <link rel="stylesheet" href="<c:url value='/resources/css/admin.css'/>">
 </head>
+
+<style>
+
+	/* 공통 */
+	.grid th, .grid td { padding:12px 16px; vertical-align: middle; }
+	.grid thead th { text-align:center; }               /* 헤더는 가운데 */
+	.grid tbody td { text-align:left; }                 /* 기본은 왼쪽 */
+	
+	/* 체크박스, 등급/인증/가입일은 가운데 정렬 */
+	.grid td.chk,
+	.grid td:nth-child(1),   /* 체크박스 열 */
+	.grid td:nth-child(6),   /* 등급 */
+	.grid td:nth-child(7),   /* 이메일인증 */
+	.grid td:nth-child(8) {  /* 가입일 */
+	  text-align:center;
+	}
+	
+	/* 등급 셀렉트 가운데 보이게 */
+	.gradeSel{
+	  min-width:70px;
+	  text-align-last:center;      /* Chrome/Edge */
+	  -moz-text-align-last:center; /* Firefox */
+	}
+
+
+</style>
+
+
+
 <body>
 <div class="admin-wrap"><!-- 좌측 사이드바 + 우측 컨텐츠 -->
 
@@ -17,7 +47,8 @@
       <li><a href="<c:url value='/admin/dashboard.do'/>">대시보드</a></li>
       <li><a class="active" href="<c:url value='/admin/members.do'/>">회원 관리</a></li>
       <li><a href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
-      <li><a href="<c:url value='/admin/reports.do'/>">신고 관리</a></li>
+      <li><a href="<c:url value='/admin/report.do'/>">신고 관리</a></li>
+      <li><a href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
     </ul>
   </aside>
 
@@ -36,8 +67,8 @@
           <input class="input" type="text" name="keyword" value="${keyword}" placeholder="검색어">
           <select name="grade" class="select">
             <option value="">등급 전체</option>
-            <option value="0" <c:if test="${grade==0}">selected</c:if>>관리자(0)</option>
-            <option value="1" <c:if test="${grade==1}">selected</c:if>>사용자(1)</option>
+            <option value="0" <c:if test="${grade==0}">selected</c:if>>관리자</option>
+            <option value="1" <c:if test="${grade==1}">selected</c:if>>사용자</option>
           </select>
           <button class="btn btn-primary" type="submit">검색</button>
           <button class="btn btn-warning" type="button" id="btnUpdate">수정</button>
@@ -51,25 +82,25 @@
           <tr>
             <th class="chk"><input type="checkbox" id="chkAll"></th>
             <th>ID</th><th>이름</th><th>닉네임</th><th>이메일</th>
-            <th class="grade">등급</th><th>이메일인증</th><th>가입일</th>
+            <th class="grade">등급</th><th>가입일</th>
           </tr>
         </thead>
         <tbody>
         <c:forEach var="m" items="${rows}">
           <tr data-id="${m.userId}">
             <td class="chk"><input type="checkbox" class="rowChk" value="${m.userId}"></td>
-            <td>${m.userId}</td>
-            <td>${m.userNm}</td>
-            <td>${m.nickNm}</td>
-            <td>${m.mailAddr}</td>
+            <td style="text-align:center;">${m.userId}</td>
+            <td style="text-align:center;">${m.userNm}</td>
+            <td style="text-align:center;">${m.nickNm}</td>
+            <td style="text-align:center;">${m.mailAddr}</td>
             <td>
               <select class="select gradeSel">
-                <option value="0" <c:if test="${m.userGradeCd==0}">selected</c:if>>0</option>
-                <option value="1" <c:if test="${m.userGradeCd==1}">selected</c:if>>1</option>
+                <option value="0" <c:if test="${m.userGradeCd==0}">selected</c:if>>관리자</option>
+                <option value="1" <c:if test="${m.userGradeCd==1}">selected</c:if>>회원</option>
               </select>
             </td>
-            <td>${m.emailAuthYn}</td>
-            <td>${m.regDt}</td>
+            
+            <td><fmt:formatDate value="${m.regDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
           </tr>
         </c:forEach>
         <c:if test="${empty rows}">

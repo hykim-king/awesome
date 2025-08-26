@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pcwk.ehr.chatmessage.domain.ChatMessageDTO;
 import com.pcwk.ehr.chatmessage.service.ChatMessageService;
+import com.pcwk.ehr.member.domain.MemberDTO;
 
 @Controller
 @RequestMapping("/chat")
@@ -54,37 +55,31 @@ public class ChatMessageController {
 
 	// 실시간 수신: 클라 → 서버 (/app/send/{category})
 	@MessageMapping("/send/{category}")
-	public void onMessage(@DestinationVariable int category, 
-						  @Payload ChatMessageDTO payload, 
-						  Principal principal,
-						  @Header("simpSessionId") String sessionId,
-	                      @Header("simpSessionAttributes") Map<String, Object> sessAttrs)throws Exception {
+	public void onMessage(@DestinationVariable int category,
+	                      @Payload ChatMessageDTO payload,
+	                      SimpMessageHeaderAccessor accessor) throws Exception {
 
-		  // 1) 로그인 사용자 식별
-		  String uid = (principal != null && principal.getName() != null)
-		      ? principal.getName()
-		      : (sessAttrs != null ? (String) sessAttrs.get("USER_ID") : null);
+	    String uid = null;
+	    Map<String,Object> attrs = accessor.getSessionAttributes();
+	    if (attrs != null) {
+	        Object lu = attrs.get("loginUser");
+	        if (lu instanceof MemberDTO) {
+	            uid = ((MemberDTO) lu).getUserId();
+	        } else if (attrs.get("USER_ID") != null) {
+	            uid = String.valueOf(attrs.get("USER_ID"));
+	        }
+	    }
+	    if (uid == null || uid.trim().isEmpty()) {
+	        log.warn("비로그인 채팅 차단");
+	        return;
+	    }
 
-		  if (uid == null || uid.trim().isEmpty()) {
-		    // 2) 비회원이면 자기 세션으로만 에러 알림 보내고 종료
-		    Map<String,Object> err = new HashMap<>();
-		    err.put("code", "NEED_LOGIN");
-		    err.put("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
-		    // Security가 없으니 sessionId 기반 user로 전송
-		    SimpMessageHeaderAccessor h = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-		    h.setSessionId(sessionId);
-		    h.setLeaveMutable(true);
-		    messagingTemplate.convertAndSendToUser(sessionId, "/queue/errors", err, h.getMessageHeaders());
-		    return;
-		  }
+	    payload.setCategory(category);
+	    payload.setUserId(uid);
+	    payload.setSendDt(new java.util.Date());
+	    service.doSave(payload);
+	    messagingTemplate.convertAndSend("/topic/chat/" + category, payload);
+	}
 
-		  // 3) 정상 처리
-		  payload.setCategory(category);
-		  payload.setUserId(uid);
-		  payload.setSendDt(new java.util.Date());
-
-		  service.doSave(payload); // DB 저장
-		  messagingTemplate.convertAndSend("/topic/chat/" + category, payload); // 브로드캐스트
-		}
 
 }
