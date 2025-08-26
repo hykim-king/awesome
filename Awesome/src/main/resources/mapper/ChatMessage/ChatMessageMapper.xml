@@ -56,7 +56,12 @@
 	        resultType="com.pcwk.ehr.chatmessage.domain.ChatMessageDTO">
 	  SELECT *
 	  FROM (
-	    SELECT CHAT_CODE, CATEGORY, USER_ID, MESSAGE, SEND_DT
+	    SELECT 
+	       CHAT_CODE, 
+	       CATEGORY,  
+	       USER_ID, 
+	       MESSAGE, 
+	       SEND_DT
 	    FROM CHAT_MESSAGE
 	    WHERE CATEGORY = #{category}
 	      AND CHAT_CODE &lt; #{lastChatCode}
@@ -70,7 +75,12 @@
 	        resultType="com.pcwk.ehr.chatmessage.domain.ChatMessageDTO">
 	  SELECT *
 	  FROM (
-	    SELECT CHAT_CODE, CATEGORY, USER_ID, MESSAGE, SEND_DT
+	    SELECT 
+	       CHAT_CODE, 
+	       CATEGORY, 
+	       USER_ID, 
+	       MESSAGE, 
+	       SEND_DT
 	    FROM CHAT_MESSAGE
 	    WHERE CATEGORY = #{category}
 	    ORDER BY CHAT_CODE DESC
