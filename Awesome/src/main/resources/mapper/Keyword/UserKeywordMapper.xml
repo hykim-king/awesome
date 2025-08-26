@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.Keyword.UserKeywordMapper">
+
+    <select id="selectKeyword" resultType="com.pcwk.ehr.userKeyword.service.UserKeywordService">
+        SELECT
+            user_id,
+            keyword,
+            count,
+            kw_code
+        FROM
+            keyword
+    </select>
+
+    <insert id="insertKeyword" parameterType="com.pcwk.ehr.userKeyword.service.UserKeywordService">
+        INSERT INTO keyword (
+            user_id,
+            keyword,
+            count,
+            kw_code
+        ) VALUES (
+            #{userId},
+            #{keyword},
+            #{count},
+            #{kwCode}
+        )
+    </insert>
+
+    <delete id="deleteKeyword" parameterType="com.pcwk.ehr.userKeyword.service.UserKeywordService">
+        DELETE FROM keyword
+        WHERE
+            user_id = #{userId}
+            AND keyword = #{keyword}
+            AND count = #{count}
+            AND kw_code = #{kwCode}
+    </delete>
+
+    <update id="updateKeyword" parameterType="com.pcwk.ehr.userKeyword.service.UserKeywordService">
+        UPDATE keyword
+        SET
+            count = #{newCount}
+        WHERE
+            user_id = #{userId}
+            AND keyword = #{keyword}
+            AND count = #{count}
+            AND kw_code = #{kwCode}
+    </update>
+
+</mapper>

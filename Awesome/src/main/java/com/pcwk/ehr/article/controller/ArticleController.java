@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.article.service.ArticleService;
+import com.pcwk.ehr.userKeyword.service.UserKeywordService;
 
 
 @Controller
@@ -28,6 +30,9 @@ public class ArticleController {
 	
 	@Autowired
 	ArticleService service;	
+	
+	@Autowired
+	UserKeywordService userKeywordService;
 
 
 
@@ -96,7 +101,10 @@ public class ArticleController {
 	}
 	//유효성 검증 후 기사 url로 리다이렉트
 	@GetMapping("/visit.do")
-	public String visit(@RequestParam("articleCode") long articleCode) throws Exception{
+	public String visit(@RequestParam("articleCode") long articleCode,
+						@SessionAttribute(name = "userId", required = false) String userId) throws Exception{
+		
+		log.debug("visit.do: articleCode={}, userId={}", articleCode, userId);
 		
 		ArticleDTO req = new ArticleDTO();
 		req.setArticleCode(articleCode);
@@ -105,12 +113,25 @@ public class ArticleController {
 		
 		//기사나 기사url이 없거나 기사url이 null값이면 리스트로 돌아감
 		if(article == null || article.getUrl() == null || article.getUrl().isEmpty()) {
+			log.warn("Article or URL not found for articleCode: {}", articleCode);
 			return "redirect:/article/list.do";
 		}
 		String url = article.getUrl();
+		String title = article.getTitle(); // 기사 제목을 가져옵니다.
 		//url이 http나 https로 시작하는 게 아니라면 리스트로 돌아감
 		if(!(url.startsWith("http://")||url.startsWith("https://"))) {
+			log.warn("Invalid URL format for articleCode: {}", articleCode);
 			return "redirect:/article/list.do";
+		}
+		
+		// 로그인된 사용자이고 제목이 있다면 키워드 추출 및 저장 로직 실행
+		if (userId != null && title != null && !title.isEmpty()) {
+			try {
+				userKeywordService.processArticleKeywords(userId, title);
+				log.debug("Keyword processing successful for user: {} and title: {}", userId, title);
+			} catch (Exception e) {
+				log.error("Failed to process keywords for articleCode: " + articleCode, e);
+			}
 		}
 		
 		return "redirect:"+url;

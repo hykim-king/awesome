@@ -45,6 +45,16 @@
     WHERE REPORT_CODE = #{reportCode}
   </select>
 
+    
+    <!-- 관리자용 -->
+    <select id="getChatCodeByReport" parameterType="int" resultType="int">
+  SELECT CHAT_CODE
+  FROM REPORT
+  WHERE REPORT_CODE = #{reportCode}
+    </select>
+    
+
+
 
   <!-- 신고 목록 조회 + 페이징 (ReportSearchDTO 사용) -->
   <!-- 목록 + 페이징: Stopkey(ROWNUM) 패턴 -->
@@ -130,12 +140,17 @@
   
 
   <!-- 상태만 변경(관리자) -->
-  <update id="doUpdateStatus" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
-    UPDATE REPORT
-       SET STATUS = #{status},
-           MOD_DT = SYSDATE
-     WHERE REPORT_CODE = #{reportCode}
-  </update>
+			<update id="doUpdateStatus" parameterType="map">
+	  UPDATE REPORT
+	     SET STATUS = #{status},
+	         MOD_DT = CASE
+	                    WHEN #{status} = 'RESOLVED' THEN SYSDATE
+	                    ELSE MOD_DT
+	                  END
+	   WHERE REPORT_CODE = #{reportCode}
+	</update>
+
+  
 
   <delete id="doDelete" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
     DELETE FROM REPORT WHERE REPORT_CODE = #{reportCode}

@@ -19,7 +19,7 @@
       <li><a href="<c:url value='/admin/members.do'/>">회원 관리</a></li>
       <li><a href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
       <li><a href="<c:url value='/admin/report.do'/>">신고 관리</a></li>
-      <a class="btn btn-outline" href="<c:url value='/member/logout.do'/>">로그아웃</a>
+      <li><a href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
       
     </ul>
   </aside>
