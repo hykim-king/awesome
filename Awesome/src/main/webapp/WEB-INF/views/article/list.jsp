@@ -7,16 +7,12 @@
 <head>
 <title>뉴스 기사 목록</title>
 <!-- 공용 헤더/메인 스타일 -->
-<link rel="stylesheet"
-	href="<c:url value='/resources/css/header.css?v=3'/>">
-<link rel="stylesheet"
-	href="<c:url value='/resources/css/pcwk_main.css'/>">
+<link rel="stylesheet" href="/ehr/resources/css/pcwk_main.css">
+<link rel="stylesheet" href="/ehr/resources/css/header.css">
 
 <style>
 :root { -
-	-blue: #0d47a1; -
 	-blue-weak: #e7efff; -
-	-text: #111827; -
 	-muted: #6b7280; -
 	-border: #e5e7eb; -
 	-card: #ffffff; -
@@ -513,50 +509,47 @@ body {
 			</form>
 
 			<!-- 기사 리스트 -->
-			<div class="news-list">
-				<c:choose>
-					<c:when test="${not empty list}">
-						<c:set var="now" value="<%=new java.util.Date()%>" />
-						<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowYmd" />
-
-						<c:forEach var="item" items="${list}">
-							<div class="news-item">
-
-								<c:url var="hitUrl" value="/article/hit.do">
-									<c:param name="articleCode" value="${item.articleCode}" />
-								</c:url>
-								<c:url var="bmToggleUrl" value="/bookmark/toggleBookmark.do">
-									<c:param name="articleCode" value="${item.articleCode}" />
-								</c:url>
-
-								<!-- 1줄: 제목(좌) + 북마크(우) -->
-								<div class="news-header">
-									<div class="news-title">
-										<a href="${item.url}" class="hit-open"
-											data-article-code="${item.articleCode}"
-											data-hit-url="${hitUrl}" target="_blank"
-											rel="noopener noreferrer"
-											onclick="return hitAndOpen(this,event)"> ${item.title} </a>
-									</div>
-
-									<c:choose>
-										<c:when test="${not empty sessionScope.loginUser}">
-											<button type="button" class="bm-btn"
-												data-toggle-url="${bmToggleUrl}"
-												data-article-code="${item.articleCode}" aria-pressed="false"
-												title="북마크 추가">
-												<span class="bm-icon">☆</span>
-											</button>
-										</c:when>
-										<c:otherwise>
-											<button type="button" class="bm-btn guest"
-												data-toggle-url="${bmToggleUrl}"
-												data-article-code="${item.articleCode}" title="로그인이 필요합니다.">
-												<span class="bm-icon">☆</span>
-											</button>
-										</c:otherwise>
-									</c:choose>
-								</div>
+            <div class="news-list">
+                <c:choose>
+                    <c:when test="${not empty list}">
+                        <c:set var="now" value="<%=new java.util.Date()%>" />
+                        <fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowYmd" />
+                        <c:forEach var="item" items="${list}">
+                            <div class="news-item">
+                                <c:url var="hitUrl" value="/article/hit.do">
+                                    <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <c:url var="bmToggleUrl" value="/bookmark/toggleBookmark.do">
+                                    <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <!-- 1줄: 제목(좌) + 북마크(우) -- 가민경 수정 -->
+                                <div class="news-header">
+                            <div class="news-title">
+                                <c:url var="visitUrl" value="/article/visit.do">
+                                  <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <a href="${visitUrl}" target="_blank" rel="noopener noreferrer">
+                                  ${item.title}
+                                </a>
+                              </div>
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.loginUser}">
+                                            <button type="button" class="bm-btn"
+                                                data-toggle-url="${bmToggleUrl}"
+                                                data-article-code="${item.articleCode}" aria-pressed="false"
+                                                title="북마크 추가">
+                                                <span class="bm-icon">☆</span>
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button type="button" class="bm-btn guest"
+                                                data-toggle-url="${bmToggleUrl}"
+                                                data-article-code="${item.articleCode}" title="로그인이 필요합니다.">
+                                                <span class="bm-icon">☆</span>
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
 
 								<!-- 2줄: 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) -->
 								<div class="news-body">
@@ -729,9 +722,6 @@ body {
   //data- 속성으로 기사코드/조회수 api 가져오기
       var code  = a.getAttribute('data-article-code');
       var hitUrl= a.getAttribute('data-hit-url');
-      var logUrl   = '${pageContext.request.contextPath}/userlog/add.do?articleCode=' + encodeURIComponent(code); //가민경
-      
-      
 
       fetch(hitUrl, {method:'POST'})
         .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
@@ -743,20 +733,12 @@ body {
         })
         .catch(function(err){ console.error('조회수 증가 실패', err); });
 
-      // 유저 클릭 로그 저장 호출_가민경
-      fetch(logUrl, {
-        method: 'POST',
-        credentials: 'same-origin'
-      }).catch(err => console.error('로그 저장 실패', err));
-      
-      
-      
       return true; // 링크 기본 동작 허용(새 탭)
     };
   })();
   </script>
 
-  <script>
+<script>
 (function () {
 
   /* === 북마크 상태 로컬 저장/복원 헬퍼 === */
