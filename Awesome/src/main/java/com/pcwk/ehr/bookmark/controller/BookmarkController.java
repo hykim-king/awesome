@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
 import com.pcwk.ehr.bookmark.service.BookmarkService;
 import com.pcwk.ehr.cmn.MessageDTO;
+import com.pcwk.ehr.member.domain.MemberDTO;
 
 @Controller
 @RequestMapping("/bookmark")
@@ -51,15 +52,15 @@ public class BookmarkController {
 		String jsonString = "";
 		log.debug("1. param:{}", param);
 		
-		String userId = (String) session.getAttribute("loginUser");
+		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 		
-		if(userId == null || userId.trim().isEmpty()) {
+		if(userId == null) {
 			log.warn("로그인 없이 북마크 등록 시도 차단됨");
 			MessageDTO messageDTO = new MessageDTO(-99, "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
 			return new Gson().toJson(messageDTO);
 		}
 		
-		param.setUserId(userId); //세션에서 주입
+		param.setUserId(userId.getUserId()); //세션에서 주입
 	
 		int flag = bookmarkService.toggleBookmark(param);
 		String message = "";
@@ -87,9 +88,9 @@ public class BookmarkController {
 		log.debug("└───────────────────────────────────────┘");
 		log.debug("param: {}", param);
 		
-		String userId = (String) session.getAttribute("loginUser");
+		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 		
-		param.setUserId(userId);
+		param.setUserId(userId.getUserId());
 		BookmarkDTO outVO = bookmarkService.doSelectOne(param);
 		model.addAttribute("outVO", outVO);
 		
