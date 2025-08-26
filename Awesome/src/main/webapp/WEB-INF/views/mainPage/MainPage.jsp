@@ -203,7 +203,7 @@
   <section id="main-weather">
   
   <h2>오늘의 날씨</h2>
-<jsp:include page="/widget/weather"/>
+<%-- <jsp:include page="/widget/weather"/> --%>
 <%--     <jsp:include page="/WEB-INF/views/widget/weather"/> --%>
 <%--   <%@ include file="/WEB-INF/views/widget/weather.jsp" %> --%>
 
