@@ -1,6 +1,5 @@
 package com.pcwk.ehr.mainpage.controller;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,9 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.pcwk.ehr.article.domain.ArticleDTO;
+import com.pcwk.ehr.article.service.ArticleService;
 import com.pcwk.ehr.keyword.domain.KeywordLink;
 import com.pcwk.ehr.keyword.service.KeywordService;
-import com.pcwk.ehr.weather.domain.WeatherDTO;
 import com.pcwk.ehr.weather.service.WeatherService;
 
 @Controller
@@ -39,27 +39,24 @@ public class MainPageController {
     @Autowired
     WeatherService weatherService;
     
+    @Autowired
+    ArticleService articleService;
+    
     
     @GetMapping("/main.do")
     public String main(Model model, HttpSession session) {
         String userId = (String) session.getAttribute("userId");
         log.debug("main.do() userId={}", userId);
 
-
+        //  키워드 기능
         List<KeywordLink> keywords = keywordService.getTodayKeywords();
         model.addAttribute("keywords", keywords);
 
-        // ── 인기/추천 더미 데이터 (JSP 변수명에 맞춤) ────────────────
-        List<String> popularArticles = Arrays.asList(
-            "인기) 정치: 국회 본회의 쟁점 정리",
-            "인기) 스포츠: 주말 경기 하이라이트",
-            "인기) IT: 보안 업데이트 권고",
-            "인기) IT: 보안 업데이트 권고",
-            "인기) IT: 보안 업데이트 권고",
-            "인기4) IT: 보안 업데이트 권고보안 업데이트 권고보안 업데이트 권고"
-        );
+        // 인기 기사 추천 기능
+        List<ArticleDTO> popularArticles = articleService.getPopularTop1PerCategory();
         model.addAttribute("popularArticles", popularArticles);
 
+        // 유저기반 추천 기능
         List<String> recommended = Arrays.asList(
             "추천) 경제: 환율 급등 관련 해설",
             "추천) IT: 생성형 AI 도입 사례",

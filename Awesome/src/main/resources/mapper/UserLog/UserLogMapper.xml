@@ -43,18 +43,19 @@
              a.views,
              a.reg_dt,
              a.mod_dt
-        FROM article a
-       WHERE a.category = (
-               SELECT a2.category
-                 FROM user_click_log l
-                 JOIN article a2 ON l.article_code = a2.article_code
-                WHERE l.user_id = #{userId}
-                GROUP BY a2.category
-                ORDER BY COUNT(*) DESC
-                FETCH FIRST 1 ROWS ONLY
-             )
-    ORDER BY a.views DESC, a.reg_dt DESC
-    FETCH FIRST 3 ROWS ONLY
+       FROM article a
+        WHERE a.category = (
+                SELECT a2.category
+                  FROM user_click_log l
+                  JOIN article a2 ON l.article_code = a2.article_code
+                 WHERE l.user_id = #{userId}
+                   AND TRUNC(l.clicked_at) BETWEEN TRUNC(SYSDATE) - 7 AND TRUNC(SYSDATE)
+                 GROUP BY a2.category
+                 ORDER BY COUNT(*) DESC
+                 FETCH FIRST 1 ROWS ONLY
+              )
+     ORDER BY a.views DESC, a.reg_dt DESC
+     FETCH FIRST 3 ROWS ONLY
     </select>  
   
   
