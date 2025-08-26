@@ -513,50 +513,47 @@ body {
 			</form>
 
 			<!-- 기사 리스트 -->
-			<div class="news-list">
-				<c:choose>
-					<c:when test="${not empty list}">
-						<c:set var="now" value="<%=new java.util.Date()%>" />
-						<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowYmd" />
-
-						<c:forEach var="item" items="${list}">
-							<div class="news-item">
-
-								<c:url var="hitUrl" value="/article/hit.do">
-									<c:param name="articleCode" value="${item.articleCode}" />
-								</c:url>
-								<c:url var="bmToggleUrl" value="/bookmark/toggleBookmark.do">
-									<c:param name="articleCode" value="${item.articleCode}" />
-								</c:url>
-
-								<!-- 1줄: 제목(좌) + 북마크(우) -->
-								<div class="news-header">
-									<div class="news-title">
-										<a href="${item.url}" class="hit-open"
-											data-article-code="${item.articleCode}"
-											data-hit-url="${hitUrl}" target="_blank"
-											rel="noopener noreferrer"
-											onclick="return hitAndOpen(this,event)"> ${item.title} </a>
-									</div>
-
-									<c:choose>
-										<c:when test="${not empty sessionScope.loginUser}">
-											<button type="button" class="bm-btn"
-												data-toggle-url="${bmToggleUrl}"
-												data-article-code="${item.articleCode}" aria-pressed="false"
-												title="북마크 추가">
-												<span class="bm-icon">☆</span>
-											</button>
-										</c:when>
-										<c:otherwise>
-											<button type="button" class="bm-btn guest"
-												data-toggle-url="${bmToggleUrl}"
-												data-article-code="${item.articleCode}" title="로그인이 필요합니다.">
-												<span class="bm-icon">☆</span>
-											</button>
-										</c:otherwise>
-									</c:choose>
-								</div>
+            <div class="news-list">
+                <c:choose>
+                    <c:when test="${not empty list}">
+                        <c:set var="now" value="<%=new java.util.Date()%>" />
+                        <fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowYmd" />
+                        <c:forEach var="item" items="${list}">
+                            <div class="news-item">
+                                <c:url var="hitUrl" value="/article/hit.do">
+                                    <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <c:url var="bmToggleUrl" value="/bookmark/toggleBookmark.do">
+                                    <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <!-- 1줄: 제목(좌) + 북마크(우) -- 가민경 수정 -->
+                                <div class="news-header">
+                            <div class="news-title">
+                                <c:url var="visitUrl" value="/article/visit.do">
+                                  <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <a href="${visitUrl}" target="_blank" rel="noopener noreferrer">
+                                  ${item.title}
+                                </a>
+                              </div>
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.loginUser}">
+                                            <button type="button" class="bm-btn"
+                                                data-toggle-url="${bmToggleUrl}"
+                                                data-article-code="${item.articleCode}" aria-pressed="false"
+                                                title="북마크 추가">
+                                                <span class="bm-icon">☆</span>
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button type="button" class="bm-btn guest"
+                                                data-toggle-url="${bmToggleUrl}"
+                                                data-article-code="${item.articleCode}" title="로그인이 필요합니다.">
+                                                <span class="bm-icon">☆</span>
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
 
 								<!-- 2줄: 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) -->
 								<div class="news-body">
@@ -729,9 +726,6 @@ body {
   //data- 속성으로 기사코드/조회수 api 가져오기
       var code  = a.getAttribute('data-article-code');
       var hitUrl= a.getAttribute('data-hit-url');
-      var logUrl   = '${pageContext.request.contextPath}/userlog/add.do?articleCode=' + encodeURIComponent(code); //가민경
-      
-      
 
       fetch(hitUrl, {method:'POST'})
         .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
@@ -743,51 +737,13 @@ body {
         })
         .catch(function(err){ console.error('조회수 증가 실패', err); });
 
-      // 유저 클릭 로그 저장 호출_가민경
-      fetch(logUrl, {
-        method: 'POST',
-        credentials: 'same-origin'
-      }).catch(err => console.error('로그 저장 실패', err));
-      
-      
-      
       return true; // 링크 기본 동작 허용(새 탭)
     };
   })();
   </script>
 
-  <script>
+	<script>
 (function () {
-
-  /* === 북마크 상태 로컬 저장/복원 헬퍼 === */
-  function getUserId(){
-    // 세션의 userId가 있으면 그걸 키로 사용, 없으면 'guest'
-    var uid = '${fn:escapeXml(sessionScope.userId)}';
-    return (uid && uid.trim && uid.trim().length) ? uid : 'guest';
-  }
-  function storageKey(code){
-    return 'bm:' + getUserId() + ':' + String(code);
-  }
-  function applyBtnState(btn, on){
-    btn.classList.toggle('on', on);
-    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    var ic = btn.querySelector('.bm-icon');
-    if (ic) ic.textContent = on ? '★' : '☆';
-    btn.title = on ? '북마크 해제' : '북마크 추가';
-  }
-
-  // 페이지 로드 시 저장된 상태 복원
-  document.addEventListener('DOMContentLoaded', function(){
-    var btns = document.querySelectorAll('.bm-btn');
-    for (var i=0; i<btns.length; i++){
-      var btn = btns[i];
-      var code = btn.getAttribute('data-article-code');
-      if (!code) continue;
-      var v = null; try { v = localStorage.getItem(storageKey(code)); } catch(_){}
-      if (v === '1') applyBtnState(btn, true);
-      else if (v === '0') applyBtnState(btn, false);
-    }
-  });
 
   function showLoginModal(){
     var m = document.getElementById('login-modal');
@@ -824,9 +780,9 @@ body {
     if(btn._busy) return;
     btn._busy = true;
 
-    var code = btn.getAttribute('data-article-code'); // ← 밖으로 빼서 아래에서도 사용
     var url = btn.getAttribute('data-toggle-url');
     if (!url) {
+      var code = btn.getAttribute('data-article-code');
       var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
       url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
     }
@@ -850,11 +806,12 @@ body {
                      ? (id === 1)
                      : !nowOn;
 
-      // UI 반영
-      applyBtnState(btn, nextOn);
+      btn.classList.toggle('on', nextOn);
+      btn.setAttribute('aria-pressed', nextOn ? 'true' : 'false');
 
-      // ✅ 새로고침 유지: localStorage 저장
-      try { localStorage.setItem(storageKey(code), nextOn ? '1' : '0'); } catch(_){}
+      var ic = btn.querySelector('.bm-icon');
+      if(ic) ic.textContent = nextOn ? '★' : '☆';
+      btn.title = nextOn ? '북마크 해제' : '북마크 추가';
 
       if (data && data.message) console.log('bookmark:', data.message);
     })
