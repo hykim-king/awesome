@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 
-<sidebar id="sidebar">
+<div id="sidebar">
+            <jsp:include page = "/WEB-INF/views/widget/dictionary.jsp" />
 
-</sidebar>
+</div>
