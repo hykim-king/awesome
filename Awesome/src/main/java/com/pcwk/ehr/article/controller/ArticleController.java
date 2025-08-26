@@ -126,6 +126,10 @@ public class ArticleController {
 		
 
 	    // 가민경추가
+		
+		service.updateReadCnt(req);
+		 
+		 
 	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
 	    if (loginUser != null) {
 	        userLogService.logArticleClick(loginUser.getUserId(), articleCode);
