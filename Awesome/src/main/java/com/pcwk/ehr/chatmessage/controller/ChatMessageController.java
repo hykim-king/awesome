@@ -57,9 +57,11 @@ public class ChatMessageController {
 	@MessageMapping("/send/{category}")
 	public void onMessage(@DestinationVariable int category,
 	                      @Payload ChatMessageDTO payload,
+	                      Principal principal,
 	                      SimpMessageHeaderAccessor accessor) throws Exception {
 
 	    String uid = null;
+	    
 	    Map<String,Object> attrs = accessor.getSessionAttributes();
 	    if (attrs != null) {
 	        Object lu = attrs.get("loginUser");
