@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.pcwk.ehr.member.domain.MemberDTO;
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
 
 import com.pcwk.ehr.userLog.service.UserLogService;
@@ -34,10 +35,11 @@ public class UserLogController {
     @ResponseBody
     public String add(@RequestParam("articleCode") Long articleCode,
                       HttpSession session) {
-        String userId = (String) session.getAttribute("userId"); // 로그인 사용자
-        log.debug("add.do() userId={}, articleCode={}", userId, articleCode);
+    	MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");  // 로그인 정보
+    	String userId = (loginUser != null) ? loginUser.getUserId() : null;
+        log.debug("add.do() userId={}, articleCode={}", loginUser, articleCode);
 
-        if (userId == null || articleCode == null) {
+        if (loginUser == null || articleCode == null) {
             return "NOT_LOGGED_IN_OR_BAD_REQUEST";
         }
 

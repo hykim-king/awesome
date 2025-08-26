@@ -6,5 +6,5 @@
 <sidebar id="sidebar">
 
             <jsp:include page = "/WEB-INF/views/chat/chat.jsp" />
-
+            <jsp:include page = "/WEB-INF/views/widget/dictionary.jsp" />
 </sidebar>

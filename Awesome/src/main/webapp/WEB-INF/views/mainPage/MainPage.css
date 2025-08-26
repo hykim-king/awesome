@@ -78,21 +78,59 @@ h2{
 /* ---------------------------------
    #2 조회수 기반 인기 기사
 ----------------------------------*/
-#main-popular ul{
-  list-style:none; padding:0; margin:0;
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
-  gap:14px;
+/* 3열 × 2줄 */
+.popular-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
 }
-#main-popular li{
-  border:1px solid #e9e9e9;
-  border-radius:12px;
-  padding:12px;
-  background:#fff;
-  min-height:84px;
-  display:flex; align-items:flex-start;
+@media (max-width: 1024px) {
+  .popular-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .popular-grid { grid-template-columns: 1fr; }
 }
 
+.popular-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.popular-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.popular-card a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+/* 아이콘 이미지 */
+.popular-card .icon {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.popular-card .icon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: inline-block;
+}
+
+/* 제목 */
+.popular-card .title {
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 600;
+  word-break: keep-all;
+  text-align: center;
+}
 /* ---------------------------------
    #3 회원별 추천 기사
 ----------------------------------*/
