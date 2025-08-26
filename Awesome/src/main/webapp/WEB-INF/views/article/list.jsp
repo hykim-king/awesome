@@ -553,6 +553,9 @@ body{
 
       var code  = a.getAttribute('data-article-code');
       var hitUrl= a.getAttribute('data-hit-url');
+      var logUrl   = '${pageContext.request.contextPath}/userlog/add.do?articleCode=' + encodeURIComponent(code); //가민경
+      
+      
 
       fetch(hitUrl, {method:'POST'})
         .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
@@ -564,6 +567,14 @@ body{
         })
         .catch(function(err){ console.error('조회수 증가 실패', err); });
 
+      // 유저 클릭 로그 저장 호출_가민경
+      fetch(logUrl, {
+        method: 'POST',
+        credentials: 'same-origin'
+      }).catch(err => console.error('로그 저장 실패', err));
+      
+      
+      
       return true; // 링크 기본 동작 허용(새 탭)
     };
   })();
