@@ -48,7 +48,7 @@
       <li><a class="active" href="<c:url value='/admin/members.do'/>">회원 관리</a></li>
       <li><a href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
       <li><a href="<c:url value='/admin/report.do'/>">신고 관리</a></li>
-      <li><a class="btn btn-outline" href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
+      <li><a href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
     </ul>
   </aside>
 
@@ -67,8 +67,8 @@
           <input class="input" type="text" name="keyword" value="${keyword}" placeholder="검색어">
           <select name="grade" class="select">
             <option value="">등급 전체</option>
-            <option value="0" <c:if test="${grade==0}">selected</c:if>>관리자(0)</option>
-            <option value="1" <c:if test="${grade==1}">selected</c:if>>사용자(1)</option>
+            <option value="0" <c:if test="${grade==0}">selected</c:if>>관리자</option>
+            <option value="1" <c:if test="${grade==1}">selected</c:if>>사용자</option>
           </select>
           <button class="btn btn-primary" type="submit">검색</button>
           <button class="btn btn-warning" type="button" id="btnUpdate">수정</button>
@@ -89,10 +89,10 @@
         <c:forEach var="m" items="${rows}">
           <tr data-id="${m.userId}">
             <td class="chk"><input type="checkbox" class="rowChk" value="${m.userId}"></td>
-            <td>${m.userId}</td>
-            <td>${m.userNm}</td>
-            <td>${m.nickNm}</td>
-            <td>${m.mailAddr}</td>
+            <td style="text-align:center;">${m.userId}</td>
+            <td style="text-align:center;">${m.userNm}</td>
+            <td style="text-align:center;">${m.nickNm}</td>
+            <td style="text-align:center;">${m.mailAddr}</td>
             <td>
               <select class="select gradeSel">
                 <option value="0" <c:if test="${m.userGradeCd==0}">selected</c:if>>관리자</option>
