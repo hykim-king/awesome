@@ -76,7 +76,8 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
   <div class="chat-wrap" id="chatRoot" 
        data-cp="${CP}" 
        data-category="${CATEGORY}"
-       data-logged-in="${not empty sessionScope.USER_ID}">
+     data-logged-in="${sessionScope.loginUser != null}"
+     data-user="${sessionScope.loginUser != null ? sessionScope.loginUser.userId : ''}">
     <div class="chat-header">
       <div class="chat-title">채팅창</div>
     </div>
