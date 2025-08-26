@@ -7,16 +7,12 @@
 <head>
 <title>뉴스 기사 목록</title>
 <!-- 공용 헤더/메인 스타일 -->
-<link rel="stylesheet"
-	href="<c:url value='/resources/css/header.css?v=3'/>">
-<link rel="stylesheet"
-	href="<c:url value='/resources/css/pcwk_main.css'/>">
+<link rel="stylesheet" href="/ehr/resources/css/pcwk_main.css">
+<link rel="stylesheet" href="/ehr/resources/css/header.css">
 
 <style>
 :root { -
-	-blue: #0d47a1; -
 	-blue-weak: #e7efff; -
-	-text: #111827; -
 	-muted: #6b7280; -
 	-border: #e5e7eb; -
 	-card: #ffffff; -
