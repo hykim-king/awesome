@@ -220,7 +220,7 @@
         <property name="jdbcUrl"
             value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
         <property name="username" value="awesome" />
-        <property name="password" value="a4321">
+        <property name="password" value="">
         </property>
         
         

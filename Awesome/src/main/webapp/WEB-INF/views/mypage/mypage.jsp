@@ -10,20 +10,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/ehr/resources/css/pcwk_main.css">
 <link rel="stylesheet" href="/ehr/resources/css/header.css">
-<style>
-  .wrap{max-width:1200px;margin:0 auto;padding:24px}
-  .grid{display:grid;gap:24px}
-  .top{grid-template-columns:1fr 1fr}
-  .middle{grid-template-columns:1fr 1fr}
-  .panel{border-top:1px solid #ddd;padding-top:16px}
-  .section-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-  .badge{font-size:12px;color:#555;border:1px solid #ddd;border-radius:999px;padding:2px 8px}
-  .item{padding:12px 0;border-bottom:1px solid #eee}
-  .title{font-weight:700;margin:0 0 6px}
-  .meta{font-size:12px;color:#777;display:flex;gap:8px}
-  .pagination a,.pagination span{margin:0 4px}
-  .current{font-weight:bold;text-decoration:underline}
-</style>
+<link rel="stylesheet" href="/ehr/resources/css/mypage.css">
 <title>Insert title here</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -32,7 +19,7 @@
 fetch('${pageContext.request.contextPath}/mypage/api/mypage/summary')
   .then(res => res.text())
   .then(msg => {
-    document.getElementById("summary").innerText = "안녕하세요 홍길동님.\n" + msg;
+    document.getElementById("summary").innerText = msg;
   });
 </script>
 <!-- 구글 차트 -->
@@ -67,7 +54,8 @@ function drawChart() {
       const dataTable = google.visualization.arrayToDataTable(chartData);
       const options = {
         title: '한 주간 읽은 카테고리',
-        is3D: true
+        is3D: true,
+        backgroundColor: 'transparent'
       };
 
       const chart = new google.visualization.PieChart(
@@ -100,30 +88,35 @@ function drawChart() {
 		  <!-- 상단: 요약 + 차트/워드클라우드 -->
 		  <div id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
 		  <div class="grid top">
-		    <div id="piechart_3d" style="height:360px;"></div>
-		    <div id="wordCloud"  style="height:360px;"></div>
+		    <div id="piechart_3d" style="height:240px;"></div>
+		    <div class="wordCloud" id="wordCloud"  style="height:240px;"></div>
 		  </div>
 
 		<!-- 중단: 좌(북마크) / 우(신고) -->
 		  <div class="grid middle">
 		    <!-- 북마크 패널 (현재 컨트롤러와 100% 호환: list/totalCnt/pageNo/pageSize) -->
-		    <section class="panel">
+		    <section class="panel recommend" style="margin-top:24px">
 		      <div class="section-title"><span class="badge">북마크</span></div>
 		      <c:choose>
 		        <c:when test="${not empty list}">
 		          <c:forEach var="item" items="${list}">
-		            <div class="item">
+		            <div class="item" data-article-code="${item.articleCode}">
 		              <div class="title"><a><c:out value="${item.title}"/></a></div>
 		              <div class="summary"><c:out value="${item.summary}"/></div>
 		              <div class="meta">
 		                <span class="press"><c:out value="${item.press}"/></span>
 		                <span class="date"><fmt:formatDate value="${item.regDt}" pattern="yyyy-MM-dd"/></span>
 		              </div>
+		              
+		              <!-- 북마크 버튼 -->
+		              <button type="button"
+		                      class="bookmark-btn"
+		                      onclick="toggleBookmark('${item.articleCode}', this)">★</button>
 		            </div>
 		          </c:forEach>
 		        </c:when>
 		        <c:otherwise>
-		          <div class="item"><c:out value="${noBookmarkMsg}"/></div>
+		          <div class="item empty"><c:out value="${noBookmarkMsg}"/></div>
 		        </c:otherwise>
 		      </c:choose>
 		
@@ -142,7 +135,7 @@ function drawChart() {
 		    </section>
 		
 		    <!-- 신고 패널 (아직 컨트롤러 없으면 안내만 노출) -->
-		    <section class="panel">
+		    <section class="panel recommend" style="margin-top:24px">
 		      <div class="section-title"><span class="badge">신고사항</span></div>
 		      <c:choose>
 		        <c:when test="${not empty reportList}">
@@ -158,7 +151,7 @@ function drawChart() {
 		          </c:forEach>
 		        </c:when>
 		        <c:otherwise>
-		          <div class="item">
+		          <div class="item empty">
 		            <c:out value="${noReportMsg != null ? noReportMsg : '신고 내역이 없습니다.'}"/>
 		          </div>
 		        </c:otherwise>
@@ -167,29 +160,36 @@ function drawChart() {
 		  </div>
 		
 		  <!-- 하단: 추천 기사 (페이징 없음) -->
-		  <section class="panel" style="margin-top:24px">
+		  <section class="panel recommend" style="margin-top:24px">
 		    <h3 style="text-align:center;margin-bottom:12px">추천 기사</h3>
 		    <c:choose>
 		      <c:when test="${not empty recommendList}">
 		        <c:forEach var="item" items="${recommendList}">
-		          <div class="item">
+		          <div class="item" data-article-code="${item.articleCode}">
 		            <div class="title"><a><c:out value="${item.title}"/></a></div>
 		            <div class="summary"><c:out value="${item.summary}"/></div>
 		            <div class="meta">
 		              <span class="press"><c:out value="${item.press}"/></span>
 		              <span class="date"><fmt:formatDate value="${item.regDt}" pattern="yyyy-MM-dd"/></span>
 		            </div>
+		            
+		            <!-- 추천 기사용 북마크 버튼 -->
+		            <button type="button"
+		                    class="bookmark-btn"
+		                    onclick="toggleBookmark('${item.articleCode}', this)">★</button>
 		          </div>
 		        </c:forEach>
 		      </c:when>
 		      <c:otherwise>
-		        <div class="item">
+		        <div class="item empty">
 		          <c:out value="${noRecommendMsg != null ? noRecommendMsg : '추천 기사가 없습니다.'}"/>
 		        </div>
 		      </c:otherwise>
 		    </c:choose>
 		  </section>
-		
+		   <div class="userInfo-btn-wrap">
+		    <a href="${CP}/mypage/userInfo.do" class="userInfo-btn">회원정보</a>
+		   </div>
 		</div>
 
     </div>
@@ -197,5 +197,58 @@ function drawChart() {
     
      <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
    </div> 
+   <!-- 스크립트: 추천 3개만 /bookmarks/checkOne 으로 초기 색칠 -->
+   <script>
+   (function(){
+	   const toggleUrl   = '<c:url value="/mypage/toggleBookmark.do"/>';
+	   const checkOneUrl = '<c:url value="/mypage/checkOne"/>';
+
+	   // 추천 기사 초기 색칠
+	   document.addEventListener('DOMContentLoaded', function () {
+	     const recItems = document.querySelectorAll('.recommend .item[data-article-code]');
+	     recItems.forEach(function(el){
+	       const code = el.getAttribute('data-article-code');
+	       const btn  = el.querySelector('.bookmark-btn');
+	       if (!btn || !code) return;
+
+	       fetch(checkOneUrl + '?articleCode=' + encodeURIComponent(code), {
+	         method: 'GET',
+	         headers: { 'Accept': 'application/json' }
+	       })
+	       .then(r => r.json())
+	       .then(res => {
+	         if (res && res.loggedIn && res.bookmarked) btn.classList.add('active');
+	       });
+	     });
+	   });
+
+	   // 토글 API 호출 (버튼 클릭 시)
+	   window.toggleBookmark = function(articleCode, btn){
+	     fetch(toggleUrl, {
+	       method: 'POST',
+	       headers: {
+	         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+	         'Accept': 'application/json'
+	       },
+	       body: new URLSearchParams({ articleCode })
+	     })
+	     .then(r => r.json())
+	     .then(res => {
+	       if (!res) return;
+	       if (res.flag === -99 || res.messageId === -99) { 
+	    	   alert(res.message || '로그인이 필요합니다.'); 
+	    	   return; 
+	    	   }
+	       
+	       // 페이지 전체 새로고침
+	       location.reload();
+	       
+	       btn.classList.toggle('active', !!res.bookmarked);
+	     })
+	     .catch(() => alert('요청 중 오류가 발생했습니다.'));
+	   };
+	 })();
+
+   </script>
 </body>
 </html>
