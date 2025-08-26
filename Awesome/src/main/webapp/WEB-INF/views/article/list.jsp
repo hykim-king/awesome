@@ -756,8 +756,38 @@ body {
   })();
   </script>
 
-	<script>
+  <script>
 (function () {
+
+  /* === 북마크 상태 로컬 저장/복원 헬퍼 === */
+  function getUserId(){
+    // 세션의 userId가 있으면 그걸 키로 사용, 없으면 'guest'
+    var uid = '${fn:escapeXml(sessionScope.userId)}';
+    return (uid && uid.trim && uid.trim().length) ? uid : 'guest';
+  }
+  function storageKey(code){
+    return 'bm:' + getUserId() + ':' + String(code);
+  }
+  function applyBtnState(btn, on){
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    var ic = btn.querySelector('.bm-icon');
+    if (ic) ic.textContent = on ? '★' : '☆';
+    btn.title = on ? '북마크 해제' : '북마크 추가';
+  }
+
+  // 페이지 로드 시 저장된 상태 복원
+  document.addEventListener('DOMContentLoaded', function(){
+    var btns = document.querySelectorAll('.bm-btn');
+    for (var i=0; i<btns.length; i++){
+      var btn = btns[i];
+      var code = btn.getAttribute('data-article-code');
+      if (!code) continue;
+      var v = null; try { v = localStorage.getItem(storageKey(code)); } catch(_){}
+      if (v === '1') applyBtnState(btn, true);
+      else if (v === '0') applyBtnState(btn, false);
+    }
+  });
 
   function showLoginModal(){
     var m = document.getElementById('login-modal');
@@ -794,9 +824,9 @@ body {
     if(btn._busy) return;
     btn._busy = true;
 
+    var code = btn.getAttribute('data-article-code'); // ← 밖으로 빼서 아래에서도 사용
     var url = btn.getAttribute('data-toggle-url');
     if (!url) {
-      var code = btn.getAttribute('data-article-code');
       var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
       url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
     }
@@ -820,12 +850,11 @@ body {
                      ? (id === 1)
                      : !nowOn;
 
-      btn.classList.toggle('on', nextOn);
-      btn.setAttribute('aria-pressed', nextOn ? 'true' : 'false');
+      // UI 반영
+      applyBtnState(btn, nextOn);
 
-      var ic = btn.querySelector('.bm-icon');
-      if(ic) ic.textContent = nextOn ? '★' : '☆';
-      btn.title = nextOn ? '북마크 해제' : '북마크 추가';
+      // ✅ 새로고침 유지: localStorage 저장
+      try { localStorage.setItem(storageKey(code), nextOn ? '1' : '0'); } catch(_){}
 
       if (data && data.message) console.log('bookmark:', data.message);
     })

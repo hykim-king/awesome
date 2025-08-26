@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
@@ -54,9 +55,31 @@
   <div class="keywords-left">
     <c:forEach var="k" items="${keywords}" varStatus="st">
       <c:if test="${st.index lt 3}">
-        <a class="keyword" href="${ctx}${k.link}">
-          <c:out value="${k.keyword}" />
-        </a>
+       <c:set var="kwRaw" value="${k.keyword}" />
+<c:set var="idx1" value="${fn:indexOf(kwRaw, '(')}" />
+<c:set var="idx2" value="${fn:indexOf(kwRaw, '（')}" />
+<c:choose>
+  <c:when test="${idx1 ne -1}">
+    <c:set var="kwClean" value="${fn:trim(fn:substring(kwRaw, 0, idx1))}" />
+  </c:when>
+  <c:when test="${idx2 ne -1}">
+    <c:set var="kwClean" value="${fn:trim(fn:substring(kwRaw, 0, idx2))}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="kwClean" value="${fn:trim(kwRaw)}" />
+  </c:otherwise>
+</c:choose>
+
+<c:url var="kwUrl" value="${k.link}">
+  <c:param name="pageNum"    value="1"/>
+  <c:param name="pageSize"   value="20"/>
+  <c:param name="searchDiv"  value="10"/>          <!-- 제목 검색 -->
+  <c:param name="searchWord" value="${kwClean}"/>  <!-- 괄호 앞부분만 -->
+</c:url>
+
+<a class="keyword" href="${kwUrl}">
+  <c:out value="${kwRaw}" />
+</a>
       </c:if>
     </c:forEach>
   </div>
@@ -66,9 +89,31 @@
   <div class="keywords-right">
     <c:forEach var="k" items="${keywords}" varStatus="st">
       <c:if test="${st.index ge 3}">
-        <a class="keyword" href="${ctx}${k.link}">
-          <c:out value="${k.keyword}" />
-        </a>
+        <c:set var="kwRaw" value="${k.keyword}" />
+<c:set var="idx1" value="${fn:indexOf(kwRaw, '(')}" />
+<c:set var="idx2" value="${fn:indexOf(kwRaw, '（')}" />
+<c:choose>
+  <c:when test="${idx1 ne -1}">
+    <c:set var="kwClean" value="${fn:trim(fn:substring(kwRaw, 0, idx1))}" />
+  </c:when>
+  <c:when test="${idx2 ne -1}">
+    <c:set var="kwClean" value="${fn:trim(fn:substring(kwRaw, 0, idx2))}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="kwClean" value="${fn:trim(kwRaw)}" />
+  </c:otherwise>
+</c:choose>
+
+<c:url var="kwUrl" value="${k.link}">
+  <c:param name="pageNum"    value="1"/>
+  <c:param name="pageSize"   value="20"/>
+  <c:param name="searchDiv"  value="10"/>          <!-- 제목 검색 -->
+  <c:param name="searchWord" value="${kwClean}"/>  <!-- 괄호 앞부분만 -->
+</c:url>
+
+<a class="keyword" href="${kwUrl}">
+  <c:out value="${kwRaw}" />
+</a>
       </c:if>
     </c:forEach>
 
