@@ -23,7 +23,7 @@
       <li><a href="<c:url value='/admin/members.do'/>">회원 관리</a></li>
       <li><a class="active" href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
       <li><a href="<c:url value='/admin/report.do'/>">신고 관리</a></li>
-      <a class="btn btn-outline" href="<c:url value='/member/logout.do'/>">로그아웃</a>
+      <li><a href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
     </ul>
   </aside>
 
@@ -35,19 +35,21 @@
       <div class="head">
         <h1 class="h1">기사 관리</h1>
 
-        <form method="get" action="<c:url value='/admin/articles.do'/>" class="actions">
-          <select name="field" class="select">
-            <option value="">전체</option>
-            <option value="press"  <c:if test="${field=='press'}">selected</c:if>>언론사</option>
-            <option value="title"  <c:if test="${field=='title'}">selected</c:if>>기사제목</option>
-          </select>
+       <form method="get" action="<c:url value='/admin/articles.do'/>">
+		  <select name="searchDiv" class="select">
+		    <option value="">전체</option>
+		    <option value="30" ${param.searchDiv=='30' ? 'selected' : ''}>언론사</option>
+		    <option value="10" ${param.searchDiv=='10' ? 'selected' : ''}>기사제목</option>
+		    <%-- <option value="20" ${param.searchDiv=='20' ? 'selected' : ''}>요약</option> --%>
+		  </select>
 
-          <input class="input" type="text" name="keyword" value="${keyword}" placeholder="검색어">
-
-          <input class="input" style="width:160px" type="text" name="category"
-                 value="${category}" placeholder="카테고리(번호)">
-
-          <select name="dateFilter" class="select">
+          <%-- <input class="input" type="text" name="keyword" value="${keyword}" placeholder="검색어"> --%>
+            <input class="input" type="text" name="searchWord" value="${param.searchWord}"placeholder="검색어">
+		  <!-- 카테고리를 검색에 쓰려면 별도의 input을 name="category"로 -->
+		  <!-- <input type="number" name="category" value="${param.category}"> -->
+		
+  
+       <%--    <select name="dateFilter" class="select">
             <option value="">기간 전체</option>
             <option value="D1" <c:if test="${dateFilter=='D1'}">selected</c:if>>오늘</option>
             <option value="W1" <c:if test="${dateFilter=='W1'}">selected</c:if>>1주</option>
@@ -58,11 +60,11 @@
             <option value="10" <c:if test="${size==10}">selected</c:if>>10</option>
             <option value="20" <c:if test="${size==20}">selected</c:if>>20</option>
             <option value="50" <c:if test="${size==50}">selected</c:if>>50</option>
-          </select>
+          </select> --%>
 
           <button class="btn btn-primary" type="submit">검색</button>
-          <button class="btn btn-warning" type="button" id="btnEdit">수정</button>
-          <button class="btn btn-primary btn-ghost" type="button" id="btnNew">등록</button>
+          <!-- <button class="btn btn-warning" type="button" id="btnEdit">수정</button> -->
+          <!-- <button class="btn btn-primary btn-ghost" type="button" id="btnNew">등록</button> -->
           <button class="btn btn-danger"  type="button" id="btnDelete">삭제</button>
         </form>
       </div>
@@ -71,27 +73,27 @@
       <table class="grid">
         <thead>
           <tr>
-            <th class="chk"><input type="checkbox" id="chkAll"></th>
-            <th>기사코드</th>
-            <th>카테고리</th>
-            <th>언론사</th>
-            <th>제목</th>
-            <th>게시일</th>
-            <th>조회수</th>
-            <th>링크</th>
+           <th class="chk"><input type="checkbox" id="chkAll"></th>
+			<th class="nowrap">기사코드</th>
+			<th class="nowrap">카테고리</th>
+			<th class="nowrap">언론사</th>
+			<th>제목</th> <!-- 제목은 줄바꿈 허용 -->
+			<th class="nowrap">게시일</th>
+			<th class="nowrap">조회수</th>
+			<th class="nowrap">링크</th>
           </tr>
         </thead>
         <tbody>
         <c:forEach var="a" items="${rows}">
           <tr data-id="${a.articleCode}">
             <td class="chk"><input type="checkbox" class="rowChk" value="${a.articleCode}"></td>
-            <td>${a.articleCode}</td>
-            <td>${a.category}</td>
-            <td>${a.press}</td>
+            <td style="text-align:center;">${a.articleCode}</td>
+            <td style="text-align:center;">${a.category}</td>
+            <td style="text-align:center;">${a.press}</td>
             <td>${a.title}</td>
-            <td><fmt:formatDate value="${a.publicDt}" pattern="yyyy-MM-dd"/></td>
-            <td><fmt:formatNumber value="${a.views}"/></td>
-            <td class="url">
+            <td style="text-align:center;"><fmt:formatDate value="${a.publicDt}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+            <td style="text-align:center;"><fmt:formatNumber value="${a.views}"/></td>
+            <td style="text-align:center;" class="url">
               <c:choose>
                 <c:when test="${not empty a.url}">
                   <a href="${a.url}" target="_blank" rel="noopener">열기</a>
@@ -200,7 +202,7 @@
     f.submit();
   });
 
-  // 등록/수정은 라우팅만(필요 시 URL 연결)
+ /*  // 등록/수정은 라우팅만(필요 시 URL 연결)
   $('#btnNew')?.addEventListener('click', () => {
     alert('등록 화면은 별도 구현 대상입니다.');
   });
@@ -208,7 +210,7 @@
     const ids = $$('.rowChk').filter(c=>c.checked).map(c=>c.value);
     if (ids.length !== 1) return alert('수정은 1건만 선택하세요.');
     alert('수정 화면 라우팅이 필요합니다. (선택 코드: ' + ids[0] + ')');
-  });
+  }); */
 </script>
 </body>
 </html>

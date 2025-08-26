@@ -52,6 +52,7 @@
       <li><a href="<c:url value='/admin/members.do'/>">회원 관리</a></li>
       <li><a href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
       <li><a class="active" href="<c:url value='/admin/report.do'/>">신고 관리</a></li>
+      <li><a href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
     </ul>
   </aside>
 
@@ -62,7 +63,8 @@
         <h1 class="h1">신고 관리</h1>
 
         <div class="controls">
-          <form method="get" action="${CP}/admin/report.do" class="actions">
+          <form method="get" action="<c:url value='/admin/report.do'/>" class="actions">
+
             <select name="field" class="select">
               <option value=""           ${empty field ? 'selected' : ''}>전체</option>
               <option value="reporterId" ${field == 'reporterId' ? 'selected' : ''}>신고자ID</option>
@@ -89,40 +91,55 @@
             <th>신고대상 ID</th>
             <th>신고일</th>
             <th>조치상태</th>
+            <th>조치날짜</th>
           </tr>
         </thead>
         <tbody>
-          <c:forEach var="r" items="${rows}">
-            <tr data-id="${r.reportCode}">
-              <td class="chk"><input type="checkbox" class="rowChk" value="${r.reportCode}"></td>
+  <c:forEach var="r" items="${rows}">
+    <tr data-id="${r.reportCode}">
+      <td class="chk"><input type="checkbox" class="rowChk" value="${r.reportCode}"></td>
 
-              <td class="center">${r.reportCode}</td>        <!-- 신고 코드 -->
-              <td>${chatContent[r.reportCode]}</td>          <!-- ★ 신고 내용(채팅 본문: Map에서) -->
-              <td>${r.userId}</td>                           <!-- 신고자 ID -->
-              <td>${r.reason}</td>                           <!-- 신고 사유 -->
-              <td>${r.ctId}</td>                             <!-- 신고대상 ID -->
-              <td class="date"><fmt:formatDate value="${r.regDt}" pattern="yyyy-MM-dd HH:mm"/></td>
+      <td class="center">${r.reportCode}</td>
+      <td>${chatContent[r.reportCode]}</td>
+      <td style="text-align:center;">${r.userId}</td>
+      <td>${r.reason}</td>
+      <td style="text-align:center;">${r.ctId}</td>
+      <td class="date"><fmt:formatDate value="${r.regDt}" pattern="yyyy-MM-dd HH:mm"/></td>
 
-              <td>
-                <form method="post" action="<c:url value='/admin/report/status.do'/>" style="display:inline;">
-                  <input type="hidden" name="reportCode" value="${r.reportCode}"/>
-                  <input type="hidden" name="page" value="${page}"/>
-                  <input type="hidden" name="size" value="${size}"/>
-                  <select name="status" class="statusSel">
-                    <option value="RECEIVED"  ${r.status == 'RECEIVED'  ? 'selected' : ''}>검토중</option>
-                    
-                    <option value="DONE"      ${r.status == 'DONE'      ? 'selected' : ''}>조치완료</option>
-                  </select>
-                </form>
-              </td>
-            </tr>
-          </c:forEach>
+      <!-- 조치상태 -->
+      <td style="text-align:center;">
+      <form id="statusForm" method="post" action="<c:url value='/admin/report/status.do'/>">
+		  <input type="hidden" name="reportCode">
+		  <input type="hidden" name="status">
+		  <input type="hidden" name="page" value="${page}">
+		  <input type="hidden" name="size" value="${size}">
+		</form>
+          
+         <select name="status" class="statusSel">
+		  <option value="RECEIVED" ${r.status=='RECEIVED' ? 'selected' : ''}>검토중</option>
+		  <option value="RESOLVED" ${r.status=='RESOLVED' ? 'selected' : ''}>조치완료</option>
+		</select>
+		</td>
+		
+		<!-- 조치날짜 -->
+		<td class="date" style="text-align:center;">
+		  <c:choose>
+		    <c:when test="${r.status eq 'RESOLVED'}">
+		      <fmt:formatDate value="${r.modDt}" pattern="yyyy-MM-dd HH:mm"/>
+		    </c:when>
+		    <c:otherwise>-</c:otherwise>
+		  </c:choose>
+		</td>
+   
+    </tr>
+  </c:forEach>
 
-          <c:if test="${empty rows}">
-            <tr><td colspan="8" style="text-align:center; padding:24px;">데이터가 없습니다.</td></tr>
-          </c:if>
-        </tbody>
-      </table>
+  <c:if test="${empty rows}">
+    <tr><td colspan="9" style="text-align:center; padding:24px;">데이터가 없습니다.</td></tr>
+  </c:if>
+</tbody>
+</table>
+
 
       <!-- 페이징 -->
       <c:set var="block" value="4"/>
@@ -169,10 +186,13 @@
       </div>
 
       <!-- 액션 폼 -->
-      <form id="statusForm" method="post" action="<c:url value='/admin/report/status.do'/>">
-        <input type="hidden" name="reportCode">
-        <input type="hidden" name="status">
-      </form>
+     <form id="statusForm" method="post" action="<c:url value='/admin/report/status.do'/>">
+		  
+		  <input type="hidden" name="status">
+		
+		</form>
+
+	
       <form id="delForm" method="post" action="<c:url value='/admin/report/delete.do'/>"></form>
 
     </div>

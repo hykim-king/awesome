@@ -31,6 +31,9 @@
         )
         
   </insert>
+            
+      
+  
   
     <!--단건 조회 -->
   <select id="doSelectOne" parameterType="int" 
@@ -97,5 +100,17 @@
   WHERE CHAT_CODE = #{chatCode}
     AND USER_ID = #{userId}
 	</delete>
+  
+ 
+	  <!-- 어드민신고관리용 본문 숨김 처리 -->
+	  <update id="hideMessage" parameterType="int">
+	    UPDATE CHAT_MESSAGE
+	       SET MESSAGE = '[숨김처리]'
+	     WHERE CHAT_CODE = #{chatCode}
+	  </update>
+  
+  
+  
+  
   
   </mapper>

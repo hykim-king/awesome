@@ -28,6 +28,7 @@ import com.pcwk.ehr.article.service.ArticleService;
 
 // ★ 팀원 코드 그대로: 채팅 본문 조회용
 import com.pcwk.ehr.mapper.ChatMessageMapper;
+import com.pcwk.ehr.mapper.ReportMapper;
 import com.pcwk.ehr.chatmessage.domain.ChatMessageDTO;
 
 @Controller
@@ -39,6 +40,8 @@ public class AdminController {
     @Autowired private ReportService reportService;
     @Autowired private AdminMemberService adminMemberService;
     @Autowired private ArticleService articleService;
+    @Autowired private ReportMapper reportMapper;   // ★ 없으면 추가
+    
 
     // ★ 채팅 본문 가져오기용(팀원 코드 사용)
     @Autowired private ChatMessageMapper chatMessageMapper;
@@ -94,45 +97,74 @@ public class AdminController {
         return "redirect:/admin/members.do";
     }
 
-    // ─────────────────────────────────────────
-    // 기사 관리(팀 코드 유지)
-    // ─────────────────────────────────────────
-    @GetMapping("/articles.do")
-    public String articles(@RequestParam(value = "searchDiv",  required = false) String searchDiv,
-                           @RequestParam(value = "searchWord", required = false) String searchWord,
-                           @RequestParam(value = "category",  required = false) Integer category,
-                           @RequestParam(value = "dateFilter", required = false) String dateFilter,
-                           @RequestParam(value = "pageNum",    defaultValue = "1")  int pageNum,
-                           @RequestParam(value = "pageSize",   defaultValue = "10") int pageSize,
-                           Model model) throws Exception {
+ // ─────────────────────────────────────────
+ // 기사 관리 (폼: field/keyword 사용)
+ // ─────────────────────────────────────────
+ @GetMapping("/articles.do")
+ public String articles(
+         @RequestParam(value = "field",     required = false) String field,     // press | title | category | null
+         @RequestParam(value = "keyword",   required = false) String keyword,   // 검색어
+         // 팀 기존 파라미터도 겸사겸사 받되(있어도 무해), 없으면 위 값으로 대체
+         @RequestParam(value = "searchDiv", required = false) String searchDiv,  // (옵션) 하위 호환
+         @RequestParam(value = "searchWord",required = false) String searchWord, // (옵션) 하위 호환
+         @RequestParam(value = "category",  required = false) Integer category,  // (옵션) 카테고리 직접 숫자로 오는 경우
+         @RequestParam(value = "dateFilter",required = false) String dateFilter,
+         @RequestParam(value = "pageNum",   defaultValue = "1")  int pageNum,
+         @RequestParam(value = "pageSize",  defaultValue = "10") int pageSize,
+         Model model) throws Exception {
 
-        ArticleSearchDTO s = new ArticleSearchDTO();
-        s.setSearchDiv(searchDiv);
-        s.setSearchWord(searchWord);
-        if (category != null)  s.setCategory(category);
-        if (dateFilter != null && !dateFilter.isEmpty()) s.setDateFilter(dateFilter);
+     // 폼(field/keyword)이 우선, 없을 때만 기존(searchDiv/searchWord) 사용
+     String effectiveField   = (field   != null) ? field   : searchDiv;
+     String effectiveKeyword = (keyword != null) ? keyword : searchWord;
 
-        int startRow = (pageNum - 1) * pageSize + 1;
-        int endRow   = pageNum * pageSize;
-        s.setStartRow(startRow);
-        s.setEndRow(endRow);
+     ArticleSearchDTO s = new ArticleSearchDTO();
 
-        int totalCount = articleService.getCount(s);
-        int totalPage  = (totalCount + pageSize - 1) / pageSize;
-        List<ArticleDTO> rows = articleService.doRetrieve(s);
+     // field → searchDiv 매핑
+     s.setSearchDiv(effectiveField);
+     s.setSearchWord(effectiveKeyword);
 
-        model.addAttribute("rows", rows);
-        model.addAttribute("totalCount", totalCount);
-        model.addAttribute("totalPage", totalPage);
-        model.addAttribute("pageNum", pageNum);
-        model.addAttribute("pageSize", pageSize);
-        model.addAttribute("searchDiv", searchDiv);
-        model.addAttribute("searchWord", searchWord);
-        model.addAttribute("category", category);
-        model.addAttribute("dateFilter", dateFilter);
+     // field가 category면 keyword를 숫자로 파싱해서 category로 사용
+     if ("category".equals(effectiveField) && effectiveKeyword != null && !effectiveKeyword.trim().isEmpty()) {
+         try {
+             s.setCategory(Integer.parseInt(effectiveKeyword.trim()));
+         } catch (NumberFormatException ignore) {
+             // 숫자 변환 실패 시에는 그대로 searchWord로 LIKE 검색하도록 둠(Mapper에서 TO_CHAR 처리)
+         }
+     }
 
-        return "admin/articles";
-    }
+     // 만약 별도로 category 파라미터가 숫자로 왔다면 그걸 우선 사용
+     if (category != null) {
+         s.setCategory(category);
+     }
+
+     if (dateFilter != null && !dateFilter.isEmpty()) {
+         s.setDateFilter(dateFilter);
+     }
+
+     int startRow = (pageNum - 1) * pageSize + 1;
+     int endRow   = pageNum * pageSize;
+     s.setStartRow(startRow);
+     s.setEndRow(endRow);
+
+     int totalCount = articleService.getCount(s);
+     int totalPage  = (totalCount + pageSize - 1) / pageSize;
+     List<ArticleDTO> rows = articleService.doRetrieve(s);
+
+     model.addAttribute("rows", rows);
+     model.addAttribute("totalCount", totalCount);
+     model.addAttribute("totalPage", totalPage);
+     model.addAttribute("pageNum", pageNum);
+     model.addAttribute("pageSize", pageSize);
+
+     // 뷰에 값 유지: 폼이 field/keyword를 쓰므로 그것도 내려줌
+     model.addAttribute("field",   effectiveField);
+     model.addAttribute("keyword", effectiveKeyword);
+     model.addAttribute("category", s.getCategory());
+     model.addAttribute("dateFilter", dateFilter);
+
+     return "admin/articles";
+ }
+
 
     // ─────────────────────────────────────────
     // 신고 관리
@@ -186,7 +218,7 @@ public class AdminController {
         model.addAttribute("last", last);
         model.addAttribute("field", field);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("chatContent", chatContent); // ✅ 잊지 말기
+        model.addAttribute("chatContent", chatContent); 
         return "admin/report";
     }
 
@@ -194,13 +226,33 @@ public class AdminController {
     @PostMapping("/report/status.do")
     public String reportStatus(@RequestParam int reportCode,
                                @RequestParam String status,
-                               @RequestParam(defaultValue = "1") int page,
-                               @RequestParam(defaultValue = "10") int size,
+                               @RequestParam(defaultValue="1") int page,
+                               @RequestParam(defaultValue="10") int size,
                                RedirectAttributes ra) throws Exception {
-        int n = reportService.doUpdateStatus(reportCode, status);
-        ra.addFlashAttribute("message", n == 1 ? "상태가 변경되었습니다." : "대상이 없습니다.");
-        return "redirect:/admin/report.do?page=" + page + "&size=" + size;
-    }
+        // UI -> DB 값 매핑
+        String dbStatus;
+        switch (status) {
+            case "DONE": case "COMP": case "RESOLVED":
+                dbStatus = "RESOLVED"; break;
+            case "RECEIVED": case "REVIEWING": default:
+                dbStatus = "RECEIVED";
+        }
+
+        Map<String,Object> p = new HashMap<>();
+        p.put("reportCode", reportCode);
+        p.put("status", status); // "RECEIVED" 또는 "RESOLVED" 그대로
+        int n = reportMapper.doUpdateStatus(p);
+
+        // 채팅 숨김 처리도 RESOLVED 기준으로
+        if ("RESOLVED".equals(status)) {
+            Integer chatCode = reportMapper.getChatCodeByReport(reportCode);
+            if (chatCode != null) chatMessageMapper.hideMessage(chatCode);
+        }
+
+
+        ra.addFlashAttribute("message", n==1 ? "상태가 변경되었습니다." : "대상이 없습니다.");
+        return "redirect:/admin/report.do?page="+page+"&size="+size;
+        }
 
     // 단건 삭제(행별)
     @PostMapping("/report/deleteOne.do")
