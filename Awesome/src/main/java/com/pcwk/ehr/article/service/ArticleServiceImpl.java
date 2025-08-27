@@ -66,6 +66,9 @@ public class ArticleServiceImpl implements ArticleService {
 		
 		return mapper.doDelete(dto);
 	}
+	
+
+	
 
 	@Override
 	public List<ArticleDTO> doRetrieve(ArticleSearchDTO param) throws Exception {
