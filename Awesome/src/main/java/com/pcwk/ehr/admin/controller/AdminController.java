@@ -100,70 +100,85 @@ public class AdminController {
  // ─────────────────────────────────────────
  // 기사 관리 (폼: field/keyword 사용)
  // ─────────────────────────────────────────
- @GetMapping("/articles.do")
- public String articles(
-         @RequestParam(value = "field",     required = false) String field,     // press | title | category | null
-         @RequestParam(value = "keyword",   required = false) String keyword,   // 검색어
-         // 팀 기존 파라미터도 겸사겸사 받되(있어도 무해), 없으면 위 값으로 대체
-         @RequestParam(value = "searchDiv", required = false) String searchDiv,  // (옵션) 하위 호환
-         @RequestParam(value = "searchWord",required = false) String searchWord, // (옵션) 하위 호환
-         @RequestParam(value = "category",  required = false) Integer category,  // (옵션) 카테고리 직접 숫자로 오는 경우
-         @RequestParam(value = "dateFilter",required = false) String dateFilter,
-         @RequestParam(value = "pageNum",   defaultValue = "1")  int pageNum,
-         @RequestParam(value = "pageSize",  defaultValue = "10") int pageSize,
-         Model model) throws Exception {
+    @GetMapping("/articles.do")
+    public String articles(
+            @RequestParam(value = "field",     required = false) String field,
+            @RequestParam(value = "keyword",   required = false) String keyword,
+            @RequestParam(value = "searchDiv", required = false) String searchDiv,
+            @RequestParam(value = "searchWord",required = false) String searchWord,
+            @RequestParam(value = "category",  required = false) Integer category,
+            @RequestParam(value = "dateFilter",required = false) String dateFilter,
+            @RequestParam(value = "pageNum",   defaultValue = "1")  int pageNum,
+            @RequestParam(value = "pageSize",  defaultValue = "10") int pageSize,
+            Model model) throws Exception {
 
-     // 폼(field/keyword)이 우선, 없을 때만 기존(searchDiv/searchWord) 사용
-     String effectiveField   = (field   != null) ? field   : searchDiv;
-     String effectiveKeyword = (keyword != null) ? keyword : searchWord;
+        String effectiveField   = (field   != null) ? field   : searchDiv;
+        String effectiveKeyword = (keyword != null) ? keyword : searchWord;
 
-     ArticleSearchDTO s = new ArticleSearchDTO();
+        ArticleSearchDTO s = new ArticleSearchDTO();
+        s.setSearchDiv(effectiveField);
+        s.setSearchWord(effectiveKeyword);
 
-     // field → searchDiv 매핑
-     s.setSearchDiv(effectiveField);
-     s.setSearchWord(effectiveKeyword);
+        if ("category".equalsIgnoreCase(effectiveField) && effectiveKeyword != null && !effectiveKeyword.trim().isEmpty()) {
+            try { s.setCategory(Integer.parseInt(effectiveKeyword.trim())); } catch (NumberFormatException ignore) {}
+        }
+        if (category != null) s.setCategory(category);
+        if (dateFilter != null && !dateFilter.isEmpty()) s.setDateFilter(dateFilter);
 
-     // field가 category면 keyword를 숫자로 파싱해서 category로 사용
-     if ("category".equals(effectiveField) && effectiveKeyword != null && !effectiveKeyword.trim().isEmpty()) {
-         try {
-             s.setCategory(Integer.parseInt(effectiveKeyword.trim()));
-         } catch (NumberFormatException ignore) {
-             // 숫자 변환 실패 시에는 그대로 searchWord로 LIKE 검색하도록 둠(Mapper에서 TO_CHAR 처리)
-         }
-     }
+        int startRow = (pageNum - 1) * pageSize + 1;
+        int endRow   = pageNum * pageSize;
+        s.setStartRow(startRow);
+        s.setEndRow(endRow);
 
-     // 만약 별도로 category 파라미터가 숫자로 왔다면 그걸 우선 사용
-     if (category != null) {
-         s.setCategory(category);
-     }
+        int totalCount = articleService.getCount(s);
+        int totalPage  = (totalCount + pageSize - 1) / pageSize;
+        List<ArticleDTO> rows = articleService.doRetrieve(s);
 
-     if (dateFilter != null && !dateFilter.isEmpty()) {
-         s.setDateFilter(dateFilter);
-     }
+        model.addAttribute("rows", rows);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("pageNum", pageNum);
+        model.addAttribute("pageSize", pageSize);
 
-     int startRow = (pageNum - 1) * pageSize + 1;
-     int endRow   = pageNum * pageSize;
-     s.setStartRow(startRow);
-     s.setEndRow(endRow);
+        // JSP 호환용(다른 페이지들과 동일 키)
+        model.addAttribute("page", pageNum);
+        model.addAttribute("size", pageSize);
+        model.addAttribute("last", Math.max(1, totalPage));
 
-     int totalCount = articleService.getCount(s);
-     int totalPage  = (totalCount + pageSize - 1) / pageSize;
-     List<ArticleDTO> rows = articleService.doRetrieve(s);
+        model.addAttribute("field",   effectiveField);
+        model.addAttribute("keyword", effectiveKeyword);
+        model.addAttribute("category", s.getCategory());
+        model.addAttribute("dateFilter", dateFilter);
 
-     model.addAttribute("rows", rows);
-     model.addAttribute("totalCount", totalCount);
-     model.addAttribute("totalPage", totalPage);
-     model.addAttribute("pageNum", pageNum);
-     model.addAttribute("pageSize", pageSize);
-
-     // 뷰에 값 유지: 폼이 field/keyword를 쓰므로 그것도 내려줌
-     model.addAttribute("field",   effectiveField);
-     model.addAttribute("keyword", effectiveKeyword);
-     model.addAttribute("category", s.getCategory());
-     model.addAttribute("dateFilter", dateFilter);
-
-     return "admin/articles";
- }
+        return "admin/articles";
+        
+    }
+    
+    
+    // 선택 삭제(다건) — 서비스에 deleteMany 없으므로 반복 호출
+    @PostMapping("/articles/delete.do")
+    public String articlestDelete(@RequestParam("ids") List<Integer> ids,
+                               @RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int size,
+                               RedirectAttributes ra) throws Exception {
+        int success = 0;
+        if (ids != null) {
+            for (Integer id : ids) {
+                if (id == null) continue;
+                try {
+                    success += reportService.doDelete(id);
+                } catch (Exception e) {
+                    log.error("기사 삭제 실패 reportCode={}", id, e);
+                }
+            }
+        }
+        ra.addFlashAttribute("message", success + "건 삭제되었습니다.");
+      
+       return "redirect:/admin/articles.do";
+    
+    
+       
+    }
 
 
     // ─────────────────────────────────────────
@@ -240,7 +255,7 @@ public class AdminController {
 
         Map<String,Object> p = new HashMap<>();
         p.put("reportCode", reportCode);
-        p.put("status", status); // "RECEIVED" 또는 "RESOLVED" 그대로
+        p.put("status", dbStatus); //  DB에 저장할 값으로 넣기
         int n = reportMapper.doUpdateStatus(p);
 
         // 채팅 숨김 처리도 RESOLVED 기준으로

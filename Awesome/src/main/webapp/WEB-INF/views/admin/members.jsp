@@ -11,32 +11,38 @@
 
 <style>
 
-	/* 공통 */
-	.grid th, .grid td { padding:12px 16px; vertical-align: middle; }
-	.grid thead th { text-align:center; }               /* 헤더는 가운데 */
-	.grid tbody td { text-align:left; }                 /* 기본은 왼쪽 */
-	
-	/* 체크박스, 등급/인증/가입일은 가운데 정렬 */
-	.grid td.chk,
-	.grid td:nth-child(1),   /* 체크박스 열 */
-	.grid td:nth-child(6),   /* 등급 */
-	.grid td:nth-child(7),   /* 이메일인증 */
-	.grid td:nth-child(8) {  /* 가입일 */
-	  text-align:center;
-	}
-	
-	/* 등급 셀렉트 가운데 보이게 */
-	.gradeSel{
-	  min-width:70px;
-	  text-align-last:center;      /* Chrome/Edge */
-	  -moz-text-align-last:center; /* Firefox */
-	}
+    <style>
+
+/* Pagination look & feel (scoped) */
+.pager{
+  display:flex; gap:8px; justify-content:center; align-items:center; margin:18px 0 6px;
+}
+.pager .page{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:34px; height:28px; padding:0 10px;
+  border-radius:8px; background:#f5f6fb; color:#1f2937; text-decoration:none;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.04); font-size:13px;
+}
+.pager .page.active{ background:#6d4aff; color:#fff; }
+.pager .page.disabled{ opacity:.45; pointer-events:none; }
+
 
 
 </style>
 
 
 
+
+
+
+
+
+
+
+
+
+
+   
 <body>
 <div class="admin-wrap"><!-- 좌측 사이드바 + 우측 컨텐츠 -->
 
