@@ -14,11 +14,7 @@
   }
   
 </style>
-<<<<<<< HEAD
-=======
 
-            
->>>>>>> branch 'feature/article' of https://github.com/hykim-king/awesome.git
 <div id="sidebar">
             <jsp:include page = "/WEB-INF/views/quiz/quizRank.jsp" />
             <jsp:include page = "/WEB-INF/views/chat/chat.jsp" />
