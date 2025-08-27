@@ -36,10 +36,18 @@
     .grid td { text-align:left; }
     .grid td.chk, .grid td.date, .grid td.center { text-align:center; }
 
-    .pager{ display:flex; gap:8px; justify-content:center; align-items:center; margin:18px 0 6px; }
-    .pager .page{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:28px; border-radius:8px; background:#f5f6fb; color:#1f2937; text-decoration:none; box-shadow:inset 0 1px 0 rgba(0,0,0,.04); font-size:13px; }
-    .pager .page.active{ background:#6d4aff; color:#fff; }
-    .pager .page.disabled{ opacity:.45; pointer-events:none; }
+	  .pager{
+	  display:flex; gap:8px; justify-content:center; align-items:center; margin:18px 0 6px;
+	}
+	.pager .page{
+	  display:inline-flex; align-items:center; justify-content:center;
+	  min-width:34px; height:28px; padding:0 10px;
+	  border-radius:8px; background:#f5f6fb; color:#1f2937; text-decoration:none;
+	  box-shadow:inset 0 1px 0 rgba(0,0,0,.04); font-size:13px;
+	}
+	.pager .page.active{ background:#6d4aff; color:#fff; }
+	.pager .page.disabled{ opacity:.45; pointer-events:none; }
+
   </style>
 </head>
 <body>
@@ -147,7 +155,7 @@
       <c:set var="end"   value="${start + block - 1}"/>
       <c:if test="${end > last}"><c:set var="end" value="${last}"/></c:if>
 
-      <div class="pager">
+      <div class="pagination">
         <c:choose>
           <c:when test="${start > 1}">
             <c:url var="prevUrl" value="/admin/report.do">
