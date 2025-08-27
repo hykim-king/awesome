@@ -181,6 +181,61 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
   border-radius:12px; padding:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
+.page-article-list{
+  --al-font: Inter, Pretendard, system-ui, -apple-system, "Segoe UI", Roboto,
+             "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --al-body-size: 14px;   /* 본문 기본 크기(카테고리 페이지와 동일 값으로) */
+  --al-title-size: 18px;  /* 기사 제목 크기 */
+  --al-meta-size: 13px;   /* 메타(언론사/날짜/조회수) 크기 */
+  --al-line-height: 1.65;
+  --al-letter-spacing: -0.2px;
+}
+
+/* 본문/사이드 전체에 기본 폰트·크기 적용 */
+.page-article-list .main,
+.page-article-list .aside{
+  font-family: var(--al-font);
+  font-size: var(--al-body-size);
+  line-height: var(--al-line-height);
+  letter-spacing: var(--al-letter-spacing);
+}
+
+/* 검색 폼 컨트롤도 본문 타이포 상속 */
+.page-article-list .search-box,
+.page-article-list .search-box select,
+.page-article-list .search-box input,
+.page-article-list .search-box button{
+  font-family: var(--al-font);
+  font-size: var(--al-body-size);
+}
+
+/* 기사 카드 내부 타이포 */
+.page-article-list .news-title a{
+  font-size: var(--al-title-size);
+  font-weight: 700;
+}
+.page-article-list .summary{
+  font-size: var(--al-body-size);
+}
+.page-article-list .meta-line{
+  font-size: var(--al-meta-size);
+}
+
+/* 사이드바(용어사전/채팅창 등)도 본문과 동일 타이포 */
+.page-article-list .aside h3,
+.page-article-list .aside .title,
+.page-article-list .aside .card-title{
+  font-family: var(--al-font);
+  font-size: 15px;      /* 필요시 조정 */
+  font-weight: 700;
+}
+.page-article-list .aside,
+.page-article-list .aside a,
+.page-article-list .aside li,
+.page-article-list .aside .item{
+  font-family: var(--al-font);
+  font-size: var(--al-body-size);
+}
 }
 </style>
 <script>
