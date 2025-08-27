@@ -23,17 +23,17 @@
      "leftsidebar main main sidebar"
      "footer footer footer footer"
      ;
-     grid-template-columns: 0.4fr 1fr 1fr 0.8fr;
+     grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
      grid-template-rows: 100px minmax(650px,auto) 100px;
      gap: 0px;
    }
    #sidebar{
-      background-color: #c031f0;
+      background-color: #F6F4F7;
       grid-area: sidebar;
    }
 
    #leftsidebar{
-      background-color: #f0d331;
+      background-color: #F6F4F7;
       grid-area: leftsidebar;
    }
 

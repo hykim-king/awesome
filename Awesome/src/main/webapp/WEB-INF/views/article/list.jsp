@@ -243,9 +243,11 @@
   <c:set var="currentCategory" value="${empty category ? param.category : category}" />
   <c:choose>
     <c:when test="${empty currentCategory or fn:trim(currentCategory) eq 'ALL'}">
+      <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp" />  
       <jsp:include page="/WEB-INF/views/include/sidebar.jsp" />
     </c:when>
     <c:otherwise>
+      <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp" />
       <jsp:include page="/WEB-INF/views/include/sidebar_category.jsp">
         <jsp:param name="category" value="${fn:trim(currentCategory)}" />
       </jsp:include>
