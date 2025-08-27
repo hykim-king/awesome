@@ -6,6 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DictionaryDTO {
+	
+	
+	
+	
 	  private int total;
 	    private int start;
 	    private int display;

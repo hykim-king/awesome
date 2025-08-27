@@ -35,7 +35,17 @@ public class MainPageServiceImpl implements MainPageService {
 
 	    // @Autowired(required = false)
 	    // private WeatherService weatherService;
+	    
+	    @Autowired
+	    private UserLogMapper userLogMapper;
 
+	    @Override
+	    public List<ArticleDTO> getRecommendedArticlesByUser(String userId) {
+	        return userLogMapper.getRecommendedArticlesByUser(userId);
+	    }
+	    
+	    
+	    
 	    @Override
 	    public List<KeywordDTO> getTodayTopics(String updatePeriod) {
 	        if (keywordMapper == null) {
