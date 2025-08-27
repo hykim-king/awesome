@@ -1,6 +1,7 @@
 package com.pcwk.ehr.mainpage.service;
 import java.util.List;
 
+import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.keyword.domain.KeywordDTO;
 //import com.pcwk.ehr.article.domain.ArticleDTO;
 
@@ -28,4 +29,8 @@ public interface MainPageService {
      * - 초기엔 더미 문자열 → 추후 기상청 API 연동
      */
     String getWeatherSummary();
+    
+    //유저로그
+    List<ArticleDTO> getRecommendedArticlesByUser(String userId);
+    
 }
