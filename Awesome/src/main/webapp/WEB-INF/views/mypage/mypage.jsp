@@ -182,71 +182,7 @@ function drawChart() {
 		   </div>
 		</div>
 
-<div id="container">
-  <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
-  <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
 
-  <main id="main">
-    <div class="main-container">
-      <div class="wrap">
-
-        <!-- 상단: 요약 + 차트/워드클라우드 -->
-        <div id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
-        <div class="grid top">
-          <div id="piechart_3d" style="height:240px;"></div>
-          <div class="wordCloud" id="wordCloud" style="height:240px;"></div>
-        </div>
-
-        <!-- 중단: 좌(북마크) / 우(신고) -->
-        <div class="grid middle">
-          <!-- 북마크 패널 -->
-          <section class="panel recommend" style="margin-top:24px">
-            <div class="section-title"><span class="badge">북마크</span></div>
-            <div id="bookmarkList"></div>
-            <div id="bookmarkPagination" class="pagination" style="margin-top:8px"></div>
-          </section>
-
-          <!-- 신고 패널 -->
-          <section class="panel recommend" style="margin-top:24px">
-            <div class="section-title"><span class="badge">신고사항</span></div>
-            <div id="reportList"></div>
-            <div id="reportPagination" class="pagination" style="margin-top:8px"></div>
-          </section>
-        </div>
-
-        <!-- 하단: 추천 기사 (기존 JSTL 그대로 유지) -->
-        <section class="panel recommend" style="margin-top:24px">
-          <h3 style="text-align:center;margin-bottom:12px">추천 기사</h3>
-          <c:choose>
-            <c:when test="${not empty recommendList}">
-              <c:forEach var="item" items="${recommendList}">
-                <div class="item" data-article-code="${item.articleCode}">
-                  <div class="title"><a><c:out value="${item.title}"/></a></div>
-                  <div class="summary"><c:out value="${item.summary}"/></div>
-                  <div class="meta">
-                    <span class="press"><c:out value="${item.press}"/></span>
-                    <span class="date"><fmt:formatDate value="${item.regDt}" pattern="yyyy-MM-dd"/></span>
-                  </div>
-                  <button type="button"
-                          class="bookmark-btn"
-                          onclick="toggleBookmark('${item.articleCode}', this)">★</button>
-                </div>
-              </c:forEach>
-            </c:when>
-            <c:otherwise>
-              <div class="item empty">
-                <c:out value="${noRecommendMsg != null ? noRecommendMsg : '추천 기사가 없습니다.'}"/>
-              </div>
-            </c:otherwise>
-          </c:choose>
-        </section>
-
-        <div class="userInfo-btn-wrap">
-          <a href="${CP}/mypage/userInfo.do" class="userInfo-btn">회원정보</a>
-        </div>
-      </div>
-    </div>
-  </main>
 
   <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
 </div>
