@@ -36,7 +36,7 @@
   if(!host) host = root.parentElement;
 
   if(host){
-    var W = 450; // 사이드바 가로폭 수정은 여기서 하면됨
+    var W = 479; // 사이드바 가로폭 수정은 여기서 하면됨
     host.style.width    = W + 'px';
     host.style.flex     = '0 0 ' + W + 'px'; 
     host.style.maxWidth = 'none';

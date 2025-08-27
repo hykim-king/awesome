@@ -80,6 +80,8 @@ function drawChart() {
    
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+    <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp" />
+    
       <!--main-->
       <main id="main">
       <div class="main-container">
