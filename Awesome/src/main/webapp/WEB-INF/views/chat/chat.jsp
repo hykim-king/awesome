@@ -19,34 +19,65 @@
 
 <style>
 /************************************CHATMESSAGE CSS*******************************************************/
-:root { --bg:#ffffff; --line:#eee; --muted:#888; --btn:#444; --btn-text:#fff; }
+:root { --bg:#fff; --line:#eee; --muted:#888; --btn:#444; --btn-text:#fff; }
 * { box-sizing: border-box; }
-body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background:#f7f7f7; color:#222; }
+body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; background:#f7f7f7; color:#222; }
 
-.chat-wrap { max-width: none; width:420px; margin: 24px auto; background:var(--bg); border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.06); overflow:hidden; }
-.chat-header { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
-.chat-title { font-weight:700; font-size:16px; }
-.chat-cat { margin-left:auto; color:var(--muted); font-size:12px; }
+/* ── 채팅 카드(컨테이너) ─────────────────────────────── */
+.chat-wrap{
+  width: 100%;           /* 부모(사이드바) 폭 100% 활용 */
+  max-width: none;       /* max-width 제한 제거 */
+  margin: 0;             /* 중앙정렬 여백 제거 (사이드바 안이라 필요 없음) */
+  background: var(--bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;      /* 둥근 모서리 유지용 */
+}
 
-.chat-list { list-style:none; padding:0; margin:0; max-height:60vh; overflow:auto; background:#fff; }
-.chat-item { display:flex; gap:10px; padding:12px; border-bottom:1px solid var(--line); }
-.avatar { width:36px; height:36px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
-.bubble { flex:1; min-width:0; }
-.meta { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-.meta .uid { font-weight:600; color:#444; }
-.meta .time { margin-left:2px; }
-.meta .report { margin-left:auto; border:none; background:transparent; cursor:pointer; font-size:12px; color:#d9534f; }
-.text { margin-top:4px; font-size:14px; word-break:break-word; white-space:pre-wrap; }
+/* ── 헤더 ───────────────────────────────────────────── */
+.chat-header{
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:10px;
+}
+.chat-title{ font-weight:700; font-size:16px; }
+.chat-cat{ margin-left:auto; color:var(--muted); font-size:12px; }
 
-.chat-input { position:sticky; bottom:0; display:flex; gap:8px; padding:10px; background:#fafafa; border-top:1px solid var(--line); }
-.chat-input input { flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
-.chat-input button { padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
-.chat-input button:disabled { opacity:.5; cursor:not-allowed; }
+/* ── 메시지 리스트(무한 스크롤 복구 핵심) ───────────── */
+.chat-list{
+  list-style:none; padding:0; margin:0;
+  /* ① 고정 높이 사용하려면: height: 460px; */
+  /* ② 화면 높이 기반(권장): */
+  max-height: calc(100vh - 240px); /* 헤더+인풋+여백을 뺀 값으로 조절 */
+  overflow-y: auto;
+  background:#fff;
+}
+.chat-item{ display:flex; gap:10px; padding:12px; border-bottom:1px solid var(--line); }
+.avatar{ width:36px; height:36px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
+.bubble{ flex:1; min-width:0; }
+.meta{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+.meta .uid{ font-weight:600; color:#444; }
+.meta .time{ margin-left:2px; }
+.meta .report{ margin-left:auto; border:none; background:transparent; cursor:pointer; font-size:12px; color:#d9534f; }
+.text{ margin-top:4px; font-size:14px; word-break:break-word; white-space:pre-wrap; }
 
+/* ── 입력 영역 ──────────────────────────────────────── */
+.chat-input{
+  position:sticky; bottom:0; /* 리스트가 스크롤될 때 하단에 붙도록 */
+  display:flex; gap:8px; padding:10px;
+  background:#fafafa; border-top:1px solid var(--line);
+}
+.chat-input input{ flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
+.chat-input button{ padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
+.chat-input button:disabled{ opacity:.5; cursor:not-allowed; }
 
+/* ── 모바일 대응 ────────────────────────────────────── */
 @media (max-width: 540px){
-  .chat-wrap { margin: 0; border-radius: 0; height: 100vh; display:flex; flex-direction:column; }
-  .chat-list { flex:1; max-height:none; }
+  .chat-wrap{ margin: 0; border-radius: 0; height: 100vh; }
+  /* 모바일에서는 리스트 높이를 자동으로 꽉 채우도록 */
+  .chat-list{ max-height: none; flex: 1 1 auto; }
 }
 
 
