@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.article.service.ArticleService;
+import com.pcwk.ehr.member.domain.MemberDTO;
+import com.pcwk.ehr.userLog.service.UserLogService;
 
 
 @Controller
@@ -28,6 +32,9 @@ public class ArticleController {
 	
 	@Autowired
 	ArticleService service;	
+	
+	@Autowired
+	UserLogService userLogService; // 로그 저장용_가민경
 
 
 
@@ -94,9 +101,13 @@ public class ArticleController {
 
 		return "article/list";
 	}
+	
+	
 	//유효성 검증 후 기사 url로 리다이렉트
 	@GetMapping("/visit.do")
-	public String visit(@RequestParam("articleCode") long articleCode) throws Exception{
+	public String visit(@RequestParam("articleCode") long articleCode, HttpSession session) throws Exception{
+		
+		
 		
 		ArticleDTO req = new ArticleDTO();
 		req.setArticleCode(articleCode);
@@ -106,12 +117,29 @@ public class ArticleController {
 		//기사나 기사url이 없거나 기사url이 null값이면 리스트로 돌아감
 		if(article == null || article.getUrl() == null || article.getUrl().isEmpty()) {
 			return "redirect:/article/list.do";
-		}
+		} 
 		String url = article.getUrl();
 		//url이 http나 https로 시작하는 게 아니라면 리스트로 돌아감
 		if(!(url.startsWith("http://")||url.startsWith("https://"))) {
 			return "redirect:/article/list.do";
 		}
+		
+
+	    // 가민경추가
+		
+		service.updateReadCnt(req);
+		 
+		 
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+	    if (loginUser != null) {
+	        userLogService.logArticleClick(loginUser.getUserId(), articleCode);
+	        log.debug("****기사 클릭 로그 저장: {}, articleCode={}", loginUser.getUserId(), articleCode);
+	    } else {
+	        log.debug("비로그인, 로그 저장 생략");
+	    }
+
+	    log.debug(" session loginUser = {}", loginUser);
+		//여기까지_로그기록용
 		
 		return "redirect:"+url;
 	}

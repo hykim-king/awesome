@@ -23,7 +23,7 @@
 * { box-sizing: border-box; }
 body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background:#f7f7f7; color:#222; }
 
-.chat-wrap { max-width: 520px; margin: 24px auto; background:var(--bg); border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.06); overflow:hidden; }
+.chat-wrap { max-width: none; width:420px; margin: 24px auto; background:var(--bg); border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.06); overflow:hidden; }
 .chat-header { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; }
 .chat-title { font-weight:700; font-size:16px; }
 .chat-cat { margin-left:auto; color:var(--muted); font-size:12px; }
@@ -42,6 +42,7 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
 .chat-input input { flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
 .chat-input button { padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
 .chat-input button:disabled { opacity:.5; cursor:not-allowed; }
+
 
 @media (max-width: 540px){
   .chat-wrap { margin: 0; border-radius: 0; height: 100vh; display:flex; flex-direction:column; }
@@ -76,7 +77,8 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
   <div class="chat-wrap" id="chatRoot" 
        data-cp="${CP}" 
        data-category="${CATEGORY}"
-       data-logged-in="${not empty sessionScope.USER_ID}">
+     data-logged-in="${sessionScope.loginUser != null}"
+     data-user="${sessionScope.loginUser != null ? sessionScope.loginUser.userId : ''}">
     <div class="chat-header">
       <div class="chat-title">채팅창</div>
     </div>
@@ -265,6 +267,7 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", R
 
       <!-- 기타사항 (선택) -->
       <div class="rp-etc">
+       <input type="radio" name="reason" value="OTHER MATTERS">      
         <label for="rpEtc">기타사항</label>
         <textarea id="rpEtc" placeholder="기타 사유를 입력하세요. (선택)"></textarea>
       </div>

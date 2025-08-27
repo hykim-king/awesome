@@ -7,441 +7,180 @@
 <head>
 <title>뉴스 기사 목록</title>
 <!-- 공용 헤더/메인 스타일 -->
-<link rel="stylesheet"
-	href="<c:url value='/resources/css/header.css?v=3'/>">
-<link rel="stylesheet"
-	href="<c:url value='/resources/css/pcwk_main.css'/>">
+<c:url var="mainCss" value="/resources/css/pcwk_main.css"/>
+<c:url var="headerCss" value="/resources/css/header.css">
+  <c:param name="v" value="20250827"/> <!-- 캐시깨기 원하면 유지 -->
+</c:url>
+<link rel="stylesheet" href="${mainCss}">
+<link rel="stylesheet" href="${headerCss}">
 
 <style>
-:root { -
-	-blue: #0d47a1; -
-	-blue-weak: #e7efff; -
-	-text: #111827; -
-	-muted: #6b7280; -
-	-border: #e5e7eb; -
-	-card: #ffffff; -
-	-bg: #f8fafc;
-	/* 서브메뉴(카테고리) 높이 */ -
-	-submenu-h: 44px;
+/* 페이지 전용 변수 */
+.page-article-list{
+  --al-blue:#0a45ff;
+  --al-blue-weak:#e7efff;
+  --al-text:#0f172a;
+  --al-muted:#6b7280;
+  --al-border:#e5e7eb;
+  --al-card:#ffffff;
+  --al-bg:#f8fafc;
 }
 
-/* 기본 */
-* {
-	box-sizing: border-box;
+/* 배경/글자색 */
+body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
+
+/* ★ 핵심: .layout을 컨테이너 그리드 2행(메인/사이드바 줄) 전체로 보냄 */
+.page-article-list #container > .layout{
+  /* pcwk_main.css의 grid-template-areas:
+     "header header header header"
+     "main   main   main   sidebar"
+     "footer footer footer footer" 기준
+     → 2번째 행(콘텐츠 줄) 전체 폭을 차지 */
+  grid-row: 2 / 3;
+  grid-column: 1 / -1;
+
+  /* 내부 2열 레이아웃 구성 */
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 280px; /* 본문 | 우측 사이드 */
+  gap:16px;
+  width:100%;
+  max-width:1480px;
+  margin:24px auto;
+  padding:0 40px;
 }
 
-body {
-	margin: 0;
-	background: var(- -bg);
-	color: var(- -text);
-	font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
-		Arial, sans-serif;
+.page-article-list .main{ min-width:0; }
+.page-article-list .aside{
+  position:sticky; top:16px; align-self:start;
+  border:1px solid var(--al-border);
+  background:var(--al-card);
+  border-radius:12px; padding:12px;
 }
 
-/* =========================
-   레이아웃: 본문 + 우측 사이드바
-   ========================= */
-.page-article-list .layout {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) 280px; /* 본문 | 우측 사이드바 */
-	gap: 16px;
-	max-width: none; /* ← 너비 제한 해제 */
-	width: 100%;
-	margin: 16px auto;
-	padding: 0 24px; /* 화면 가장자리와 살짝 여백만 */
+/* 좌측 잔상/옛 레이아웃 흔적 제거 (이 페이지 한정) */
+.page-article-list #content,
+.page-article-list .container,
+.page-article-list .main-container,
+.page-article-list .content-wrap,
+.page-article-list .board-wrap,
+.page-article-list .board-area,
+.page-article-list .al-layout,
+.page-article-list .al-list-wrap{
+  display:block !important; float:none !important; width:100% !important;
+  max-width:none !important; margin-left:0 !important; padding-left:0 !important;
+}
+.page-article-list .sidebar-left,
+.page-article-list .left-sidebar,
+.page-article-list .snb,
+.page-article-list .lnb,
+.page-article-list .nav-left,
+.page-article-list .side-left{ display:none !important; }
+
+/* 모바일 1열 */
+@media (max-width:900px){
+  .page-article-list #container > .layout{ grid-template-columns:1fr; padding:0 16px; }
+  .page-article-list .aside{ position:static; order:2; }
 }
 
-.page-article-list .main {
-	min-width: 0;
-} /* 긴 제목 줄바꿈 안정화 */
-.page-article-list .aside {
-	position: sticky;
-	top: 16px;
-	align-self: start;
-	border: 1px solid var(- -border);
-	background: var(- -card);
-	border-radius: 12px;
-	padding: 12px;
+/* ===== 검색 박스 ===== */
+.search-box{
+  display:grid;
+  grid-template-columns:120px 380px 160px 64px; /* 셀렉트 | 텍스트 | 날짜 | 버튼 */
+  gap:8px; padding:10px; margin:12px 0;
+  border:1px solid var(--al-border);
+  border-radius:12px; background:var(--al-card);
+}
+.search-box select,
+.search-box input[type="text"],
+.search-box input[type="date"]{
+  height:38px; border:1px solid var(--al-border);
+  border-radius:8px; padding:0 10px; background:#fff;
+}
+.search-box button{
+  height:38px; border:0; border-radius:10px;
+  background:var(--al-blue); color:#fff; font-weight:700; cursor:pointer;
+}
+.search-box button:hover{ opacity:.92; }
+@media (max-width:900px){
+  .search-box{ grid-template-columns:1fr 1fr; grid-auto-rows:minmax(38px,auto); }
+  .search-box button{ grid-column:1/-1; }
 }
 
-/* 모바일에서 1열 */
-@media ( max-width :900px) {
-	.page-article-list .layout {
-		grid-template-columns: 1fr;
-	}
-	.page-article-list .aside {
-		position: static;
-		order: 2;
-	}
+/* ===== 기사 리스트 카드 ===== */
+.news-list{ display:flex; flex-direction:column; gap:10px; }
+.news-item{
+  display:grid; grid-template-columns:1fr auto; gap:6px 12px;
+  background:var(--al-card); border:1px solid var(--al-border);
+  border-radius:12px; padding:12px;
+  transition: box-shadow .12s, transform .12s, border-color .12s;
+}
+.news-item:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
+  border-color:#d9dee5;
 }
 
-/* =========================
-   좌측 사이드바 잔상 제거(이 페이지 한정)
-   ========================= */
-.page-article-list #content, .page-article-list .container,
-	.page-article-list .main-container, .page-article-list .content-wrap,
-	.page-article-list .board-wrap, .page-article-list .board-area,
-	.page-article-list .al-layout, .page-article-list .al-list-wrap {
-	display: block !important;
-	float: none !important;
-	width: 100% !important;
-	max-width: none !important;
-	margin-left: 0 !important;
-	padding-left: 0 !important;
+/* 카드 상단: 제목 + 북마크 */
+.news-header{ display:flex; align-items:flex-start; gap:8px; grid-column:1/-1; }
+.news-header .news-title{ flex:1; min-width:0; }
+.news-title a{
+  color:var(--al-blue); text-decoration:none; font-weight:700;
+  font-size:18px; word-break:break-word;
 }
+.news-title a:hover{ text-decoration:underline; }
 
-.page-article-list .sidebar-left, .page-article-list .left-sidebar,
-	.page-article-list .snb, .page-article-list .lnb, .page-article-list .nav-left,
-	.page-article-list .side-left {
-	display: none !important;
+/* 카드 하단: 요약 + 메타 */
+.news-body{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:12px; grid-column:1/-1;
 }
-
-/* =========================
-   검색 바
-   ========================= */
-.search-box {
-	display: grid;
-	grid-template-columns: 120px 380px 160px 64px; /* 검색창 줄이고 버튼 넓힘 */
-	gap: 8px;
-	padding: 10px;
-	border: 1px solid var(- -border);
-	border-radius: 12px;
-	background: var(- -card);
-	margin-bottom: 12px;
+.summary{
+  flex:1; min-width:0; color:#374151; margin:2px 0 4px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
-
-.search-box select, .search-box input[type="text"], .search-box input[type="date"]
-	{
-	height: 38px;
-	border: 1px solid var(- -border);
-	border-radius: 8px;
-	padding: 0 10px;
-	background: #fff;
-}
-
-.search-box button {
-	height: 38px;
-	border: none;
-	border-radius: 10px;
-	background: var(- -blue);
-	color: #fff;
-	font-weight: 600;
-	cursor: pointer;
-}
-
-.search-box button:hover {
-	opacity: .92;
-}
-
-@media ( max-width :900px) {
-	.search-box {
-		grid-template-columns: 1fr 1fr;
-		grid-auto-rows: minmax(38px, auto);
-	}
-	.search-box button {
-		grid-column: 1/-1;
-	}
-}
-
-/* =========================
-   뉴스 리스트 (행 카드)
-   ========================= */
-.news-list {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-}
-
-.news-item {
-	display: grid;
-	grid-template-columns: 1fr auto;
-	gap: 6px 12px;
-	background: var(- -card);
-	border: 1px solid var(- -border);
-	border-radius: 12px;
-	padding: 12px;
-	transition: box-shadow .12s, transform .12s, border-color .12s;
-}
-
-.news-item:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 6px 16px rgba(0, 0, 0, .06);
-	border-color: #d9dee5;
-}
-
-/* 제목/요약/메타 */
-.news-title {
-	grid-column: 1/-1;
-	line-height: 1.35;
-}
-
-.news-title a {
-	color: var(- -blue);
-	text-decoration: none;
-	font-weight: 700;
-	font-size: 18px;
-	word-break: break-word;
-}
-
-.news-title a:hover {
-	text-decoration: underline;
-}
-
-.summary {
-	color: #374151;
-	margin: 2px 0 4px;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	overflow: hidden;
-}
-
-/* 메타: 왼쪽(언론사/날짜) · 오른쪽(조회수/북마크) */
-.meta {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 10px;
-	font-size: 13px;
-	color: var(- -muted);
-}
-
-.meta-left {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-}
-
-.meta-right {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+.meta-line{
+  display:flex; gap:10px; white-space:nowrap; color:var(--al-muted); font-size:13px;
 }
 
 /* 북마크 버튼 */
-.bm-btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	border-radius: 999px;
-	border: 1px solid var(- -border);
-	background: #fff;
-	cursor: pointer;
+.bm-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border-radius:999px;
+  border:1px solid var(--al-border); background:#fff; cursor:pointer;
+}
+.bm-btn.on{ border-color:#f59e0b; background:#fff7ed; }
+.bm-btn .bm-icon{ font-size:14px; line-height:1; }
+
+/* ===== 페이징 ===== */
+.paging{
+  display:flex; justify-content:center; gap:8px; margin:16px 0 24px;
+}
+.paging a, .paging span{
+  min-width:36px; height:36px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:#fff; border:1px solid var(--al-border); border-radius:10px;
+  text-decoration:none; color:var(--al-text);
+}
+.paging a:hover{ border-color:var(--al-blue); color:var(--al-blue); }
+.paging .activePage{ background:var(--al-blue); border-color:var(--al-blue); color:#fff; }
+.paging .disabled{ color:#9ca3af; background:#f3f4f6; }
+
+/* ===== 데이터 없음 카드 ===== */
+.no-data{
+  padding:24px; text-align:center; color:#6b7280;
+  background:#fff; border:1px solid var(--al-border); border-radius:12px;
 }
 
-.bm-btn.on {
-	border-color: #f59e0b;
-	background: #fff7ed;
+/* ===== 로그인 모달 ===== */
+.hidden{ display:none !important; }
+.login-modal{ position:fixed; inset:0; z-index:1000; }
+.login-modal_backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.4); }
+.login-modal_card{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(420px,90vw); background:#fff;
+  border-radius:12px; padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
-
-.bm-btn .bm-icon {
-	font-size: 14px;
-	line-height: 1;
-}
-
-/* 조회수 뱃지 */
-.views-badge {
-	background: var(- -blue-weak);
-	color: var(- -blue);
-	border-radius: 999px;
-	padding: 2px 8px;
-	font-weight: 700;
-	font-size: 12px;
-}
-
-/* =========================
-   페이징
-   ========================= */
-.paging {
-	display: flex;
-	justify-content: center;
-	gap: 8px;
-	margin: 16px 0 24px;
-}
-
-.paging a, .paging span {
-	min-width: 36px;
-	height: 36px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	background: #fff;
-	border: 1px solid var(- -border);
-	border-radius: 10px;
-	text-decoration: none;
-	color: var(- -text);
-}
-
-.paging a:hover {
-	border-color: var(- -blue);
-	color: var(- -blue);
-}
-
-.paging .activePage {
-	background: var(- -blue);
-	border-color: var(- -blue);
-	color: #fff;
-}
-
-.paging .disabled {
-	color: #9ca3af;
-	background: #f3f4f6;
-}
-
-/* =========================
-   로그인 모달
-   ========================= */
-.hidden {
-	display: none !important;
-}
-
-.login-modal {
-	position: fixed;
-	inset: 0;
-	z-index: 1000;
-}
-
-.login-modal_backdrop {
-	position: absolute;
-	inset: 0;
-	background: rgba(0, 0, 0, .4);
-}
-
-.login-modal_card {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	width: min(420px, 90vw);
-	background: #fff;
-	border-radius: 12px;
-	padding: 20px;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
-}
-/* =========================
-   헤더: 비고정 + 서브메뉴 중앙 + 흰띠 제거 (이 페이지만)
-   ========================= */
-.page-article-list #header {
-	position: relative !important;
-	top: auto !important;
-	z-index: auto !important;
-	padding-bottom: var(- -submenu-h); /* 서브메뉴 자리 확보 */
-}
-
-.page-article-list #header .submenu-box {
-	position: absolute !important;
-	top: 55px;
-	left: 0;
-	right: 0;
-	height: var(- -submenu-h);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0;
-	background: transparent;
-	border: 0;
-	z-index: 1;
-}
-
-.page-article-list #header .submenu {
-	display: flex !important;
-	align-items: center;
-	justify-content: center;
-	gap: 40px;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	white-space: nowrap;
-}
-
-.page-article-list #header .submenu a {
-	display: block;
-	padding: 10px 2px;
-	font-size: 14px;
-	line-height: 1;
-	color: #333;
-	text-decoration: none;
-	white-space: nowrap;
-	word-break: keep-all;
-}
-
-.page-article-list #header .submenu a:hover {
-	color: #0a45ff;
-	text-decoration: underline;
-	text-underline-offset: 3px;
-}
-
-/* 파란 메뉴바 하단 라인 비노출(흰띠처럼 보일 수 있어) */
-.page-article-list #header .menu-bar::after {
-	background: transparent;
-}
-
-/* 서브메뉴 모바일 줄바꿈 */
-@media ( max-width :640px) {
-	.page-article-list #header .submenu {
-		flex-wrap: wrap;
-		row-gap: 8px;
-	}
-}
-/* 제목(좌) + 북마크(우) 한 줄 */
-.news-header {
-	display: flex;
-	align-items: flex-start;
-	gap: 8px;
-}
-
-.news-header .news-title {
-	flex: 1;
-	min-width: 0;
-} /* 제목이 남는 폭을 차지 */
-.news-header .bm-btn {
-	margin-left: 8px;
-}
-
-/* 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) 한 줄 */
-.news-body {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: 12px;
-}
-
-.news-body .summary {
-	flex: 1;
-	min-width: 0;
-}
-
-/* 요약 오른쪽 메타 줄(언론사 | 날짜 | 조회수) */
-.meta-line {
-	display: flex;
-	gap: 10px;
-	white-space: nowrap;
-	color: var(- -muted);
-	font-size: 13px;
-}
-/* 제목+북마크(.news-header)와 요약+메타(.news-body)를 그리드 가로 전체로 배치 */
-.news-header, .news-body {
-	grid-column: 1/-1;
-}
-
-.page-article-list .layout {
-	/* 중앙 정렬 + 최대폭 제한으로 좌우 여백 확보 */
-	max-width: 1480px; /* 필요에 따라 1100~1280px로 조절 */
-	margin: 24px auto; /* 상하 여백 살짝 넓힘 + 수평 중앙 */
-	padding-left: 40px; /* 좌우 내부 패딩으로 흰 여백 추가 */
-	padding-right: 40px;
-	gap: 16px; /* 메인↔사이드 간격은 그대로 */
-}
-
-/* 화면이 아주 넓을 때는 여백을 조금 더 */
-@media ( min-width : 1800px) {
-	.page-article-list .layout {
-		max-width: 1480px; /* 컨테이너를 더 좁게 */
-		padding-left: 56px; /* 좌우 내부 패딩도 소폭 확대 */
-		padding-right: 56px;
-	}
 }
 </style>
 <script>
@@ -485,6 +224,7 @@ body {
 </head>
 
 <body class="page-article-list">
+    <div id="container">
 	<c:if 
 	   test="${empty sessionScope.userId and not empty sessionScope.loginUser}">
 		<c:set var="userId" value="${sessionScope.loginUser.userId}" scope="session" />
@@ -513,50 +253,47 @@ body {
 			</form>
 
 			<!-- 기사 리스트 -->
-			<div class="news-list">
-				<c:choose>
-					<c:when test="${not empty list}">
-						<c:set var="now" value="<%=new java.util.Date()%>" />
-						<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowYmd" />
-
-						<c:forEach var="item" items="${list}">
-							<div class="news-item">
-
-								<c:url var="hitUrl" value="/article/hit.do">
-									<c:param name="articleCode" value="${item.articleCode}" />
-								</c:url>
-								<c:url var="bmToggleUrl" value="/bookmark/toggleBookmark.do">
-									<c:param name="articleCode" value="${item.articleCode}" />
-								</c:url>
-
-								<!-- 1줄: 제목(좌) + 북마크(우) -->
-								<div class="news-header">
-									<div class="news-title">
-										<a href="${item.url}" class="hit-open"
-											data-article-code="${item.articleCode}"
-											data-hit-url="${hitUrl}" target="_blank"
-											rel="noopener noreferrer"
-											onclick="return hitAndOpen(this,event)"> ${item.title} </a>
-									</div>
-
-									<c:choose>
-										<c:when test="${not empty sessionScope.loginUser}">
-											<button type="button" class="bm-btn"
-												data-toggle-url="${bmToggleUrl}"
-												data-article-code="${item.articleCode}" aria-pressed="false"
-												title="북마크 추가">
-												<span class="bm-icon">☆</span>
-											</button>
-										</c:when>
-										<c:otherwise>
-											<button type="button" class="bm-btn guest"
-												data-toggle-url="${bmToggleUrl}"
-												data-article-code="${item.articleCode}" title="로그인이 필요합니다.">
-												<span class="bm-icon">☆</span>
-											</button>
-										</c:otherwise>
-									</c:choose>
-								</div>
+            <div class="news-list">
+                <c:choose>
+                    <c:when test="${not empty list}">
+                        <c:set var="now" value="<%=new java.util.Date()%>" />
+                        <fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="nowYmd" />
+                        <c:forEach var="item" items="${list}">
+                            <div class="news-item">
+                                <c:url var="hitUrl" value="/article/hit.do">
+                                    <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <c:url var="bmToggleUrl" value="/bookmark/toggleBookmark.do">
+                                    <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <!-- 1줄: 제목(좌) + 북마크(우) -- 가민경 수정 -->
+                                <div class="news-header">
+                            <div class="news-title">
+                                <c:url var="visitUrl" value="/article/visit.do">
+                                  <c:param name="articleCode" value="${item.articleCode}" />
+                                </c:url>
+                                <a href="${visitUrl}" target="_blank" rel="noopener noreferrer">
+                                  ${item.title}
+                                </a>
+                              </div>
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.loginUser}">
+                                            <button type="button" class="bm-btn"
+                                                data-toggle-url="${bmToggleUrl}"
+                                                data-article-code="${item.articleCode}" aria-pressed="false"
+                                                title="북마크 추가">
+                                                <span class="bm-icon">☆</span>
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button type="button" class="bm-btn guest"
+                                                data-toggle-url="${bmToggleUrl}"
+                                                data-article-code="${item.articleCode}" title="로그인이 필요합니다.">
+                                                <span class="bm-icon">☆</span>
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
 
 								<!-- 2줄: 요약(좌) + 메타(우: 언론사 | 날짜 | 조회수) -->
 								<div class="news-body">
@@ -582,13 +319,10 @@ body {
 					</c:when>
 					<c:otherwise>
 					<!-- 데이터 없을 시 -->
-						<div class="no-data"
-							style="padding: 24px; text-align: center; color: #6b7280; background: #fff; border: 1px solid var(- -border); border-radius: 12px;">
 							<c:choose>
 								<c:when test="${not empty searchWord or not empty dateFilter}">검색한 값이 없습니다.</c:when>
 								<c:otherwise>등록된 기사가 없습니다.</c:otherwise>
 							</c:choose>
-						</div>
 					</c:otherwise>
 				</c:choose>
 			</div>
@@ -716,6 +450,7 @@ body {
 
 	<!-- 푸터 -->
 	<jsp:include page="/WEB-INF/views/include/footer.jsp" />
+	</div>
 
 	<script>
   // 새 탭 열리면서 조회수 +1
@@ -745,8 +480,38 @@ body {
   })();
   </script>
 
-	<script>
+<script>
 (function () {
+
+  /* === 북마크 상태 로컬 저장/복원 헬퍼 === */
+  function getUserId(){
+    // 세션의 userId가 있으면 그걸 키로 사용, 없으면 'guest'
+    var uid = '${fn:escapeXml(sessionScope.userId)}';
+    return (uid && uid.trim && uid.trim().length) ? uid : 'guest';
+  }
+  function storageKey(code){
+    return 'bm:' + getUserId() + ':' + String(code);
+  }
+  function applyBtnState(btn, on){
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    var ic = btn.querySelector('.bm-icon');
+    if (ic) ic.textContent = on ? '★' : '☆';
+    btn.title = on ? '북마크 해제' : '북마크 추가';
+  }
+
+  // 페이지 로드 시 저장된 상태 복원
+  document.addEventListener('DOMContentLoaded', function(){
+    var btns = document.querySelectorAll('.bm-btn');
+    for (var i=0; i<btns.length; i++){
+      var btn = btns[i];
+      var code = btn.getAttribute('data-article-code');
+      if (!code) continue;
+      var v = null; try { v = localStorage.getItem(storageKey(code)); } catch(_){}
+      if (v === '1') applyBtnState(btn, true);
+      else if (v === '0') applyBtnState(btn, false);
+    }
+  });
 
   function showLoginModal(){
     var m = document.getElementById('login-modal');
@@ -783,9 +548,9 @@ body {
     if(btn._busy) return;
     btn._busy = true;
 
+    var code = btn.getAttribute('data-article-code'); // ← 밖으로 빼서 아래에서도 사용
     var url = btn.getAttribute('data-toggle-url');
     if (!url) {
-      var code = btn.getAttribute('data-article-code');
       var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
       url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
     }
@@ -809,12 +574,11 @@ body {
                      ? (id === 1)
                      : !nowOn;
 
-      btn.classList.toggle('on', nextOn);
-      btn.setAttribute('aria-pressed', nextOn ? 'true' : 'false');
+      // UI 반영
+      applyBtnState(btn, nextOn);
 
-      var ic = btn.querySelector('.bm-icon');
-      if(ic) ic.textContent = nextOn ? '★' : '☆';
-      btn.title = nextOn ? '북마크 해제' : '북마크 추가';
+      // ✅ 새로고침 유지: localStorage 저장
+      try { localStorage.setItem(storageKey(code), nextOn ? '1' : '0'); } catch(_){}
 
       if (data && data.message) console.log('bookmark:', data.message);
     })

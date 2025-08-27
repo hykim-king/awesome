@@ -56,7 +56,7 @@ public class MypageController {
 		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId("userId");
+		param.setUserId(userId.getUserId());
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
@@ -102,7 +102,7 @@ public class MypageController {
 		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
 		
 		MemberDTO param = new MemberDTO();
-		param.setUserId("userId");
+		param.setUserId(userId.getUserId());
 		
 		MemberDTO user = memberService.doSelectOne(param);
 		model.addAttribute("user", user);
@@ -240,10 +240,10 @@ public class MypageController {
 	    log.debug("│ getSummary()                          │");
 	    log.debug("└───────────────────────────────────────┘");
 		
-	    MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
 
 	    UserLogDTO param = new UserLogDTO();
-	    param.setUserId("userId");
+	    param.setUserId(loginUser.getUserId());
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
 
@@ -262,11 +262,11 @@ public class MypageController {
 	    log.debug("│ getUserChartData()                    │");
 	    log.debug("└───────────────────────────────────────┘");
 
-	    MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
 	    
 
 	    UserLogDTO param = new UserLogDTO();
-	    param.setUserId("userId");
+	    param.setUserId(loginUser.getUserId());
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
 
