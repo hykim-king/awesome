@@ -1,6 +1,7 @@
 package com.pcwk.ehr.mainpage.controller;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,8 @@ import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.service.ArticleService;
 import com.pcwk.ehr.keyword.domain.KeywordLink;
 import com.pcwk.ehr.keyword.service.KeywordService;
+import com.pcwk.ehr.mainpage.service.MainPageService;
+import com.pcwk.ehr.member.domain.MemberDTO;
 import com.pcwk.ehr.weather.service.WeatherService;
 
 @Controller
@@ -34,6 +37,9 @@ public class MainPageController {
      */
 
     @Autowired
+    MainPageService mainPageService; 
+    
+    @Autowired
     KeywordService keywordService;
     
     @Autowired
@@ -45,31 +51,47 @@ public class MainPageController {
     
     @GetMapping("/main.do")
     public String main(Model model, HttpSession session) {
+        // 로그인 여부 확인
         String userId = (String) session.getAttribute("userId");
+        if (userId == null) {
+            MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+            if (loginUser != null) {
+                userId = String.valueOf(loginUser.getUserId());
+            }
+        }
         log.debug("main.do() userId={}", userId);
 
-        //  키워드 기능
+        // 키워드
         List<KeywordLink> keywords = keywordService.getTodayKeywords();
         model.addAttribute("keywords", keywords);
 
-        // 인기 기사 추천 기능
+        // 인기 기사(top3)
         List<ArticleDTO> popularArticles = articleService.getPopularTop1PerCategory();
         model.addAttribute("popularArticles", popularArticles);
 
-        // 유저기반 추천 기능
-        List<String> recommended = Arrays.asList(
-            "추천) 경제: 환율 급등 관련 해설",
-            "추천) IT: 생성형 AI 도입 사례",
-            "추천) 사회: 여름철 전력수급 이슈"
-        );
-        model.addAttribute("recommended", recommended);
+        // 유저로그 기반 추천
+        List<ArticleDTO> personalRecs = Collections.emptyList();
+        String recommendMessage = null;
 
-  
+        if (userId != null) { // 로그인 O
+            personalRecs = mainPageService.getRecommendedArticlesByUser(userId);
+            if (personalRecs == null || personalRecs.isEmpty()) {
+                recommendMessage = "관심있는 기사들을 읽어보세요. 회원님의 맞춤 기사가 추천됩니다🙂";
+            }
+        } else { // 로그인 X
+            recommendMessage = "로그인 하시면 회원님의 맞춤기사가 추천됩니다🙂";
+        }
+
+        model.addAttribute("personalRecs", personalRecs);
+        model.addAttribute("recommendMessage", recommendMessage);
+
         // 페이지 메타
         model.addAttribute("pageTitle", "Hot Issue - 메인");
-
         return "mainPage/MainPage";
     }
+    
+    
+    
     
     @GetMapping("/article/list.do")
     public String keywordList(String keyword, int category, Model model) {
