@@ -87,9 +87,6 @@
         </div>
       </c:otherwise>
     </c:choose>
-
-        
-
       </div>
       </main>
       <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>

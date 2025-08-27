@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import com.pcwk.ehr.quiz.domain.QuizDTO;
+import com.pcwk.ehr.quiz.domain.RankingDTO;
 
 
 @Mapper
@@ -33,7 +34,7 @@ public interface QuizMapper {
 	/**
 	 * 사용자 랭킹 TOP 10 조회
 	 */
-	List<QuizDTO> selectUserRankingTop10() throws SQLException;
+	List<RankingDTO> selectUserRankingTop10() throws SQLException;
 
 	/**
 	 * 퀴즈 결과 단건 조회 (JUnit 테스트에서 검증용으로 사용)
@@ -49,6 +50,13 @@ public interface QuizMapper {
 	 * 사용자가 오늘 퀴즈에 참여했는지 확인
 	 */
 	int checkIfUserPlayedToday(String userId) throws SQLException;
+	
+	 /**
+     * 오늘의 퀴즈 및 사용자의 답변을 함께 조회
+     * @param userId
+     * @return List<QuizDTO>
+     */
+    List<QuizDTO> selectTodaysQuizAndUserAnswers(String userId);
 	
 	//======================================================================
 	// 테스트 지원용 메서드 (Test Support Methods)
