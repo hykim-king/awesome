@@ -28,8 +28,8 @@ body { margin:0; background:#f5f6fa; font:14px/1.4 "Noto Sans KR", system-ui, sa
 .input { width:220px; }
 .btn { padding:9px 14px; border:0; border-radius:10px; background:#e9ecf5; cursor:pointer; }
 .btn-primary { background:#2e5bff; color:#fff; }
-.btn-warning { background:#00bcd4; color:#fff; }
-.btn-danger { background:#ff4d4f; color:#fff; }
+.btn-warning { background:#2e5bff; color:#fff; }
+.btn-danger { background:#2e5bff; color:#fff; }
 
 /* Table */
 .grid { width:100%; border-collapse:collapse; }

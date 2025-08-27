@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 // --- 변경된 import ---
@@ -33,6 +34,8 @@ public class QuizController {
     QuizService quizService;
 
     public QuizController() {}
+    
+   
 
     /**
      * 퀴즈 메인 페이지로 이동
@@ -142,5 +145,19 @@ public class QuizController {
         model.addAttribute("totalCount", totalCount);
         
         return "quiz/quizResult";
+    }
+    
+ // --- 랭킹 조회용 API 추가 ---
+    /**
+     * 랭킹 목록을 JSON으로 반환하는 API
+     * @throws Exception 
+     */
+    @GetMapping(value = "/ranking.do", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<QuizDTO> getRanking() throws Exception {
+        log.debug("┌──────────────────────────┐");
+        log.debug("│ getRanking() - 랭킹 조회 API 호출 │");
+        log.debug("└──────────────────────────┘");
+        return quizService.selectUserRankingTop10();
     }
 }

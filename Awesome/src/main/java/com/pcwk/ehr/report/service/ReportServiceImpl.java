@@ -120,4 +120,9 @@ public class ReportServiceImpl implements ReportService {
 		return mapper.deleteAll();
 	}
 
+	@Override
+	public int getCountById(String userId) {
+		return mapper.getCountById(userId);
+	}
+
 }

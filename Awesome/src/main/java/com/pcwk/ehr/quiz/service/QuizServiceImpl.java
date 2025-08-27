@@ -36,7 +36,7 @@ public class QuizServiceImpl implements QuizService{
 	}
 	
 	@Override
-	public List<QuizDTO> selectUserRankingTop10(QuizDTO dto) throws Exception{
+	public List<QuizDTO> selectUserRankingTop10() throws Exception{
 		
 		return mapper.selectUserRankingTop10();
 		

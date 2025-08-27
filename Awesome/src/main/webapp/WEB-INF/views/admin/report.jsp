@@ -2,10 +2,8 @@
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
 
-<%-- 프로젝트 contextPath를 CP 변수로 세팅 --%>
 <c:set var="CP" value="${pageContext.request.contextPath}" />
 
-<%-- 리스트/페이지 변수 호환 처리 --%>
 <c:set var="rows"   value="${empty rows ? list : rows}" />
 <c:set var="page"   value="${empty page ? pageNum : page}" />
 <c:set var="last"   value="${empty last ? totalPage : last}" />
@@ -37,14 +35,13 @@
     .grid td.chk, .grid td.date, .grid td.center { text-align:center; }
 
     .pager{ display:flex; gap:8px; justify-content:center; align-items:center; margin:18px 0 6px; }
-    .pager .page{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:28px; border-radius:8px; background:#f5f6fb; color:#1f2937; text-decoration:none; box-shadow:inset 0 1px 0 rgba(0,0,0,.04); font-size:13px; }
+    .pager .page{ display:inline-flex; align-items:center; justify-content:center; min-width:34px; height:28px; padding:0 10px; border-radius:8px; background:#f5f6fb; color:#1f2937; text-decoration:none; box-shadow:inset 0 1px 0 rgba(0,0,0,.04); font-size:13px; }
     .pager .page.active{ background:#6d4aff; color:#fff; }
     .pager .page.disabled{ opacity:.45; pointer-events:none; }
   </style>
 </head>
 <body>
 <div class="admin-wrap">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="title">관리자 페이지</div>
     <ul class="nav">
@@ -56,7 +53,6 @@
     </ul>
   </aside>
 
-  <!-- Content -->
   <section class="content">
     <div class="panel">
       <div class="head">
@@ -64,7 +60,6 @@
 
         <div class="controls">
           <form method="get" action="<c:url value='/admin/report.do'/>" class="actions">
-
             <select name="field" class="select">
               <option value=""           ${empty field ? 'selected' : ''}>전체</option>
               <option value="reporterId" ${field == 'reporterId' ? 'selected' : ''}>신고자ID</option>
@@ -79,7 +74,6 @@
         </div>
       </div>
 
-      <!-- 표 -->
       <table class="grid">
         <thead>
           <tr>
@@ -95,51 +89,45 @@
           </tr>
         </thead>
         <tbody>
-  <c:forEach var="r" items="${rows}">
-    <tr data-id="${r.reportCode}">
-      <td class="chk"><input type="checkbox" class="rowChk" value="${r.reportCode}"></td>
+        <c:forEach var="r" items="${rows}">
+          <tr data-id="${r.reportCode}">
+            <td class="chk"><input type="checkbox" class="rowChk" value="${r.reportCode}"></td>
 
-      <td class="center">${r.reportCode}</td>
-      <td>${chatContent[r.reportCode]}</td>
-      <td style="text-align:center;">${r.userId}</td>
-      <td>${r.reason}</td>
-      <td style="text-align:center;">${r.ctId}</td>
-      <td class="date"><fmt:formatDate value="${r.regDt}" pattern="yyyy-MM-dd HH:mm"/></td>
+            <td class="center">${r.reportCode}</td>
+            <td>${chatContent[r.reportCode]}</td>
+            <td style="text-align:center;">${r.userId}</td>
 
-      <!-- 조치상태 -->
-      <td style="text-align:center;">
-      <form id="statusForm" method="post" action="<c:url value='/admin/report/status.do'/>">
-		  <input type="hidden" name="reportCode">
-		  <input type="hidden" name="status">
-		  <input type="hidden" name="page" value="${page}">
-		  <input type="hidden" name="size" value="${size}">
-		</form>
-          
-         <select name="status" class="statusSel">
-		  <option value="RECEIVED" ${r.status=='RECEIVED' ? 'selected' : ''}>검토중</option>
-		  <option value="RESOLVED" ${r.status=='RESOLVED' ? 'selected' : ''}>조치완료</option>
-		</select>
-		</td>
-		
-		<!-- 조치날짜 -->
-		<td class="date" style="text-align:center;">
-		  <c:choose>
-		    <c:when test="${r.status eq 'RESOLVED'}">
-		      <fmt:formatDate value="${r.modDt}" pattern="yyyy-MM-dd HH:mm"/>
-		    </c:when>
-		    <c:otherwise>-</c:otherwise>
-		  </c:choose>
-		</td>
-   
-    </tr>
-  </c:forEach>
+            <!-- ★ 여기: reasonLabel 사용 -->
+            <td><c:out value="${r.reasonLabel}"/></td>
 
-  <c:if test="${empty rows}">
-    <tr><td colspan="9" style="text-align:center; padding:24px;">데이터가 없습니다.</td></tr>
-  </c:if>
-</tbody>
-</table>
+            <td style="text-align:center;">${r.ctId}</td>
+            <td class="date"><fmt:formatDate value="${r.regDt}" pattern="yyyy-MM-dd HH:mm"/></td>
 
+            <!-- 조치상태 -->
+            <td style="text-align:center;">
+              <select name="status" class="statusSel">
+                <option value="RECEIVED" ${r.status=='RECEIVED' ? 'selected' : ''}>검토중</option>
+                <option value="RESOLVED" ${r.status=='RESOLVED' ? 'selected' : ''}>조치완료</option>
+              </select>
+            </td>
+
+            <!-- 조치날짜 -->
+            <td class="date" style="text-align:center;">
+              <c:choose>
+                <c:when test="${r.status eq 'RESOLVED'}">
+                  <fmt:formatDate value="${r.modDt}" pattern="yyyy-MM-dd HH:mm"/>
+                </c:when>
+                <c:otherwise>-</c:otherwise>
+              </c:choose>
+            </td>
+          </tr>
+        </c:forEach>
+
+        <c:if test="${empty rows}">
+          <tr><td colspan="9" style="text-align:center; padding:24px;">데이터가 없습니다.</td></tr>
+        </c:if>
+        </tbody>
+      </table>
 
       <!-- 페이징 -->
       <c:set var="block" value="4"/>
@@ -147,7 +135,7 @@
       <c:set var="end"   value="${start + block - 1}"/>
       <c:if test="${end > last}"><c:set var="end" value="${last}"/></c:if>
 
-      <div class="pager">
+      <div class="pagination">
         <c:choose>
           <c:when test="${start > 1}">
             <c:url var="prevUrl" value="/admin/report.do">
@@ -185,14 +173,14 @@
         </c:choose>
       </div>
 
-      <!-- 액션 폼 -->
-     <form id="statusForm" method="post" action="<c:url value='/admin/report/status.do'/>">
-		  
-		  <input type="hidden" name="status">
-		
-		</form>
+      <!-- ★ 행 안 폼 제거하고, 아래에 단 하나만 둡니다 -->
+      <form id="statusForm" method="post" action="<c:url value='/admin/report/status.do'/>">
+        <input type="hidden" name="reportCode"/>
+        <input type="hidden" name="status"/>
+        <input type="hidden" name="page" value="${page}"/>
+        <input type="hidden" name="size" value="${size}"/>
+      </form>
 
-	
       <form id="delForm" method="post" action="<c:url value='/admin/report/delete.do'/>"></form>
 
     </div>
