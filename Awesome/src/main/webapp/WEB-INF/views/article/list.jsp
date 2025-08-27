@@ -325,11 +325,15 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
                                 <div class="news-header">
                             <div class="news-title">
                                 <c:url var="visitUrl" value="/article/visit.do">
-                                  <c:param name="articleCode" value="${item.articleCode}" />
-                                </c:url>
-                                <a href="${visitUrl}" target="_blank" rel="noopener noreferrer">
-                                  ${item.title}
-                                </a>
+								  <c:param name="articleCode" value="${item.articleCode}" />
+								</c:url>
+								
+								<a href="${visitUrl}"
+								   target="_blank"
+								   rel="noopener noreferrer"
+								   data-article-code="${item.articleCode}">
+								  ${item.title}
+								</a>
                               </div>
                                     <c:choose>
                                         <c:when test="${not empty sessionScope.loginUser}">
@@ -508,32 +512,52 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
 	</div>
 
 	<script>
-  // 새 탭 열리면서 조회수 +1
-  (function(){
-    window.hitAndOpen = function(a, ev){
-  //중복 호출 방지용 가드
-      if (a.__hitting) return true;
-      a.__hitting = true;
-  //중복 클릭 방지
-      setTimeout(function(){ a.__hitting = false; }, 300);
-  //data- 속성으로 기사코드/조회수 api 가져오기
-      var code  = a.getAttribute('data-article-code');
-      var hitUrl= a.getAttribute('data-hit-url');
+(function(){
+  // a[href*="/article/visit.do"] 클릭/휠클릭/Enter 시, 리스트 화면에서만 즉시 +1 표시
+  function bumpOnce(anchor){
+    if (anchor.dataset.bumped === '1') return; // 같은 링크에서 중복 +1 방지
+    anchor.dataset.bumped = '1';
 
-      fetch(hitUrl, {method:'POST'})
-        .then(function(res){ if(!res.ok) throw res; return res.json().catch(function(){ return null; }); })
-        .then(function(data){
-          if (data && typeof data.views === 'number') {
-            var span = document.getElementById('views-' + code);
-            if (span) span.textContent = String(data.views);
-          }
-        })
-        .catch(function(err){ console.error('조회수 증가 실패', err); });
+    // articleCode 가져오기 (data-속성 우선, 없으면 href에서 추출)
+    var code = anchor.getAttribute('data-article-code');
+    if (!code) {
+      try {
+        var u = new URL(anchor.href, location.origin);
+        code = u.searchParams.get('articleCode');
+      } catch(_) {}
+    }
+    if (!code) return;
 
-      return true; // 링크 기본 동작 허용(새 탭)
-    };
-  })();
-  </script>
+    var span = document.getElementById('views-' + code);
+    if (!span) return;
+
+    var cur = parseInt((span.textContent || '').replace(/[^0-9]/g,''), 10) || 0;
+    span.textContent = String(cur + 1);
+  }
+
+  // 좌클릭
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="/article/visit.do"]');
+    if (!a) return;
+    if (e.button !== 0) return;
+    bumpOnce(a); // 새 탭 열리기 직전에 UI만 +1
+  }, true);
+
+  // 휠클릭(중클릭)
+  document.addEventListener('auxclick', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="/article/visit.do"]');
+    if (!a) return;
+    if (e.button === 1) bumpOnce(a);
+  }, true);
+
+  // 키보드 Enter로 링크 열 때도 +1
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter') return;
+    var a = e.target.closest && e.target.closest('a[href*="/article/visit.do"]');
+    if (a) bumpOnce(a);
+  }, true);
+})();
+</script>
 
 <script>
 (function () {
