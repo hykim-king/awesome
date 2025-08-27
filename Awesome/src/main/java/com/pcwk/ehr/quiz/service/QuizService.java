@@ -12,7 +12,7 @@ public interface QuizService {
 
 	int getTotalQuizCount(QuizDTO dto) throws Exception;
 
-	List<QuizDTO> selectUserRankingTop10(QuizDTO dto) throws Exception;
+	List<QuizDTO> selectUserRankingTop10() throws Exception;
 
 	QuizDTO selectQuizResult(QuizDTO dto) throws Exception;
 	/**
