@@ -81,6 +81,8 @@ public class ChatMessageController {
 	    payload.setSendDt(new java.util.Date());
 	    service.doSave(payload);
 	    messagingTemplate.convertAndSend("/topic/chat/" + category, payload);
+	    log.info("채팅 수신: category={}, userId={}, message={}", category, uid, payload.getMessage());
+
 	}
 
 
