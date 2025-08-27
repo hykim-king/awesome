@@ -14,7 +14,24 @@
 </head>
 <body>
 <div class="admin-wrap"><!-- 좌측 사이드바 + 우측 컨텐츠 -->
+<style>
 
+/* Pagination look & feel (scoped) */
+.pager{
+  display:flex; gap:8px; justify-content:center; align-items:center; margin:18px 0 6px;
+}
+.pager .page{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:34px; height:28px; padding:0 10px;
+  border-radius:8px; background:#f5f6fb; color:#1f2937; text-decoration:none;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.04); font-size:13px;
+}
+.pager .page.active{ background:#6d4aff; color:#fff; }
+.pager .page.disabled{ opacity:.45; pointer-events:none; }
+
+
+
+</style>
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="title">관리자 페이지</div>
@@ -109,71 +126,61 @@
         </tbody>
       </table>
 
-      <!-- 페이지네이션(회원관리와 동일 형태) -->
-      <c:set var="cur"   value="${empty page ? pageNum : page}"/>
-      <c:set var="lastP" value="${empty last ? totalPage : last}"/>
+   
 
-     <!-- 페이지네이션 -->
-   <c:set var="cur"   value="${empty page ? pageNum : page}" />
-<c:set var="lastP" value="${empty last ? totalPage : last}" />
+	     <!-- 페이지네이션 -->
+	   <c:set var="cur"   value="${empty page ? pageNum : page}" />
+	<c:set var="lastP" value="${empty last ? totalPage : last}" />
+	
+	<!-- 페이징 -->
+	<c:set var="block" value="5"/>
+	<c:set var="cur" value="${page != null ? page : pageNum}"/>
+	<c:set var="lastPage" value="${last != null ? last : totalPage}"/>
+	<c:set var="start" value="${(cur-1) - ((cur-1) % block) + 1}"/>
+	<c:set var="end"   value="${start + block - 1}"/>
+	<c:if test="${end > lastPage}"><c:set var="end" value="${lastPage}"/></c:if>
+	
+	<div class="pagination">
+	  <!-- 이전 블록 -->
+	  <c:choose>
+	    <c:when test="${start > 1}">
+	      <c:url var="prevUrl" value="/admin/articles.do">
+	        <c:param name="pageNum" value="${start-1}"/>
+	        <c:param name="pageSize" value="${pageSize}"/>
+	        <c:if test="${not empty field}"><c:param name="field" value="${field}"/></c:if>
+	        <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}"/></c:if>
+	      </c:url>
+	      <a class="page" href="${prevUrl}">&lsaquo;</a>
+	    </c:when>
+	    <c:otherwise><span class="page disabled">&lsaquo;</span></c:otherwise>
+	  </c:choose>
+	
+	  <!-- 페이지 번호 -->
+	  <c:forEach var="p" begin="${start}" end="${end}">
+	    <c:url var="pUrl" value="/admin/articles.do">
+	      <c:param name="pageNum" value="${p}"/>
+	      <c:param name="pageSize" value="${pageSize}"/>
+	      <c:if test="${not empty field}"><c:param name="field" value="${field}"/></c:if>
+	      <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}"/></c:if>
+	    </c:url>
+	    <a class="page ${p==cur ? 'active' : ''}" href="${pUrl}">${p}</a>
+	  </c:forEach>
+	
+	 <!-- 다음 블록 -->
+	  <c:choose>
+	    <c:when test="${end < lastPage}">
+	      <c:url var="nextUrl" value="/admin/articles.do">
+	        <c:param name="pageNum" value="${end+1}"/>
+	        <c:param name="pageSize" value="${pageSize}"/>
+	        <c:if test="${not empty field}"><c:param name="field" value="${field}"/></c:if>
+	        <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}"/></c:if>
+	      </c:url>
+	      <a class="page" href="${nextUrl}">&rsaquo;</a>
+	    </c:when>
+	    <c:otherwise><span class="page disabled">&rsaquo;</span></c:otherwise>
+	  </c:choose>
+	</div>
 
-<c:set var="block" value="4"/>
-<c:set var="start" value="${(cur-1) - ((cur-1) % block) + 1}"/>
-<c:set var="end"   value="${start + block - 1}"/>
-<c:if test="${end > lastP}">
-  <c:set var="end" value="${lastP}"/>
-</c:if>
-
-<div class="pagination">
-  <%-- Prev --%>
-  <c:choose>
-    <c:when test="${start > 1}">
-      <c:url var="prevUrl" value="/admin/articles.do">
-        <c:param name="page" value="${start-1}"/>
-        <c:param name="size" value="${size}"/>
-        <c:if test="${not empty field}"><c:param name="field" value="${field}"/></c:if>
-        <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}"/></c:if>
-        <c:if test="${not empty category}"><c:param name="category" value="${category}"/></c:if>
-        <c:if test="${not empty dateFilter}"><c:param name="dateFilter" value="${dateFilter}"/></c:if>
-      </c:url>
-      <a class="page prev" href="${prevUrl}">&lsaquo;</a>
-    </c:when>
-    <c:otherwise>
-      <span class="page prev disabled">&lsaquo;</span>
-    </c:otherwise>
-  </c:choose>
-
-  <%-- Pages --%>
-  <c:forEach var="p" begin="${start}" end="${end}">
-    <c:url var="pUrl" value="/admin/articles.do">
-      <c:param name="page" value="${p}"/>
-      <c:param name="size" value="${size}"/>
-      <c:if test="${not empty field}"><c:param name="field" value="${field}"/></c:if>
-      <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}"/></c:if>
-      <c:if test="${not empty category}"><c:param name="category" value="${category}"/></c:if>
-      <c:if test="${not empty dateFilter}"><c:param name="dateFilter" value="${dateFilter}"/></c:if>
-    </c:url>
-    <a class="page ${p==cur ? 'active' : ''}" href="${pUrl}">${p}</a>
-  </c:forEach>
-
-  <%-- Next --%>
-  <c:choose>
-    <c:when test="${end < lastP}">
-      <c:url var="nextUrl" value="/admin/articles.do">
-        <c:param name="page" value="${end+1}"/>
-        <c:param name="size" value="${size}"/>
-        <c:if test="${not empty field}"><c:param name="field" value="${field}"/></c:if>
-        <c:if test="${not empty keyword}"><c:param name="keyword" value="${keyword}"/></c:if>
-        <c:if test="${not empty category}"><c:param name="category" value="${category}"/></c:if>
-        <c:if test="${not empty dateFilter}"><c:param name="dateFilter" value="${dateFilter}"/></c:if>
-      </c:url>
-      <a class="page next" href="${nextUrl}">&rsaquo;</a>
-    </c:when>
-    <c:otherwise>
-      <span class="page next disabled">&rsaquo;</span>
-    </c:otherwise>
-  </c:choose>
-</div>
       <!-- 삭제용 숨김 폼(단건) -->
       <form id="delForm" method="post" action="<c:url value='/article/delete.do'/>">
         <input type="hidden" name="articleCode">
@@ -191,7 +198,7 @@
   $('#chkAll')?.addEventListener('change', e =>
     $$('.rowChk').forEach(c => c.checked = e.target.checked));
 
-  // 삭제(단건)
+/*   // 삭제(단건)
   $('#btnDelete')?.addEventListener('click', () => {
     const ids = $$('.rowChk').filter(c=>c.checked).map(c=>c.value);
     if (!ids.length) return alert('삭제할 기사를 선택하세요.');
@@ -200,8 +207,18 @@
     const f = $('#delForm');
     f.articleCode.value = ids[0];
     f.submit();
-  });
+  }); */
 
+  // 선택 삭제
+  $('#btnDelete')?.addEventListener('click', () => {
+    const ids = $$('.rowChk').filter(c=>c.checked).map(c=>c.value);
+    if (!ids.length) return alert('삭제할 기사를 선택하세요.');
+    if (!confirm(ids.length + '건 삭제하시겠습니까?')) return;
+    const f = $('#delForm'); f.innerHTML='';
+    ids.forEach(id => { const i=document.createElement('input'); i.type='hidden'; i.name='ids'; i.value=id; f.appendChild(i); });
+    f.submit();
+  });
+  
  /*  // 등록/수정은 라우팅만(필요 시 URL 연결)
   $('#btnNew')?.addEventListener('click', () => {
     alert('등록 화면은 별도 구현 대상입니다.');
