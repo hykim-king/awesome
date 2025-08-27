@@ -2,6 +2,7 @@ package com.pcwk.ehr.quiz.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pcwk.ehr.mapper.QuizMapper;
 import com.pcwk.ehr.quiz.domain.QuizDTO;
+import com.pcwk.ehr.quiz.domain.RankingDTO;
 
 @Service
 public class QuizServiceImpl implements QuizService{
@@ -35,12 +37,11 @@ public class QuizServiceImpl implements QuizService{
 		return mapper.getTotalQuizCount();
 	}
 	
+	
 	@Override
-	public List<QuizDTO> selectUserRankingTop10() throws Exception{
-		
-		return mapper.selectUserRankingTop10();
-		
-	}
+    public List<RankingDTO> selectUserRankingTop10() throws Exception {
+        return mapper.selectUserRankingTop10();
+    }
 	
 	@Override
 	public QuizDTO selectQuizResult(QuizDTO dto) throws Exception{
@@ -70,7 +71,10 @@ public class QuizServiceImpl implements QuizService{
     }
 	
 	
-	
+    @Override
+    public List<QuizDTO> getTodaysQuizAndUserAnswers(String userId) throws SQLException {
+        return mapper.selectTodaysQuizAndUserAnswers(userId);
+    }
 	
 
 }
