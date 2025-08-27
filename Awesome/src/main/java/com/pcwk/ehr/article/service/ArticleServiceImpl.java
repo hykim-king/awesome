@@ -21,55 +21,65 @@ public class ArticleServiceImpl implements ArticleService {
 //	이하 두줄 가민경 사용
     private static final int WINDOW_DAYS = 3; // 최근 N일
     private static final int MIN_CLICKS   = 3; // 최소 클릭수
-	
+
 	Logger log = LogManager.getLogger(getClass());
-	
+
 	@Autowired
 	private ArticleMapper mapper;
 	
-	
-	
+	 @Autowired 
+	 private ArticleMapper articleMapper;
+
+
+
+
 	public ArticleServiceImpl() {
 
 	}
 
 	@Override
 	public int doSave(ArticleDTO dto) throws Exception {
-		
+
 		Date now = new Date();
 		dto.setRegDt(now);
 		dto.setModDt(now);		
-		
+
 		int result = mapper.doSave(dto);
-		
+
 		if(result > 0) {
 			ArticleDTO saved = mapper.doSelectOne(dto);
 			dto.setRegDt(saved.getRegDt());
 			dto.setModDt(saved.getModDt());
 		}
-		
+
 		return result;
 	}
 
 	@Override
 	public ArticleDTO doSelectOne(ArticleDTO dto) throws Exception {
-		
-		
+
+
 		return mapper.doSelectOne(dto);
 	}
 
 	@Override
 	public int doDelete(long articleCode) {
-		
+
 		ArticleDTO dto = new ArticleDTO();
 		dto.setArticleCode(articleCode);
-		
+
 		return mapper.doDelete(dto);
 	}
 	
+	
+	@Override
+	public int deleteMany(List<Long> ids) {
+	    if (ids == null || ids.isEmpty()) return 0;
+	    return articleMapper.deleteMany(ids);
+	}
 
 	
-
+	
 	@Override
 	public List<ArticleDTO> doRetrieve(ArticleSearchDTO param) throws Exception {
 
@@ -90,8 +100,8 @@ public class ArticleServiceImpl implements ArticleService {
 	public int updateReadCnt(ArticleDTO param) throws Exception {
 		return mapper.updateReadCnt(param);
 	}
-	
-	
+
+
     // === 가민경 메인 사용 ===
     // 카테고리별 Top1(최근 N일 + 최소 클릭수), 없으면 최신 기사 fallback
     @Override

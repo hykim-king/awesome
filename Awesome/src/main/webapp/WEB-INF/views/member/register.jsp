@@ -12,86 +12,80 @@
 
   <style>
     :root{
-    --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
-    --line:#e5e7eb; --blue-light:#4aa3ff; --blue:#0a45ff; --input:#f9fafb;
-   }
-   *{box-sizing:border-box}
-   body{
-     margin:0; background:var(--bg); color:var(--text);
-     font-family:"Inter","Pretendard",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,
-                 "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
-   }
-   .wrap{
-     max-width:360px; margin:48px auto; padding:28px 22px; background:var(--card);
-     border-radius:16px; box-shadow:0 10px 30px rgba(15,23,42,.08);
-   }
-   h1{ font-size:22px; font-weight:800; text-align:center; margin:6px 0 22px; }
-   .group{ margin-bottom:14px; }
-   label{ display:block; font-size:13px; font-weight:700; margin:2px 0 8px; }
-   .row{ display:flex; gap:10px; align-items:center; }
-   .row.right{ justify-content:flex-end; } /* 인증확인 버튼 라인 오른쪽 정렬 */
+      --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#6b7280;
+      --line:#e5e7eb; --blue-light:#4aa3ff; --blue:#0a45ff; --input:#f9fafb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font-family:"Inter","Pretendard",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,
+                  "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+    }
+    .group{ margin-bottom:14px; }
+    label{ display:block; font-size:13px; font-weight:700; margin:2px 0 8px; }
+    .row{ display:flex; gap:10px; align-items:center; }
+    .row.right{ justify-content:flex-end; }
 
-   input[type="text"],input[type="password"],input[type="email"],input[type="date"]{
-     width:100%; height:44px; padding:0 12px; border:1px solid var(--line);
-     background:var(--input); border-radius:10px; outline:none; transition:.15s ease; font-size:14px;
-   }
-   input:focus{
-     border-color:var(--blue);
-     box-shadow:0 0 0 4px color-mix(in srgb, var(--blue) 20%, transparent);
-     background:#fff;
-   }
-   .hint{font-size:12px;color:var(--muted)}
-   .msg{font-size:13px;margin-top:6px}
-   .msg.ok{color:#15803d}
-   .msg.err{color:#dc2626}
+    input[type="text"],input[type="password"],input[type="email"],input[type="date"]{
+      width:100%; height:44px; padding:0 12px; border:1px solid var(--line);
+      background:var(--input); border-radius:10px; outline:none; transition:.15s ease; font-size:14px;
+    }
+    input:focus{
+      border-color:var(--blue);
+      box-shadow:0 0 0 4px color-mix(in srgb, var(--blue) 20%, transparent);
+      background:#fff;
+    }
+    .hint{font-size:12px;color:var(--muted)}
+    .msg{font-size:13px;margin-top:6px}
+    .msg.ok{color:#15803d}
+    .msg.err{color:#dc2626}
 
-   /* 버튼 */
-   .btn{
-     height:44px; padding:0 14px; border:0; background:var(--blue-light);
-     color:#fff; border-radius:10px; font-size:14px; font-weight:700;
-     cursor:pointer; transition:.15s ease; white-space:nowrap;
-   }
-   .btn:hover{ background:var(--blue) }
-   .btn:active{ background:#072fc7 }
+    .btn{
+      height:44px; padding:0 14px; border:0; background:var(--blue-light);
+      color:#fff; border-radius:10px; font-size:14px; font-weight:700;
+      cursor:pointer; transition:.15s ease; white-space:nowrap;
+    }
+    .btn:hover{ background:var(--blue) }
+    .btn:active{ background:#072fc7 }
 
-   /* 회원가입 버튼 */
-   #btnSubmit{
-     display:block; width:100%; height:48px; margin-top:20px;
-     text-align:center; border-radius:12px;
-   }
+    #btnSubmit{ display:block; width:100%; height:48px; margin-top:20px; border-radius:12px; }
 
-   /* 약관 영역: 박스/점선 제거 */
-   .checks{ margin-top:16px; padding:0; border:0; background:transparent; }
-   .checks .chk-all{ display:block; font-weight:800; margin:12px 0 8px; }
-   .checks .term{
-     display:flex; align-items:center; gap:8px; padding:6px 0; border:0;
-   }
-   .checks .term + .term{ margin-top:4px; }
-   .checks label, .checks .link{ color:#111827 !important; text-decoration:none !important; }
-   .checks .link{ cursor:pointer; text-decoration:underline !important; color:#4f46e5 !important; }
+    .checks{ margin-top:16px; padding:0; border:0; background:transparent; }
+    .checks .chk-all{ display:block; font-weight:800; margin:12px 0 8px; }
+    .checks .term{ display:flex; align-items:center; gap:8px; padding:6px 0; }
+    .checks .term + .term{ margin-top:4px; }
+    .checks label, .checks .link{ color:#111827 !important; text-decoration:none !important; }
+    .checks .link{ cursor:pointer; text-decoration:underline !important; color:#4f46e5 !important; }
 
-   /* 모달 */
-   .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1000}
-   .modal.open{display:flex}
-   .modal .backdrop{position:absolute; inset:0; background:rgba(0,0,0,.45)}
-   .modal .panel{
-     position:relative; max-width:640px; width:calc(100% - 32px); max-height:80vh; overflow:auto;
-     background:#fff; border-radius:16px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.2)
-   }
-   .modal .close{position:absolute; top:10px; right:12px; border:0; background:transparent; font-size:22px; cursor:pointer; line-height:1}
-   .modal h2{margin:0 0 10px; font-size:18px}
-   .modal .content{font-size:14px; color:#334155}
+    /* 중앙 정렬 레이아웃 */
+    .page-register, .page-register #main{ background:#fff !important; }
+    .page-register #main{
+      display:flex; justify-content:center; align-items:flex-start; padding:0 16px;
+    }
+    .wrap{
+      width:100%; max-width:520px; margin:48px auto; padding:28px 22px;
+      background:var(--card); border-radius:16px; box-shadow:0 10px 30px rgba(15,23,42,.08);
+    }
+    h1{ font-size:22px; font-weight:800; text-align:center; margin:6px 0 22px; }
 
-   /* 회원가입 페이지 배경 고정 */
-   .page-register, .page-register #main, .page-register .main-container{ background:#fff !important; }
-   .page-register .wrap{
-     max-width:520px; margin:48px 0; position:relative; left:50vw; transform:translateX(-50%);
-   }
-   .page-register input[type="text"],
-   .page-register input[type="password"],
-   .page-register input[type="email"],
-   .page-register input[type="date"]{ height:44px; }
+    /* 모달 */
+    .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1000}
+    .modal.open{display:flex}
+    .modal .backdrop{position:absolute; inset:0; background:rgba(0,0,0,.45)}
+    .modal .panel{
+      position:relative; max-width:640px; width:calc(100% - 32px); max-height:80vh; overflow:auto;
+      background:#fff; border-radius:16px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.2)
+    }
+    .modal .close{position:absolute; top:10px; right:12px; border:0; background:transparent; font-size:22px; cursor:pointer; line-height:1}
+    .modal h2{margin:0 0 10px; font-size:18px}
+    .modal .content{font-size:14px; color:#334155}
+ 
    
+   
+    /* 사이드바 여백 제거 */
+  .content { margin-left:0 !important; }
+  /* 혹시 보이면 숨김 */
+  .sidebar, .admin-wrap .sidebar { display:none !important; }
  
  
   </style>
