@@ -224,9 +224,19 @@
   	DELETE FROM REPORT
   </delete>
   
-  <select id="getCount" resultType="int">
-    SELECT COUNT(*) FROM REPORT
-  </select>
+    <!-- 카운트 세기 -->
+    <select id="getCount"  resultType="java.lang.Integer">
+        SELECT count(*) totalCnt 
+        FROM REPORT
+    </select>
+    
+    <!-- 유저 별 카운트 세기 -->
+    <select id="getCountById"  resultType="java.lang.Integer">
+        SELECT count(*) totalCnt 
+        FROM REPORT
+        WHERE user_id = #{userId}
+    </select>
+ 
 
   
 </mapper>

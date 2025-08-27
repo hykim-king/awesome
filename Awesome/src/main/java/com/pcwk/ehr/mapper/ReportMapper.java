@@ -25,12 +25,16 @@ public interface ReportMapper extends WorkDiv<ReportDTO> {
 
 	List<ReportDTO> doRetrieve(ReportSearchDTO cond);
 	
+
 	 // 어드민: 신고코드 -> 채팅코드
     Integer getChatCodeByReport(@Param("reportCode") int reportCode);
     
    
 	
 	
+
+	int getCountById(String userId);
+
 	
 	
 }
