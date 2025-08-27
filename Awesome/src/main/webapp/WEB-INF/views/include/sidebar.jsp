@@ -4,6 +4,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 
 <div id="sidebar">
-            <jsp:include page = "/WEB-INF/views/widget/dictionary.jsp" />
+
 
 </div>
