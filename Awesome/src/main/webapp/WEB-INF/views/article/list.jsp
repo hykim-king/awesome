@@ -15,6 +15,23 @@
 <link rel="stylesheet" href="${mainCss}">
 <link rel="stylesheet" href="${headerCss}">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sidebar_category.css?v=1" />
+<style>
+/* 보이기/숨기기 */
+.hidden{ display:none !important; }
+
+/* 모달 전체 레이어 */
+.login-modal{ position:fixed; inset:0; z-index:1000; }
+
+/* 반투명 배경 */
+.login-modal_backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.4); }
+
+/* 모달 카드 */
+.login-modal_card{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+</style>
 <script>
 /* 새로고침 시 검색 조건 초기화 (category만 유지) */
 (function (){
@@ -404,8 +421,12 @@
 })();
 </script>
 
-<!-- 로그인 안내 모달 (페이지 하단에 둬도 OK) -->
-<div id="login-modal" class="login-modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+<!-- 로그인 안내 모달 -->
+<div id="login-modal"
+     class="login-modal hidden"
+     aria-hidden="true"
+     role="dialog"
+     aria-modal="true">
   <div class="login-modal_backdrop"></div>
   <div class="login-modal_card">
     <div class="login-modal_title">로그인이 필요합니다.</div>
