@@ -50,7 +50,7 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
   list-style:none; padding:0; margin:0;
   /* ① 고정 높이 사용하려면: height: 460px; */
   /* ② 화면 높이 기반(권장): */
-  max-height: calc(100vh - 240px); /* 헤더+인풋+여백을 뺀 값으로 조절 */
+  max-height: 40vh; /* 높이 조절 */
   overflow-y: auto;
   background:#fff;
 }
