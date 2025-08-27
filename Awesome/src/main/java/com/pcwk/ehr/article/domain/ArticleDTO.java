@@ -34,6 +34,9 @@ public class ArticleDTO {
 	// 10. 수정일
 	private Date modDt;
 	
+	// 11. 어드민기사관리 카테고리
+	private String categoryLabel;
+	
 
 	/**
 	 * 
@@ -209,6 +212,14 @@ public class ArticleDTO {
 		this.modDt = modDt;
 	}
 
+	/* 어드민 기사관리 카테고리 */
+	public String getCategoryLabel() { 
+		return categoryLabel; 
+		}
+	
+	public void setCategoryLabel(String categoryLabel) { 
+		this.categoryLabel = categoryLabel; }
+	
 	@Override
 	public String toString() {
 		return "ArticleDTO [articleCode=" + articleCode + ", category=" + category + ", press=" + press + ", title="

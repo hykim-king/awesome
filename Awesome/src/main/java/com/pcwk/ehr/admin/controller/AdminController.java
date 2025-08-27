@@ -40,7 +40,7 @@ public class AdminController {
     @Autowired private ReportService reportService;
     @Autowired private AdminMemberService adminMemberService;
     @Autowired private ArticleService articleService;
-    @Autowired private ReportMapper reportMapper;   // ★ 없으면 추가
+    @Autowired private ReportMapper reportMapper;   
     
 
     // ★ 채팅 본문 가져오기용(팀원 코드 사용)
@@ -151,35 +151,29 @@ public class AdminController {
         model.addAttribute("dateFilter", dateFilter);
 
         return "admin/articles";
-        
+ 
     }
     
+   
     
-    // 선택 삭제(다건) — 서비스에 deleteMany 없으므로 반복 호출
-    @PostMapping("/articles/delete.do")
-    public String articlestDelete(@RequestParam("ids") List<Integer> ids,
-                               @RequestParam(defaultValue = "1") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               RedirectAttributes ra) throws Exception {
-        int success = 0;
-        if (ids != null) {
-            for (Integer id : ids) {
-                if (id == null) continue;
-                try {
-                    success += reportService.doDelete(id);
-                } catch (Exception e) {
-                    log.error("기사 삭제 실패 reportCode={}", id, e);
-                }
-            }
+    
+    // 기사 선택 삭제(다건) — 메서드는 반드시 클래스 레벨에 위치해야 함
+    @PostMapping("/article/delete.do")
+    public String deleteArticles(@RequestParam("ids") List<Long> ids, RedirectAttributes ra) {
+        if (ids == null || ids.isEmpty()) {
+            ra.addFlashAttribute("msg", "삭제할 항목을 선택하세요.");
+            return "redirect:/admin/articles.do";
         }
-        ra.addFlashAttribute("message", success + "건 삭제되었습니다.");
-      
-       return "redirect:/admin/articles.do";
-    
-    
-       
+        int n = articleService.deleteMany(ids);
+        ra.addFlashAttribute("msg", n + "건 삭제했습니다.");
+        return "redirect:/admin/articles.do";
     }
-
+    
+    
+    
+    
+    
+    
 
     // ─────────────────────────────────────────
     // 신고 관리

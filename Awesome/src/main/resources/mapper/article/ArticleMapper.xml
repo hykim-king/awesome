@@ -2,9 +2,68 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pcwk.ehr.mapper.ArticleMapper">
 
+       <!-- 어드민 기사 관리 카테고리 -->
+        <sql id="category_label_sql">
+		    CASE CATEGORY
+		      WHEN 10 THEN '정치'
+		      WHEN 20 THEN '경제'
+		      WHEN 30 THEN '사회/문화'
+		      WHEN 40 THEN '스포츠'
+		      WHEN 50 THEN '연예'
+		      WHEN 60 THEN 'IT/과학'
+		      ELSE '-'
+		    END
+		  </sql>
+		
+		
+   <!-- 별칭 A를 쓰는 버전 (별칭 있는 쿼리에서만 사용) -->
+			<sql id="category_label_sql_A">
+		    CASE A.CATEGORY
+		      WHEN 10 THEN '정치'
+		      WHEN 20 THEN '경제'
+		      WHEN 30 THEN '사회/문화'
+		      WHEN 40 THEN '스포츠'
+		      WHEN 50 THEN '연예'
+		      WHEN 60 THEN 'IT/과학'
+		      ELSE '-'
+		    END
+		  </sql>
+        
+          
+       <!-- resultMap -->
+     
+		  <resultMap id="ArticleMap" type="com.pcwk.ehr.article.domain.ArticleDTO">
+		    <result column="ARTICLE_CODE"   property="articleCode"/>
+		    <result column="CATEGORY"       property="category"/>
+		    <result column="CATEGORY_LABEL" property="categoryLabel"/>
+		    <result column="PRESS"          property="press"/>
+		    <result column="TITLE"          property="title"/>
+		    <result column="SUMMARY"        property="summary"/>
+		    <result column="URL"            property="url"/>
+		    <result column="PUBLIC_DT"      property="publicDt"/>
+		    <result column="VIEWS"          property="views"/>
+		    <result column="REG_DT"         property="regDt"/>
+		    <result column="MOD_DT"         property="modDt"/>
+		  </resultMap>
+       
+
+
 	<delete id="deleteAll">
 		DELETE FROM article
 	</delete>
+	
+	
+        <delete id="deleteMany" parameterType="list">
+	  DELETE FROM ARTICLE
+	  WHERE ARTICLE_CODE IN
+	  <foreach collection="ids" item="id" open="(" separator="," close=")">
+	    #{id}
+	  </foreach>
+	</delete>
+        
+	
+	
+	
 
 	<update id="updateReadCnt"
 		parameterType="com.pcwk.ehr.article.domain.ArticleDTO">
@@ -18,6 +77,9 @@
 	<select id="getCountAll" resultType="java.lang.Integer">
 		SELECT COUNT(*) FROM article
 	</select>
+	
+	
+	
 	
 	<select id="getCount"
         parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
@@ -113,7 +175,9 @@
       SELECT A.*, ROWNUM RN
       FROM (
         SELECT
-          ARTICLE_CODE, CATEGORY, PRESS, TITLE, SUMMARY, URL,
+          ARTICLE_CODE, CATEGORY, 
+          <include refid="category_label_sql"/> AS CATEGORY_LABEL,
+          PRESS, TITLE, SUMMARY, URL,
           PUBLIC_DT, VIEWS, REG_DT, MOD_DT
         FROM ARTICLE
         WHERE 1=1
@@ -134,7 +198,25 @@
       ) A
     )
     WHERE RN BETWEEN #{startRow} AND #{endRow}
-  </select>
+    </select> 
+  
+  <!-- =========================================================
+       관리자 목록(예시) : selectPage
+       - 별칭 A 사용 → category_label_sql_A 포함
+       ========================================================= -->
+  <select id="selectPage" resultMap="ArticleMap"
+        parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO">
+  SELECT
+    A.ARTICLE_CODE,
+    A.CATEGORY,
+    ( <include refid="category_label_sql_A"/> ) AS CATEGORY_LABEL,
+    A.TITLE,
+    A.REG_DT
+  FROM ARTICLE A
+</select>
+
+    
+    
   
   
          <!--   가민경 메인페이지 사용 8/25 -->
@@ -167,6 +249,7 @@
              SELECT 
                a.article_code AS articleCode,
                a.category     AS category,
+               <include refid="category_label_sql"/> AS CATEGORY_LABEL, <!-- 카테고리 -->
                a.title        AS title,
                a.url          AS url,
                a.public_dt    AS publicDt,
