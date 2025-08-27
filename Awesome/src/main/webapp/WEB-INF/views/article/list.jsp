@@ -15,24 +15,6 @@
 <link rel="stylesheet" href="${mainCss}">
 <link rel="stylesheet" href="${headerCss}">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sidebar_category.css?v=1" />
-<style>
-#main { min-width: 0; }
-
-/* 사이드바: 보라 배경 제거 + 상단 고정(원치 않으면 position:sticky 줄 삭제) */
-#sidebar{
-  background: transparent !important;  /* pcwk_main.css의 보라색 덮어쓰기 */
-  position: sticky;
-  top: 16px;
-  align-self: start;                    /* 그리드 행 상단 정렬 */
-  width: auto;                          /* 남아 있을 수 있는 폭 고정 규칙 무력화 */
-}
-
-/* 모바일에서는 1열로 내려갈 때 sticky 해제 */
-@media (max-width: 900px){
-  #sidebar{ position: static; }
-}
-</style>
-
 <script>
 /* 새로고침 시 검색 조건 초기화 (category만 유지) */
 (function (){
