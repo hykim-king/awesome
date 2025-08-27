@@ -2,61 +2,113 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
-<div class="card dict-widget">
-  <div class="card-header">용어사전</div>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>뉴스 사전</title>
+  <style>
+    .dict-widget { font-size:14px; }
+    .dict-form { display:flex; gap:8px; }
+    .dict-form input { flex:1; padding:6px 8px; border:1px solid #ddd; border-radius:6px; }
+    .dict-form button { padding:6px 10px; border:1px solid #0046FF; background:#0046FF; color:#fff; border-radius:6px; cursor:pointer; }
+    .dict-form button:disabled { opacity:.6; cursor:not-allowed; }
+    .dict-results { margin-top:10px; border-top:1px solid #e5e5e5; padding-top:8px; display:none; }
+    .dict-item { padding:8px 0; border-bottom:1px dashed #eee; }
+    .dict-term { font-weight:700; margin-bottom:4px; }
+    .dict-summary { color:#555; line-height:1.4; margin-bottom:6px; }
+    .dict-actions a { text-decoration:underline; }
+    .dict-empty, .dict-error, .dict-loading { color:#666; padding:8px 0; }
+  </style>
+</head>
+<body>
+<div class="dict-widget" role="search" aria-label="뉴스 사전 검색">
+  <form id="dictForm" class="dict-form" autocomplete="off">
+    <input id="dictQuery" type="text" name="query" placeholder="용어를 입력하세요" required aria-label="검색어 입력" />
+    <button id="dictSearchBtn" type="submit" aria-label="검색">검색</button>
+  </form>
 
-  <!-- 페이지 리로드 방식: .do 엔드포인트 -->
-<div class="dict-form">
-  <input type="text" id="dictQuery" placeholder="용어를 입력하세요" value="${query}" required />
-  <button type="button"
-          onclick="location.href='${ctx}/widget/dict/search.do?query='
-                   + encodeURIComponent(document.getElementById('dictQuery').value)">
-    검색
-  </button>
+  <div id="dictResults" class="dict-results" aria-live="polite" aria-busy="false"></div>
 </div>
 
-  <c:if test="${not empty recentKeywords}">
-    <div class="recent">
-      <span class="title">최근 검색어</span>
-      <div class="chips">
-        <c:forEach var="k" items="${recentKeywords}">
-          <a class="chip" href="<c:url value='/widget/dict/search.do'/>?query=${k}"><c:out value="${k}" /></a>
-        </c:forEach>
-      </div>
-    </div>
-  </c:if>
+<script>
+(function () {
+  // 안전한 절대경로: 컨텍스트 자동 부착됨
+  var searchUrl = '<c:url value="/widget/dict/search.do"/>';
+  var form = document.getElementById('dictForm');
+  var input = document.getElementById('dictQuery');
+  var btn = document.getElementById('dictSearchBtn');
+  var box = document.getElementById('dictResults');
 
-  <c:if test="${not empty dictError}">
-    <div class="error"><c:out value="${dictError}" /></div>
-  </c:if>
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    doSearch();
+  });
 
-  <c:if test="${not empty result}">
-    <div class="dict-result">
-      <c:if test="${not empty result.items}">
-        <c:forEach var="item" items="${result.items}">
-          <div class="entry">
-            <a href="${item.link}" target="_blank" class="term"><c:out value="${item.title}" /></a>
-            <div class="desc"><c:out value="${item.description}" /></div>
-          </div>
-        </c:forEach>
-      </c:if>
-      <c:if test="${empty result.items}">
-        <div class="no-data">검색 결과가 없습니다.</div>
-      </c:if>
-    </div>
-  </c:if>
-</div>
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      doSearch();
+    }
+  });
 
-<style>
-.dict-widget { padding:12px; border:1px solid #e5e7eb; border-radius:12px; background:#fff; }
-.dict-widget .card-header { font-weight:700; margin-bottom:8px; }
-.dict-form { display:flex; gap:6px; margin-bottom:8px; }
-.dict-form input { flex:1; padding:6px 8px; }
-.recent .title { font-size:12px; color:#666; }
-.chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.chip { padding:4px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; text-decoration:none; }
-.dict-result .entry { padding:8px 0; border-top:1px solid #f0f0f0; }
-.dict-result .entry .term { font-weight:600; }
-.dict-result .entry .desc { font-size:13px; color:#444; margin-top:4px; }
-.error { color:#b91c1c; }
-</style>
+  function setLoading(on) {
+    box.style.display = 'block';
+    box.setAttribute('aria-busy', on ? 'true' : 'false');
+    btn.disabled = !!on;
+    if (on) box.innerHTML = '<div class="dict-loading">검색 중...</div>';
+  }
+
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
+  }
+
+  async function doSearch() {
+    var q = (input.value || '').trim();
+    if (!q) {
+      box.style.display = 'none';
+      box.innerHTML = '';
+      return;
+    }
+
+    setLoading(true);
+    try {
+      var resp = await fetch(searchUrl + '?query=' + encodeURIComponent(q), {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json(); // [{term, summary, link}, ...]
+
+      if (!Array.isArray(data) || data.length === 0) {
+        box.innerHTML = '<div class="dict-empty">검색 결과가 없습니다.</div>';
+        return;
+      }
+
+      var top5 = data.slice(0, 5);
+      box.innerHTML = top5.map(function (it) {
+        var term = esc(it.term);
+        var summary = esc(it.summary);
+        var link = it.link || '#';
+        return (
+          '<div class="dict-item">' +
+            '<div class="dict-term">' + term + '</div>' +
+            '<div class="dict-summary">' + summary + '</div>' +
+            '<div class="dict-actions"><a href="' + link + '" target="_blank" rel="noopener">자세히보기</a></div>' +
+          '</div>'
+        );
+      }).join('');
+
+    } catch (err) {
+      console.error(err);
+      box.innerHTML = '<div class="dict-error">오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</div>';
+    } finally {
+      setLoading(false);
+    }
+  }
+})();
+</script>
+</body>
+</html>
