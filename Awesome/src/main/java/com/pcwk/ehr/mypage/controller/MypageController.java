@@ -25,6 +25,10 @@ import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
 import com.pcwk.ehr.bookmark.service.BookmarkService;
 import com.pcwk.ehr.member.domain.MemberDTO;
 import com.pcwk.ehr.member.service.MemberService;
+import com.pcwk.ehr.mypage.domain.PagedResult;
+import com.pcwk.ehr.report.domain.ReportDTO;
+import com.pcwk.ehr.report.domain.ReportSearchDTO;
+import com.pcwk.ehr.report.service.ReportService;
 import com.pcwk.ehr.userLog.domain.UserChartDTO;
 import com.pcwk.ehr.userLog.domain.UserLogDTO;
 import com.pcwk.ehr.userLog.service.UserLogService;
@@ -44,6 +48,9 @@ public class MypageController {
 	@Autowired
 	MemberService memberService;
 	
+	@Autowired
+	ReportService reportService;
+	
 	public MypageController() {
 		log.debug("┌───────────────────────────────────────┐");
 		log.debug("│ MypageController()                    │");
@@ -51,6 +58,24 @@ public class MypageController {
 	}
 	
 	
+	@GetMapping
+	public String mypage(Model model, HttpSession session) {
+		log.debug("┌───────────────────────────────────────┐");
+		log.debug("│ mypage()                              │");
+		log.debug("└───────────────────────────────────────┘");
+
+		MemberDTO loginUser  = (MemberDTO) session.getAttribute("loginUser");
+		
+		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
+		if(loginUser  == null) {
+			log.warn("로그인 없이 마이페이지 조회 시도 차단됨");
+			model.addAttribute("loginRequired", true);
+			model.addAttribute("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
+			return "redirect:/member/login.do";
+		}
+		return "mypage/mypage";
+	}
+		
 	@GetMapping("/userInfo.do")
 	public String userInfo(HttpSession session, Model model){
 		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
@@ -129,56 +154,124 @@ public class MypageController {
 	/**
 	 * -----------회원정보 END
 	 */
-	
-	//같은 페이지를 그대로 렌더 + 모달 플래그 내려주기(로그인 팝업)
-	//마이페이지에서 내가 북마크한 기사 목록
-	@GetMapping
-	public String doRetriveMy( 
-			@RequestParam(defaultValue = "1") int pageNo,
-	        @RequestParam(defaultValue = "5") int pageSize,
-	        BookmarkDTO param, 
-	        Model model, 
-	        HttpSession session) {
-		String viewName = "/mypage/mypage";
-		log.debug("┌───────────────────────────────────────┐");
-		log.debug("│ doRetriveMy()                         │");
-		log.debug("└───────────────────────────────────────┘");
-		log.debug("param: {}", param);
-		
-		MemberDTO loginUser  = (MemberDTO) session.getAttribute("loginUser");
 
-		
-		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
-		if(loginUser  == null) {
-			log.warn("로그인 없이 마이페이지 조회 시도 차단됨");
-			model.addAttribute("loginRequired", true);
-			model.addAttribute("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
-			return "redirect:/member/login.do";
-		}
-		
-		// 2) 로그인된 경우만 조회
-		param.setUserId(loginUser.getUserId()); //세션에서 주입
-		param.setPageNo(pageNo);
-		param.setPageSize(pageSize);
-		List<BookmarkDTO> list = bookmarkService.doRetriveMy(param);
-		model.addAttribute("list", list);
-		log.debug("북마크 목록 건수: {}", (list != null ? list.size() : 0));
-		
-	    // 전체 건수 (서비스에서 별도로 조회)
-	    int totalCnt = bookmarkService.getCountById(param);
-	    model.addAttribute("totalCnt", totalCnt);
-	    model.addAttribute("pageNo", pageNo);
-	    model.addAttribute("pageSize", pageSize);
-		
+	@GetMapping("/bookmarks")
+	@ResponseBody
+	public PagedResult<BookmarkDTO> myBookmarks(@RequestParam(defaultValue = "1") int pageNo,
+	                                            @RequestParam(defaultValue = "5") int pageSize,
+	                                            HttpSession session) throws Exception {
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
 
-	    if(list == null || list.isEmpty()) {
-	        model.addAttribute("noBookmarkMsg", "북마크한 기사가 없습니다. 핫이슈 '오늘의 토픽'을 살펴보세요!");
-	    }
+	    BookmarkDTO param = new BookmarkDTO();
+	    param.setUserId(loginUser.getUserId());
+	    param.setPageNo(pageNo);
+	    param.setPageSize(pageSize);
 
-	    return viewName;
-	
+	    List<BookmarkDTO> bkList = bookmarkService.doRetriveMy(param);
+	    int bkTotalCnt = bookmarkService.getCountById(param);
+	    log.debug("bkList:{}", bkList);
+	    log.debug("bkTotalCnt:{}", bkTotalCnt);
+
+	    return new PagedResult<>(bkList, bkTotalCnt);
 	}
 	
+	@GetMapping("/reports")
+	@ResponseBody
+	public PagedResult<ReportDTO> myReports(@RequestParam(defaultValue = "1") int pageNo,
+	                                        @RequestParam(defaultValue = "5") int pageSize,
+	                                        HttpSession session) throws Exception {
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+
+	    ReportSearchDTO param = new ReportSearchDTO();
+	    param.setUserId(loginUser.getUserId());
+	    param.setPageNo(pageNo);
+	    param.setPageSize(pageSize);
+
+	    List<ReportDTO> reportList = reportService.doRetrieve(param);
+	    int rpTotalCnt = reportService.getCountById(loginUser.getUserId());
+	    log.debug("reportList:{}", reportList);
+	    log.debug("rpTotalCnt:{}", rpTotalCnt);
+
+	    return new PagedResult<>(reportList, rpTotalCnt);
+	}
+	
+//	//같은 페이지를 그대로 렌더 + 모달 플래그 내려주기(로그인 팝업)
+//	//마이페이지에서 내가 북마크한 기사 목록
+//	@GetMapping
+//	public String doRetriveMy( 
+//			@RequestParam(defaultValue = "1") int pageNo,
+//	        @RequestParam(defaultValue = "5") int pageSize,
+//	        BookmarkDTO param, 
+//	        Model model, 
+//	        HttpSession session) {
+//		String viewName = "/mypage/mypage";
+//		log.debug("┌───────────────────────────────────────┐");
+//		log.debug("│ doRetriveMy()                         │");
+//		log.debug("└───────────────────────────────────────┘");
+//		log.debug("param: {}", param);
+//		
+//		MemberDTO loginUser  = (MemberDTO) session.getAttribute("loginUser");
+//
+//		
+//		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
+//		if(loginUser  == null) {
+//			log.warn("로그인 없이 마이페이지 조회 시도 차단됨");
+//			model.addAttribute("loginRequired", true);
+//			model.addAttribute("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
+//			return "redirect:/member/login.do";
+//		}
+//		
+//		// 2) 로그인된 경우만 조회
+//		param.setUserId(loginUser.getUserId()); //세션에서 주입
+//		param.setPageNo(pageNo);
+//		param.setPageSize(pageSize);
+//		List<BookmarkDTO> list = bookmarkService.doRetriveMy(param);
+//		model.addAttribute("list", list);
+//		log.debug("북마크 목록 건수: {}", (list != null ? list.size() : 0));
+//		
+//	    // 전체 건수 (서비스에서 별도로 조회)
+//	    int totalCnt = bookmarkService.getCountById(param);
+//	    model.addAttribute("totalCnt", totalCnt);
+//	    model.addAttribute("pageNo", pageNo);
+//	    model.addAttribute("pageSize", pageSize);
+//		
+//
+//	    if(list == null || list.isEmpty()) {
+//	        model.addAttribute("noBookmarkMsg", "북마크한 기사가 없습니다. 핫이슈 '오늘의 토픽'을 살펴보세요!");
+//	    }
+//
+//	    return viewName;
+//	
+//	}
+//	
+//	@GetMapping("report")
+//	public String myReports(@RequestParam(defaultValue = "1") int pageNo,
+//			@RequestParam(defaultValue = "5") int pageSize,
+//			HttpSession session, Model model
+//			) throws Exception {
+//		MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+//		
+//		ReportSearchDTO  search = new ReportSearchDTO();
+//		search.setUserId(loginUser.getUserId());
+//		search.setPageNo(pageNo);
+//		search.setPageSize(pageSize);
+//		
+//		List<ReportDTO> reportList = reportService.doRetrieve(search);
+//		model.addAttribute("reportList", reportList);
+//		
+//		//전체 건수(페이징용)
+//		int totalCnt = reportService.getCountById(loginUser.getUserId());
+//		model.addAttribute("totalCnt", totalCnt);
+//		model.addAttribute("pageNo", pageNo);
+//		model.addAttribute("pageSize", pageSize);
+//		
+//		if(reportList.isEmpty()) {
+//			model.addAttribute("noReportMsg", "신고 내역이 없습니다.");
+//		}
+//		
+//		return "mypage/mypage";
+//	}
+//	
 	@GetMapping(value="/checkOne", produces="application/json;charset=UTF-8")
 	@ResponseBody
 	public String checkOne(@RequestParam("articleCode") int articleCode, HttpSession session) {

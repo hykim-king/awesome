@@ -23,5 +23,7 @@ public interface ReportService {
 	int doDelete(int reportCode) throws Exception;
 
 	int deleteAll();
+	
+	int getCountById(String userId);
 
 }
