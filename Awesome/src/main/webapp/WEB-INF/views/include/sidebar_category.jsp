@@ -14,14 +14,11 @@
   }
   
 </style>
-
+<div id="sidebar">
             <jsp:include page = "/WEB-INF/views/quiz/quizRank.jsp" />
-            
-<sidebar id="sidebar_category">
-
             <jsp:include page = "/WEB-INF/views/chat/chat.jsp" />
             <jsp:include page = "/WEB-INF/views/widget/dictionary.jsp" />
-</sidebar>
+</div>
 
 <script>
 /*chat.jsp 자식만으로 부모인 <aside> width 바꿀수가 없어서, JSP 내부 스크립트로 직접 style을 하기 위해서 세팅함.*/
