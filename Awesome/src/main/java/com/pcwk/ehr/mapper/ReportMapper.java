@@ -24,7 +24,7 @@ public interface ReportMapper extends WorkDiv<ReportDTO> {
 
 	List<ReportDTO> doRetrieve(ReportSearchDTO cond);
 	
-	
+	int getCountById(String userId);
 	
 	
 }

@@ -3,7 +3,7 @@
  
  <style>
   .quiz-ranking-sidebar {
-  width: 280px;
+  width: 385px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
