@@ -9,7 +9,7 @@
 <!-- 공용 헤더/메인 스타일 -->
 <c:url var="mainCss" value="/resources/css/pcwk_main.css"/>
 <c:url var="headerCss" value="/resources/css/header.css">
-  <c:param name="v" value="20250827"/> <!-- 캐시깨기 원하면 유지 -->
+  <c:param name="v" value="20250828"/> <!-- 캐시깨기 원하면 유지 -->
 </c:url>
 <link rel="stylesheet" href="${mainCss}">
 <link rel="stylesheet" href="${headerCss}">
@@ -236,6 +236,19 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
   font-family: var(--al-font);
   font-size: var(--al-body-size);
 }
+/* 현재 페이지의 카테고리를 body[data-cat]로 받아서, 헤더 서브메뉴에서 해당 항목만 강조 */
+body[data-cat="10"] #header .submenu a[href*="category=10"],
+body[data-cat="20"] #header .submenu a[href*="category=20"],
+body[data-cat="30"] #header .submenu a[href*="category=30"],
+body[data-cat="40"] #header .submenu a[href*="category=40"],
+body[data-cat="50"] #header .submenu a[href*="category=50"],
+body[data-cat="60"] #header .submenu a[href*="category=60"]{
+  font-weight:800;
+  font-size:15px;
+  color:var(--blue);
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
 }
 </style>
 <script>
@@ -278,7 +291,7 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
   </script>
 </head>
 
-<body class="page-article-list">
+<body class="page-article-list" data-cat="${empty category ? param.category : category}">
     <div id="container">
 	<c:if 
 	   test="${empty sessionScope.userId and not empty sessionScope.loginUser}">
