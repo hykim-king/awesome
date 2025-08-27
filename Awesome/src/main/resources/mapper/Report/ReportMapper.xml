@@ -2,6 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pcwk.ehr.mapper.ReportMapper">
 
+    
+    <sql id="reason_label_sql">
+    CASE UPPER(TRIM(R.REASON))
+      WHEN 'SPAM'              THEN '스팸홍보/도배글입니다.'
+      WHEN 'UNPLEASANT'        THEN '음란물입니다.'
+      WHEN 'ILLEGAL'           THEN '불법정보를 포함하고 있습니다.'
+      WHEN 'HARMFUL TO YOUTH'  THEN '청소년에게 유해한 내용입니다.'
+      WHEN 'OBSCENITY'         THEN '욕설/생명경시/혐오/차별적 표현입니다.'
+      WHEN 'PRIVACY'           THEN '개인정보 노출 게시물입니다.'
+      WHEN 'PERSONAL_INFO'     THEN '개인정보 노출 게시물입니다.'
+      WHEN 'OTHER'             THEN '기타사항 - ' || NVL(R.REASON_DETAIL, '-')
+	  WHEN 'OTHERS'            THEN '기타사항 - ' || NVL(R.REASON_DETAIL, '-')
+	  WHEN 'OTHER MATTERS'     THEN '기타사항 - ' || NVL(R.REASON_DETAIL, '-')
+	  WHEN 'ETC'               THEN '기타사항 - ' || NVL(R.REASON_DETAIL, '-')
+	  ELSE NVL(R.REASON, '-')
+    END
+  </sql>
+    
+    
+    
+    <!-- 어드민신고관련  resultMap -->
+    <resultMap id="ReportMap" type="com.pcwk.ehr.report.domain.ReportDTO">
+    <id     column="REPORT_CODE"      property="reportCode"/>
+    <result column="CHAT_CODE"        property="chatCode"/>
+    <result column="USER_ID"          property="userId"/>
+    <result column="CT_ID"            property="ctId"/>
+    <result column="REASON"           property="reason"/>
+    <result column="REASON_LABEL"     property="reasonLabel"/>
+    <result column="REASON_DETAIL"    property="reasonDetail"/> 
+    <result column="STATUS"           property="status"/>
+    <result column="REG_DT"           property="regDt"/>
+    <result column="MOD_DT"           property="modDt"/>
+    <!-- NEW: 신고된 채팅 정보 보관용 컬럼 매핑 -->
+    <result column="TARGET_USER_ID"   property="targetUserId"/>
+    <result column="TARGET_MESSAGE"   property="targetMessage"/>
+    <result column="TARGET_SEND_DT"   property="targetSendDt"/>
+  </resultMap>
+    
+    
+    
+    
     <!-- 신고 저장 -->
   <insert id="doSave" parameterType="com.pcwk.ehr.report.domain.ReportDTO">
     <selectKey keyProperty="reportCode" resultType="int" order="BEFORE">
@@ -14,6 +55,11 @@
       CT_ID,
       REASON,
       STATUS,
+      REASON_DETAIL,  
+      <!-- 신고된 채팅 스냅샷 보관 -->
+      TARGET_USER_ID,
+      TARGET_MESSAGE,
+      TARGET_SEND_DT,
       REG_DT,
       MOD_DT
     ) VALUES (
@@ -22,7 +68,11 @@
       #{userId,jdbcType=VARCHAR},
       #{ctId,jdbcType=VARCHAR},    
       #{reason,jdbcType=VARCHAR},   
-      #{status,jdbcType=VARCHAR},   
+      #{status,jdbcType=VARCHAR},  
+      #{reasonDetail,jdbcType=VARCHAR}, 
+      #{targetUserId,jdbcType=VARCHAR},
+      #{targetMessage,jdbcType=VARCHAR},
+      #{targetSendDt,jdbcType=TIMESTAMP},
       SYSDATE,
       SYSDATE
     )
@@ -38,19 +88,24 @@
       USER_ID,
       CT_ID,
       REASON,
+      <include refid="reason_label_sql"/> AS REASON_LABEL,
+      REASON_DETAIL,  
       STATUS,
       REG_DT,
-      MOD_DT
+      MOD_DT,
+      TARGET_USER_ID,
+      TARGET_MESSAGE,
+      TARGET_SEND_DT
     FROM REPORT
     WHERE REPORT_CODE = #{reportCode}
   </select>
 
     
-    <!-- 관리자용 -->
+    <!-- 어드민: 신고코드로 채팅코드 조회  -->
     <select id="getChatCodeByReport" parameterType="int" resultType="int">
-  SELECT CHAT_CODE
-  FROM REPORT
-  WHERE REPORT_CODE = #{reportCode}
+	  SELECT CHAT_CODE
+	  FROM REPORT
+	  WHERE REPORT_CODE = #{reportCode}
     </select>
     
 
@@ -60,7 +115,7 @@
   <!-- 목록 + 페이징: Stopkey(ROWNUM) 패턴 -->
   <select id="doRetrieve"
           parameterType="com.pcwk.ehr.report.domain.ReportSearchDTO"
-          resultType="com.pcwk.ehr.report.domain.ReportDTO">
+           resultMap="ReportMap">
 
     <!-- 대소문자 무시 전방일치 바인딩: 반드시 &amp;&amp; 사용 -->
     <bind name="kw"
@@ -76,9 +131,14 @@
           R.USER_ID,
           R.CT_ID,
           R.REASON,
+          <include refid="reason_label_sql"/> AS REASON_LABEL,
+          R.REASON_DETAIL,   
           R.STATUS,
           R.REG_DT,
-          R.MOD_DT
+          R.MOD_DT,
+          R.TARGET_USER_ID,
+          R.TARGET_MESSAGE,
+          R.TARGET_SEND_DT
         FROM REPORT R
         <where>
           <!-- free-text 전방일치 : USER_ID / CT_ID -->
@@ -133,6 +193,9 @@
          <if test="ctId    != null and ctId   != ''">CT_ID   = #{ctId},</if>
          <if test="reason  != null and reason != ''">REASON = #{reason},</if>
          <if test="status  != null and status != ''">STATUS = #{status},</if>
+         <if test="targetUserId   != null and targetUserId   != ''">TARGET_USER_ID = #{targetUserId},</if>
+         <if test="targetMessage  != null and targetMessage  != ''">TARGET_MESSAGE = #{targetMessage},</if>
+         <if test="targetSendDt   != null">TARGET_SEND_DT = #{targetSendDt,jdbcType=TIMESTAMP},</if>
          MOD_DT = SYSDATE
        </set>
      WHERE REPORT_CODE = #{reportCode}

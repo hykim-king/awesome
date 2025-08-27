@@ -256,7 +256,7 @@ public class AdminController {
         Map<String,Object> p = new HashMap<>();
         p.put("reportCode", reportCode);
         p.put("status", dbStatus); //  DB에 저장할 값으로 넣기
-        int n = reportMapper.doUpdateStatus(p);
+        int n = reportMapper.doUpdateStatus(reportCode, dbStatus);
 
         // 채팅 숨김 처리도 RESOLVED 기준으로
         if ("RESOLVED".equals(status)) {

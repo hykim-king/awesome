@@ -19,10 +19,16 @@ public interface ReportMapper extends WorkDiv<ReportDTO> {
     // 상태만 바꾸는 전용 메서드가 필요하면 유지
     int doUpdateStatus(ReportDTO dto);
     
-    int doUpdateStatus(Map<String,Object> p);         //어드민신고페이지용
-    Integer getChatCodeByReport(@Param("reportCode") int reportCode);//어드민신고페이지용
+    //어드민 신고관리용
+    int doUpdateStatus(@Param("reportCode") int reportCode,
+            @Param("status") String status);
 
 	List<ReportDTO> doRetrieve(ReportSearchDTO cond);
+	
+	 // 어드민: 신고코드 -> 채팅코드
+    Integer getChatCodeByReport(@Param("reportCode") int reportCode);
+    
+   
 	
 	
 	
