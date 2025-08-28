@@ -34,7 +34,7 @@
 /* 카테고리 배너(리스트 상단) */
 /* 배너 한 세트(가운데 정렬 + 전체폭 + 배경 이미지) */
 .page-article-list #container > .category-hero{
-  /* 그리드 위치 */
+
   grid-area: banner;
   grid-column: 1 / -1;
 
@@ -42,28 +42,28 @@
   width: 100%;
   max-width: none;
   margin: 0 0 12px;
-  border-radius: 0;      /* 좌우 여백만 */
+  border-radius: 0;      
 
   /* 배경(오버레이 + 이미지) */
   background:
     linear-gradient(to right, rgba(0,0,0,.30), rgba(0,0,0,.15)),
     url('${bannerImg}') center/cover no-repeat;
   color: #fff;
-  min-height: 100px;      /* 배너 높이: 취향대로 140~220 조절 */
+  min-height: 100px;      
 
   /* 텍스트 중앙 정렬 */
   display: grid;
-  place-items: center;    /* 수직·수평 중앙 한 줄 끝 */
+  place-items: center;    
   padding: 0 20px;  
 }
 
 /* 배너 타이틀 스타일 */
 .page-article-list .category-hero h1{
   margin: 0;
-  font-size: 28px;        /* 필요하면 24로 줄이기 */
+  font-size: 28px;        
   font-weight: 800;
   letter-spacing: .2px;
-  text-shadow: 0 2px 8px rgba(0,0,0,.35); /* 가독성 */
+  text-shadow: 0 2px 8px rgba(0,0,0,.35); 
 }
 #container > .category-hero { grid-column: 1 / -1; }
 .page-article-list #container{
@@ -119,7 +119,7 @@
 
 <body class="page-article-list" data-cat="${empty category ? param.category : category}">
 <div id="container">
-  <!-- 헤더(그리드: header) -->
+  <!-- 헤더 -->
   <jsp:include page="/WEB-INF/views/include/header.jsp" />
     <c:set var="curCat" value="${empty category ? param.category : category}" />
   <c:if test="${not empty curCat and fn:trim(curCat) ne 'ALL'}">
@@ -139,7 +139,7 @@
     </div>
   </c:if>
 
-  <!-- 메인(그리드: main) -->
+  <!-- 메인 -->
   <main id="main">
     <!-- 검색 폼 -->
     <c:url var="searchAction" value="/article/list.do" />
@@ -318,7 +318,7 @@
     </div>
   </main>
 
-  <!-- 사이드바(그리드: sidebar) — 포함만 함. 포함된 JSP의 루트가 <div id="sidebar"> 이어야 함 -->
+  <!-- 사이드바 -->
   <c:set var="currentCategory" value="${empty category ? param.category : category}" />
   <c:choose>
     <c:when test="${empty currentCategory or fn:trim(currentCategory) eq 'ALL'}">
@@ -333,11 +333,11 @@
     </c:otherwise>
   </c:choose>
 
-  <!-- 푸터(그리드: footer) -->
+  <!-- footer -->
   <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </div>
 
-<!-- ===== 스크립트 ===== -->
+
 <script>
 /* 리스트 화면에서만 즉시 조회수 +1 (UI 반영용) */
 (function(){
