@@ -2,6 +2,9 @@ package com.pcwk.ehr.userKeyword.service;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.pcwk.ehr.bookmark.domain.BookmarkDTO;
+import com.pcwk.ehr.userKeyword.domain.UserKeywordDTO;
+
 import okhttp3.*;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import java.util.Map;
 
 @Service
 public class UserKeywordService {
+
 	
 	private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
