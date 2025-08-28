@@ -10,6 +10,7 @@ public class BookmarkDTO {
 	private String title;	 //기사 제목
 	private String summary;  //기사 요약
 	private String press;	 //언론사
+	private String url;      //url
 	private Date regDt;	 //북마크 날짜
 	private int totalCnt;	 //총 개수
 	
@@ -32,7 +33,21 @@ public class BookmarkDTO {
 		this.userId = userId;
 	}
 	
-	
+    	
+
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	/**
 	 * @return the pageNo
@@ -177,9 +192,11 @@ public class BookmarkDTO {
 	@Override
 	public String toString() {
 		return "BookmarkDTO [bmCode=" + bmCode + ", articleCode=" + articleCode + ", userId=" + userId + ", title="
-				+ title + ", summary=" + summary + ", press=" + press + ", regDt=" + regDt + ", totalCnt=" + totalCnt
-				+ ", pageNo=" + pageNo + ", pageSize=" + pageSize + "]";
+				+ title + ", summary=" + summary + ", press=" + press + ", url=" + url + ", regDt=" + regDt
+				+ ", totalCnt=" + totalCnt + ", pageNo=" + pageNo + ", pageSize=" + pageSize + "]";
 	}
+
+
 
 
 }

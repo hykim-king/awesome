@@ -60,7 +60,40 @@ function drawChart() {
 
 <!-- 워드 클라우드 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.2/wordcloud2.min.js"></script>
-<script src="${CP}/resources/js/wordcloud.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const el = document.getElementById('wordCloud');
+  if (!el) return;
+
+  fetch('${CP}/mypage/api/mypage/wordcloud')
+    .then(response => {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        el.innerHTML = '<div class="empty">워드 클라우드 데이터가 없습니다.</div>';
+        return;
+      }
+
+      const list = data.map(item => [item.keyword, item.count]);  // ✨ 중요: 변환
+      console.log("list:", list);
+      WordCloud(el, {
+        list: list,
+        gridSize: 8,
+        weightFactor: 10,
+        fontFamily: 'Arial',
+        color: 'random-dark',
+        rotateRatio: 0,
+        backgroundColor: '#fff'
+      });
+    })
+    .catch(err => {
+      console.error('[wordcloud]', err);
+      el.innerHTML = '<div class="error">워드클라우드를 불러오지 못했습니다.</div>';
+    });
+});
+</script>
 </head>
 <body>
 <div id="container">
@@ -97,29 +130,8 @@ function drawChart() {
 
         <!-- 하단: 추천 기사 (기존 JSTL 그대로 유지) -->
         <section class="panel recommend" style="margin-top:24px">
-          <h3 style="text-align:center;margin-bottom:12px">추천 기사</h3>
-          <c:choose>
-            <c:when test="${not empty recommendList}">
-              <c:forEach var="item" items="${recommendList}">
-                <div class="item" data-article-code="${item.articleCode}">
-                  <div class="title"><a><c:out value="${item.title}"/></a></div>
-                  <div class="summary"><c:out value="${item.summary}"/></div>
-                  <div class="meta">
-                    <span class="press"><c:out value="${item.press}"/></span>
-                    <span class="date"><fmt:formatDate value="${item.regDt}" pattern="yyyy-MM-dd"/></span>
-                  </div>
-                  <button type="button"
-                          class="bookmark-btn"
-                          onclick="toggleBookmark('${item.articleCode}', this)">★</button>
-                </div>
-              </c:forEach>
-            </c:when>
-            <c:otherwise>
-              <div class="item empty">
-                <c:out value="${noRecommendMsg != null ? noRecommendMsg : '추천 기사가 없습니다.'}"/>
-              </div>
-            </c:otherwise>
-          </c:choose>
+          <div class="section-title"><span class="badge">추천기사</span></div>
+          <div id="recommendList"></div>
         </section>
 
         <div class="userInfo-btn-wrap">
@@ -153,6 +165,9 @@ function escapeHtml(text) {
 	    .replace(/'/g, "&#039;");
 	}
 	
+const toggleUrl   = '<c:url value="/mypage/toggleBookmark.do"/>';
+const checkOneUrl = '<c:url value="/mypage/checkOne"/>';
+//북마크
 function loadBookmarks(pageNo, pageSize) {
 	  pageNo = pageNo || 1;
 	  pageSize = pageSize || 5;
@@ -166,8 +181,6 @@ function loadBookmarks(pageNo, pageSize) {
     `&pageSize=${pageSize}` +          // 커스텀 대비
     `&_=${Date.now()}`;                // 캐시 방지
 
-  console.log("📌 fetch URL:", url);
-
   fetch(url, { headers: { 'Accept':'application/json' }, cache: 'no-store' })
     .then(res => res.json())
     .then(data => {
@@ -178,14 +191,9 @@ function loadBookmarks(pageNo, pageSize) {
         html = "<div class='item empty'>북마크가 없습니다.</div>";
       } else {
         list.forEach(item => {
-        	console.log("📌 item:", item);
-       	    console.log("📌 item.title:", item.title);
-       	    console.log("📌 item.summary:", item.summary);
-       	    console.log("📌 item.press:", item.press);
-       	 console.log("📌 item.regDt:", item.regDt, typeof item.regDt);
-       	console.log("📌 parsed date:", new Date(Number(item.regDt)));
+          
           html += 
-            '<div class="item">' +
+            '<div class="item" data-article-code="' + item.articleCode + '">' +
               '<div class="title">' + escapeHtml(item.title) + '</div>' +
               '<div class="summary">' + escapeHtml(item.summary) + '</div>' +
         	  '<div class="meta">' +
@@ -197,9 +205,27 @@ function loadBookmarks(pageNo, pageSize) {
         });
       } 
       const target = document.getElementById("bookmarkList");
-      console.log("📌 target:", target);
       target.innerHTML = html;
-      console.log("📌 after set:", target.innerHTML);
+      
+      // 2차 처리: 북마크된 항목은 별을 색칠해줌 (checkOne 호출)
+      list.forEach(item => {
+        const code = item.articleCode;
+        const btn = document.querySelector(`.item[data-article-code="${code}"] .bookmark-btn`);
+
+        if (!btn) return;
+
+        fetch(checkOneUrl + '?articleCode=' + encodeURIComponent(code), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(res => {
+          if (res && res.loggedIn && res.bookmarked) {
+            btn.classList.add('active');  // 북마크 별 색칠
+          }
+        });
+      });
+      
       // 페이지네이션
       // (가급적 숫자로 강제 변환)
 	  pageNo = Number(pageNo || 1);
@@ -219,14 +245,13 @@ function loadBookmarks(pageNo, pageSize) {
     }); 
 }
 
+//신고사항
 function loadReports(pageNo, pageSize) {
 	  pageNo = pageNo || 1;
 	  pageSize = pageSize || 5;
-	  console.log("📌 pageNo:", pageNo, "pageSize:", pageSize);
   fetch(`/ehr/mypage/reports?pageNo=${pageNo}&pageSize=${pageSize}`)
     .then(res => res.json())
     .then(data => {
-      console.log("📌 신고 응답:", data);   // 👉 서버에서 온 데이터 확인
       const list = data?.list;
       const totalCnt = data?.totalCnt;
       let html = "";
@@ -261,18 +286,63 @@ function loadReports(pageNo, pageSize) {
     });
 }
 
+//추천기사
+function loadRecommend() {
+
+ fetch(`/ehr/mypage/recommend`)
+  .then(res => res.json())
+  .then(data => {
+    const list = data || []; //배열 꺼내기
+    let html = "";
+    if (list.length === 0) {
+      html = "<div class='item empty'>추천 기사가 없습니다.</div>";
+    } else {
+      list.forEach(item => {
+        html += 
+          '<div class="item" data-article-code="' + item.articleCode + '">' +
+            '<div class="title">' + escapeHtml(item.title) + '</div>' +
+            '<div class="summary">' + escapeHtml(item.summary) + '</div>' +
+            '<div class="meta">' +
+               '<span class="press">' + escapeHtml(item.press) + '</span>' +
+               '<span class="date">' + formatDate(Number(item.regDt)) + '</span>' +
+          '</div>' +
+          '<button type="button" class="bookmark-btn" onclick="toggleBookmark(' + item.articleCode + ', this)">★</button>' +
+        '</div>';
+      });
+    } 
+    const target = document.getElementById("recommendList");
+    target.innerHTML = html;
+    // 🔥 북마크 색칠 로직은 렌더링 이후 실행해야 함
+    list.forEach(item => {
+      const code = item.articleCode;
+      const btn = document.querySelector(`.recommend .item[data-article-code="${code}"] .bookmark-btn`);
+      if (!btn || !code) return;
+
+      fetch(checkOneUrl + '?articleCode=' + encodeURIComponent(code), {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res && res.loggedIn && res.bookmarked) {
+          btn.classList.add('active');
+        }
+      });
+    });
+  });
+}
+
 // 페이지 로드 시 자동 호출
 document.addEventListener("DOMContentLoaded", function() {
   loadBookmarks();
   loadReports();
+  loadRecommend();
 });
 </script>
 
 <!-- 기존 추천 기사 색칠 스크립트 유지 -->
 <script>
 (function(){
-   const toggleUrl   = '<c:url value="/mypage/toggleBookmark.do"/>';
-   const checkOneUrl = '<c:url value="/mypage/checkOne"/>';
 
    // 추천 기사 초기 색칠
    document.addEventListener('DOMContentLoaded', function () {
