@@ -41,6 +41,7 @@
       <li><a class="active" href="<c:url value='/admin/articles.do'/>">기사 관리</a></li>
       <li><a href="<c:url value='/admin/report.do'/>">신고 관리</a></li>
       <li><a href="<c:url value='/member/logout.do'/>">로그아웃</a></li>
+      
     </ul>
   </aside>
 
@@ -83,6 +84,8 @@
           <!-- <button class="btn btn-warning" type="button" id="btnEdit">수정</button> -->
           <!-- <button class="btn btn-primary btn-ghost" type="button" id="btnNew">등록</button> -->
           <button class="btn btn-danger"  type="button" id="btnDelete">삭제</button>
+          
+
         </form>
       </div>
 
@@ -100,30 +103,61 @@
 			<th class="nowrap">링크</th>
           </tr>
         </thead>
-        <tbody>
-        <c:forEach var="a" items="${rows}">
-          <tr data-id="${a.articleCode}">
-            <td class="chk"><input type="checkbox" class="rowChk" value="${a.articleCode}"></td>
-            <td style="text-align:center;">${a.articleCode}</td>
-            <td style="text-align:center;">${a.category}</td>
-            <td style="text-align:center;">${a.press}</td>
-            <td>${a.title}</td>
-            <td style="text-align:center;"><fmt:formatDate value="${a.publicDt}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-            <td style="text-align:center;"><fmt:formatNumber value="${a.views}"/></td>
-            <td style="text-align:center;" class="url">
-              <c:choose>
-                <c:when test="${not empty a.url}">
-                  <a href="${a.url}" target="_blank" rel="noopener">열기</a>
-                </c:when>
-                <c:otherwise>-</c:otherwise>
-              </c:choose>
-            </td>
-          </tr>
-        </c:forEach>
-        <c:if test="${empty rows}">
-          <tr><td colspan="8" style="text-align:center; padding:24px;">데이터가 없습니다.</td></tr>
-        </c:if>
-        </tbody>
+       <tbody>
+  <c:forEach var="a" items="${rows}">
+    <tr data-id="${a.articleCode}">
+      <td class="chk">
+        <input type="checkbox" class="rowChk" value="${a.articleCode}">
+      </td>
+
+      <td style="text-align:center;">${a.articleCode}</td>
+
+      <!-- 카테고리(한글 라벨 우선, 없으면 숫자→한글 매핑) -->
+      <td style="text-align:center;">
+        <c:choose>
+          <c:when test="${not empty a.categoryLabel}">
+            ${a.categoryLabel}
+          </c:when>
+          <c:when test="${a.category == 10}">정치</c:when>
+          <c:when test="${a.category == 20}">경제</c:when>
+          <c:when test="${a.category == 30}">사회/문화</c:when>
+          <c:when test="${a.category == 40}">스포츠</c:when>
+          <c:when test="${a.category == 50}">연예</c:when>
+          <c:when test="${a.category == 60}">IT/과학</c:when>
+          <c:otherwise>-</c:otherwise>
+        </c:choose>
+      </td>
+
+      <td style="text-align:center;">${a.press}</td>
+      <td>${a.title}</td>
+      <td style="text-align:center;">
+        <fmt:formatDate value="${a.publicDt}" pattern="yyyy-MM-dd HH:mm:ss"/>
+      </td>
+      <td style="text-align:center;">
+        <fmt:formatNumber value="${a.views}"/>
+      </td>
+
+      <!-- 링크 -->
+      <td style="text-align:center;" class="url">
+        <c:choose>
+          <c:when test="${not empty a.url}">
+            <a href="${a.url}" target="_blank" rel="noopener">열기</a>
+          </c:when>
+          <c:otherwise>-</c:otherwise>
+        </c:choose>
+      </td>
+    </tr>
+  </c:forEach>
+
+  <c:if test="${empty rows}">
+    <tr>
+      <td colspan="8" style="text-align:center; padding:24px;">데이터가 없습니다.</td>
+    </tr>
+  </c:if>
+</tbody>
+
+            
+ 
       </table>
 
    
@@ -181,18 +215,16 @@
 	  </c:choose>
 	</div>
 
-      <!-- 삭제용 숨김 폼(단건) -->
-      <form id="delForm" method="post" action="<c:url value='/article/delete.do'/>">
-        <input type="hidden" name="articleCode">
-      </form>
+      <!-- 삭제용 숨김 폼(다건) -->
+     <form id="delForm" method="post" action="<c:url value='/admin/article/delete.do'/>"></form>
+     
 
-    </div>
-  </section>
-</div>
+
 
 <script>
   const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
+  
 
   // 전체 선택
   $('#chkAll')?.addEventListener('change', e =>
@@ -209,14 +241,22 @@
     f.submit();
   }); */
 
-  // 선택 삭제
+  // 다건 삭제
   $('#btnDelete')?.addEventListener('click', () => {
     const ids = $$('.rowChk').filter(c=>c.checked).map(c=>c.value);
     if (!ids.length) return alert('삭제할 기사를 선택하세요.');
     if (!confirm(ids.length + '건 삭제하시겠습니까?')) return;
-    const f = $('#delForm'); f.innerHTML='';
-    ids.forEach(id => { const i=document.createElement('input'); i.type='hidden'; i.name='ids'; i.value=id; f.appendChild(i); });
-    f.submit();
+   
+    const f = $('#delForm'); 
+    f.innerHTML='';
+    ids.forEach(id => { 
+    	const i=document.createElement('input'); 
+    	i.type='hidden'; 
+    	i.name='ids'; 
+    	i.value=id; 
+    	f.appendChild(i); 
+    	});
+        f.submit();
   });
   
  /*  // 등록/수정은 라우팅만(필요 시 URL 연결)

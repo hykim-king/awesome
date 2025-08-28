@@ -21,6 +21,9 @@ public interface ArticleService {
 	
 	int updateReadCnt(ArticleDTO param) throws Exception;
 	
+	int deleteMany(List<Long> ids); //어드민용
+
+	
 	
 	//가민경 메인사용
 	  ArticleDTO getTopArticleByCategory(int category);

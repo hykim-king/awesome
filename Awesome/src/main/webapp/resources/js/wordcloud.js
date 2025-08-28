@@ -1,20 +1,7 @@
-  window.onload = function() {
-    // 하드코딩 키워드 데이터
-    const list = [
-      ['노로바이러스', 15],
-      ['코로나', 20],
-      ['독감', 10],
-      ['파상풍', 8],
-      ['감기', 25],
-      ['폐렴', 12],
-      ['원숭이', 4],
-      ['바나나', 16],
-      ['경제', 17],
-      ['금리', 10],
-      ['놀이동산', 19],
-      ['아이', 18]
-    ];
-
+fetch('/ehr/mypage/wordcloud', { headers:{'Accept':'application/json'} })
+  .then(r => r.json())
+  .then(data => {
+    const list = Array.isArray(data?.list) ? data.list : [];
     WordCloud(document.getElementById('wordCloud'), {
       list: list,            // 단어, 크기
       gridSize: 8,          // 글자 간격
@@ -23,4 +10,4 @@
       color: 'random-dark',  // 랜덤 진한 색상
       backgroundColor: '#fff'
     });
-  }
+  });

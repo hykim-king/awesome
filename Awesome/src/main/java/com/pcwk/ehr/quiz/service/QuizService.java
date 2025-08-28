@@ -2,8 +2,10 @@ package com.pcwk.ehr.quiz.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.pcwk.ehr.quiz.domain.QuizDTO;
+import com.pcwk.ehr.quiz.domain.RankingDTO;
 
 public interface QuizService {
 
@@ -12,7 +14,7 @@ public interface QuizService {
 
 	int getTotalQuizCount(QuizDTO dto) throws Exception;
 
-	List<QuizDTO> selectUserRankingTop10() throws Exception;
+	List<RankingDTO> selectUserRankingTop10() throws Exception;
 
 	QuizDTO selectQuizResult(QuizDTO dto) throws Exception;
 	/**
@@ -29,5 +31,7 @@ public interface QuizService {
 	 * 사용자가 오늘 퀴즈에 참여했는지 확인
 	 */
 	boolean hasUserPlayedToday(String userId) throws SQLException;
+	
+	public List<QuizDTO> getTodaysQuizAndUserAnswers(String userId) throws SQLException;
 
 }

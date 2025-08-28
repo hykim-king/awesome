@@ -104,38 +104,39 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
 
 </style>
 </head>
+
 <body>
-  <div class="chat-wrap" id="chatRoot" 
-       data-cp="${CP}" 
+
+  <div class="chat-wrap" id="chatRoot"
+       data-cp="${CP}"
        data-category="${CATEGORY}"
-     data-logged-in="${sessionScope.loginUser != null}"
-     data-user="${sessionScope.loginUser != null ? sessionScope.loginUser.userId : ''}">
+       data-logged-in="${sessionScope.loginUser != null}"
+       data-user="${sessionScope.loginUser != null ? sessionScope.loginUser.userId : ''}">
     <div class="chat-header">
       <div class="chat-title">채팅창</div>
     </div>
 
-    <ul id="chatList" class="chat-list"></ul>
+    <ul class="chat-list"></ul>
 
     <div class="chat-input">
-      <input id="msg" type="text" placeholder="내용을 입력하세요." autocomplete="off"
-             onkeydown="if(event.key==='Enter') sendMessage()">
-      <button id="sendBtn" onclick="sendMessage()">전송</button>
+      <input id="msg" type="text" placeholder="내용을 입력하세요." autocomplete="off">
+      <button id="sendBtn">전송</button>
     </div>
   </div>
-  
-<!-- 신고 모달: 처음엔 숨김 -->
-<div id="reportOverlay" class="rp-overlay" style="display:none" aria-hidden="true">
-  <div class="rp-modal" role="dialog" aria-modal="true" aria-labelledby="rpTitle">
-    <button type="button" class="rp-close" aria-label="닫기" onclick="rpClose()">×</button>
 
-    <h3 id="rpTitle" class="rp-title">신고하기</h3>
+  <!-- ★ 모달은 chat-wrap 밖, body 바로 아래로 이동 -->
+  <div id="reportOverlay" class="rp-overlay" style="display:none" aria-hidden="true">
+    <div class="rp-modal" role="dialog" aria-modal="true" aria-labelledby="rpTitle">
+      <button type="button" class="rp-close" aria-label="닫기" onclick="rpClose()">×</button>
 
-    <div class="rp-meta">
-      <div><b>작성자</b> <span id="rpAuthor">-</span></div>
-      <div><b>내용</b> <div id="rpMessage" class="rp-msg"></div></div>
-    </div>
+      <h3 id="rpTitle" class="rp-title">신고하기</h3>
 
-    <h4 class="rp-sec-title">사유선택</h4>
+      <div class="rp-meta">
+        <div><b>작성자</b> <span id="rpAuthor">-</span></div>
+        <div><b>내용</b> <div id="rpMessage" class="rp-msg"></div></div>
+      </div>
+
+      <h4 class="rp-sec-title">사유선택</h4>
 
 
 
@@ -297,209 +298,229 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
       </div>
 
       <!-- 기타사항 (선택) -->
-      <div class="rp-etc">
-       <input type="radio" name="reason" value="OTHER MATTERS">      
-        <label for="rpEtc">기타사항</label>
-        <textarea id="rpEtc" placeholder="기타 사유를 입력하세요. (선택)"></textarea>
-      </div>
+        <div class="rp-etc">
+          <input type="radio" name="reason" value="OTHER_MATTERS" id="rpOther">
+          <label for="rpEtc">기타사항</label>
+          <textarea id="rpEtc" placeholder="기타 사유를 입력하세요. (선택)"></textarea>
+        </div>
 
-      <div class="rp-actions">
-        <button type="button" class="rp-submit" onclick="rpSubmit()">신고하기</button>
-      </div>
-    </form>
+        <div class="rp-actions">
+          <button type="button" class="rp-submit" onclick="rpSubmit()">신고하기</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
-
 
   <!-- SockJS/STOMP (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script>
-/* ------------------- 공통 환경 ------------------- */
-(function initGlobals(){
-  const root = document.getElementById('chatRoot');
-  window.CP = root ? (root.getAttribute('data-cp') || '') : '';
-  window.CATEGORY = root ? parseInt(root.getAttribute('data-category') || '10', 10) : 10;
-  window.LOGGED_IN = !!(root && root.getAttribute('data-logged-in') === 'true');
+(function(){
+  if (window.HOTISSUE_CHAT_INIT) return;
+  window.HOTISSUE_CHAT_INIT = true;
 
-  // 로그인 아니면 전송 비활성화 & 안내 문구
-  const sendBtn = document.getElementById('sendBtn');
-  const msg = document.getElementById('msg');
-  if (!LOGGED_IN) {
-    sendBtn.disabled = true;
-    msg.disabled = true;
-    msg.placeholder = '로그인 후 이용 가능합니다.';
+  var ROOT = document.getElementById('chatRoot');
+  if (!ROOT) { console.warn('[chat] #chatRoot not found'); return; }
+
+  // helpers
+  function rqs(sel){ return ROOT.querySelector(sel); }
+  function rqsa(sel){ return ROOT.querySelectorAll(sel); }
+  function dqs(sel){  return document.querySelector(sel); }
+  function dqsa(sel){ return document.querySelectorAll(sel); }
+
+  var CP        = ROOT.getAttribute('data-cp') || '';
+  var CATEGORY  = parseInt(ROOT.getAttribute('data-category') || '10', 10);
+  var LOGGED_IN = ROOT.getAttribute('data-logged-in') === 'true';
+
+  var CSRF_H = (dqs('meta[name="_csrf_header"]')||{}).content;
+  var CSRF_T = (dqs('meta[name="_csrf"]')||{}).content;
+
+  var $list    = rqs('.chat-list');
+  var $input   = rqs('#msg');
+  var $sendBtn = rqs('#sendBtn');
+
+  if (!LOGGED_IN && $sendBtn && $input) {
+    $sendBtn.disabled = true;
+    $input.disabled   = true;
+    $input.placeholder = '로그인 후 이용 가능합니다.';
   }
+
+  // STOMP
+  var stomp = null, sub = null, connecting = false;
+
+  function unsub(){ try{ sub && sub.unsubscribe(); }catch(e){} sub = null; }
+  function disconnect(){ try{ stomp && stomp.disconnect(function(){}); }catch(e){} stomp = null; }
+
+  function connectWS(){
+    if (connecting || (stomp && stomp.connected)) return;
+    connecting = true;
+
+    var sock = new SockJS(CP + '/ws-chat');
+    stomp = Stomp.over(sock);
+    stomp.debug = null;
+
+    stomp.connect({}, function(){
+      connecting = false;
+
+      unsub();
+      sub = stomp.subscribe('/topic/chat/' + CATEGORY, function(frame){
+        try { appendMessage(JSON.parse(frame.body)); }
+        catch(e){ console.error('[chat] parse error', e); }
+      });
+
+      fetch(CP + '/chat/recent?category=' + CATEGORY + '&size=30', {credentials:'same-origin'})
+        .then(function(r){ return r.json(); })
+        .then(function(list){ list.reverse().forEach(appendMessage); })
+        .catch(console.error);
+
+      if ($sendBtn && LOGGED_IN) $sendBtn.disabled = false;
+    }, function(err){
+      console.error('[chat] STOMP error:', err);
+      connecting = false;
+      if ($sendBtn) $sendBtn.disabled = true;
+    });
+  }
+
+  function sendMessage(){
+    if (!LOGGED_IN) { alert('로그인 후 이용해 주세요.'); return; }
+    if (!stomp || !stomp.connected) return;
+    var text = ($input && $input.value ? $input.value : '').trim();
+    if (!text) return;
+    stomp.send('/app/send/' + CATEGORY, {}, JSON.stringify({ message: text }));
+    if ($input){ $input.value=''; $input.focus(); }
+  }
+  if ($sendBtn) $sendBtn.addEventListener('click', sendMessage);
+  if ($input)   $input.addEventListener('keydown', function(e){ if (e.key === 'Enter') sendMessage(); });
+
+  // render
+  function esc(s){ var d=document.createElement('div'); d.innerText = (s==null?'':String(s)); return d.innerHTML; }
+  function pad2(n){ n=+n; return (n<10?'0'+n:String(n)); }
+  function fmt(dt){
+    try{
+      if(!dt) return '';
+      var d=new Date(dt); if(isNaN(d)) return String(dt);
+      return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+    }catch(e){ return String(dt||''); }
+  }
+
+  function appendMessage(m){
+    if (!$list) return;
+    var li = document.createElement('li');
+    li.className   = 'chat-item';
+    li.dataset.code = m.chatCode || 0;
+    li.dataset.uid  = m.userId   || 'user***';
+    li.dataset.text = m.message  || '';
+
+    var html = ''
+      + '<div class="avatar">'+ esc((li.dataset.uid.charAt(0)||'u')) +'</div>'
+      + '<div class="bubble">'
+      +   '<div class="meta">'
+      +     '<span class="uid">'+ esc(li.dataset.uid) +'</span>'
+      +     '<span class="time">'+ esc(fmt(m.sendDt)) +'</span>'
+      +     '<button class="report" type="button" title="신고">🚨 신고</button>'
+      +   '</div>'
+      +   '<div class="text">'+ esc(li.dataset.text) +'</div>'
+      + '</div>';
+
+    li.innerHTML = html;
+    $list.appendChild(li);
+    $list.scrollTop = $list.scrollHeight;
+  }
+
+  // modal
+  var $overlay  = dqs('#reportOverlay');
+  var $rpAuthor = dqs('#rpAuthor');
+  var $rpMsg    = dqs('#rpMessage');
+
+  function openReportFromLI(li){
+    if (!$overlay || !li) return;
+    $overlay.style.display = 'flex';
+    $overlay.setAttribute('aria-hidden','false');
+    $overlay.dataset.chatCode = li.dataset.code || '0';
+    if ($rpAuthor) $rpAuthor.textContent = li.dataset.uid || '-';
+    if ($rpMsg)    $rpMsg.textContent    = li.dataset.text || '';
+    dqsa('#rpForm input[name="reason"]').forEach(function(r){ r.checked=false; });
+    var etc = dqs('#rpEtc'); if (etc) etc.value='';
+    dqsa('.rp-reason-detail').forEach(function(d){ d.hidden=true; });
+    dqsa('.rp-toggle').forEach(function(b){ b.setAttribute('aria-expanded','false'); });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function rpClose(){
+    if (!$overlay) return;
+    $overlay.style.display='none';
+    $overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  window.rpClose = rpClose;
+
+  async function rpSubmit(){
+    if (!$overlay) return;
+    var chatCode = parseInt($overlay.dataset.chatCode||'0',10);
+    var reasonEl = dqs('#rpForm input[name="reason"]:checked');
+    var reason   = reasonEl ? reasonEl.value : '';
+    var etc      = (dqs('#rpEtc')||{}).value || '';
+    etc = (typeof etc.trim==='function') ? etc.trim() : etc;
+
+    if (!LOGGED_IN){ alert('로그인 후 신고 가능합니다.'); return; }
+    if (!chatCode){  alert('대상 메시지 코드가 없습니다.'); return; }
+    if (!reason){    alert('사유를 선택해 주세요.'); return; }
+
+    var headers = { 'Content-Type':'application/json' };
+    if (CSRF_H && CSRF_T) headers[CSRF_H] = CSRF_T;
+
+    try{
+      var r = await fetch(CP + '/report', {
+        method:'POST', headers:headers, credentials:'same-origin',
+        body: JSON.stringify({ chatCode:chatCode, reason:reason, reasonDetail:etc })
+      });
+      var res = await r.json().catch(function(){ return {}; });
+      alert((res && res.message) ? res.message : (res && res.ok ? '신고가 접수되었습니다.' : '신고 실패'));
+      if (res && res.ok) rpClose();
+    }catch(e){
+      console.error('[chat] report error', e);
+      alert('전송 오류');
+    }
+  }
+  window.rpSubmit = rpSubmit;
+
+  // 이벤트 위임
+  if ($list){
+    $list.addEventListener('click', function(e){
+      var btn = e.target.closest('.report');
+      if (!btn) return;
+      var li = btn.closest('.chat-item');
+      if (li) openReportFromLI(li);
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+	  const head   = e.target.closest('.rp-reason-head');
+	  if (!head) return;                 // 모달 안에서만 동작
+
+	  const box    = head.parentElement; // .rp-reason
+	  const detail = box.querySelector('.rp-reason-detail');
+	  const toggle = head.querySelector('.rp-toggle');
+
+	  if (!detail) return;
+
+	  // 라디오도 같이 선택
+	  const r = head.querySelector('input[type="radio"]');
+	  if (r) r.checked = true;
+
+	  // 접힘/펼침 토글
+	  const expanded = toggle && toggle.getAttribute('aria-expanded') === 'true';
+	  if (toggle) toggle.setAttribute('aria-expanded', String(!expanded));
+	  detail.hidden = expanded; // true면 접힘, false면 펼침
+	});
+
+  document.addEventListener('DOMContentLoaded', connectWS);
+  window.addEventListener('beforeunload', function(){ unsub(); disconnect(); window.HOTISSUE_CHAT_INIT = false; });
 })();
-
-const CSRF_HEADER = (document.querySelector('meta[name="_csrf_header"]')||{}).content;
-const CSRF_TOKEN  = (document.querySelector('meta[name="_csrf"]')||{}).content;
-
-/* ------------------- WebSocket ------------------- */
-let stomp = null;
-let connected = false;
-let connecting = false;
-let subscription = null;
-
-function safeSubscribe(){
-  try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e){}
-  subscription = stomp.subscribe("/topic/chat/" + CATEGORY, function(frame){
-    appendMessage(JSON.parse(frame.body));
-  });
-}
-
-function connectWS(){
-  if (connecting || (stomp && stomp.connected)) return;
-  connecting = true;
-
-  const sock = new SockJS(CP + "/ws-chat");
-  stomp = Stomp.over(sock);
-  stomp.debug = null;
-
-  stomp.connect({}, function(){
-    connected = true; connecting = false;
-    if (LOGGED_IN) document.getElementById('sendBtn').disabled = false;
-
-    safeSubscribe();
-
-    fetch(CP + "/chat/recent?category=" + CATEGORY + "&size=30", {credentials:'same-origin'})
-      .then(r => r.json())
-      .then(list => list.reverse().forEach(appendMessage))
-      .catch(console.error);
-  }, function(err){
-    console.error("STOMP error:", err);
-    connected = false; connecting = false;
-    document.getElementById('sendBtn').disabled = true;
-  });
-}
-
-/* ------------------- 채팅 보내기 ------------------- */
-function sendMessage(){
-  if(!LOGGED_IN){ alert('로그인 후 이용해 주세요.'); return; }
-  const input = document.getElementById('msg');
-  const text = (input.value || '').trim();
-  if(!text || !connected) return;
-
-  const payload = { message: text };
-  stomp.send("/app/send/" + CATEGORY, {}, JSON.stringify(payload));
-  input.value = '';
-  input.focus();
-}
-window.sendMessage = sendMessage;
-
-/* ------------------- 렌더링 ------------------- */
-function escHtml(s){ const d=document.createElement('div'); d.innerText = (s==null?'':String(s)); return d.innerHTML; }
-function pad2(n){ n = +n; return (n<10?'0':'')+n; }
-function fmt(dt){
-  try{
-    if(!dt) return '';
-    const d = new Date(dt);
-    if(isNaN(d)) return String(dt);
-    return d.getFullYear()+'.'+pad2(d.getMonth()+1)+'.'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
-  }catch(e){ return String(dt||''); }
-}
-
-function appendMessage(m){
-  const li = document.createElement('li');
-  li.className = 'chat-item';
-  li.dataset.code = m.chatCode || 0;
-  li.dataset.uid  = m.userId   || 'user***';
-  li.dataset.text = m.message  || '';
-
-  const html =
-    '<div class="avatar">'+escHtml((li.dataset.uid.charAt(0)||'u'))+'</div>'+
-    '<div class="bubble">'+
-      '<div class="meta">'+
-        '<span class="uid">'+escHtml(li.dataset.uid)+'</span>'+
-        '<span class="time">'+escHtml(fmt(m.sendDt))+'</span>'+
-        '<button class="report" onclick="openReportFrom(this)" title="신고">🚨 신고</button>'+
-      '</div>'+
-      '<div class="text">'+escHtml(li.dataset.text)+'</div>'+
-    '</div>';
-  li.innerHTML = html;
-
-  const list = document.getElementById('chatList');
-  list.appendChild(li);
-  li.scrollIntoView({behavior:'smooth', block:'end'});
-}
-
-/* ------------------- 신고 모달 ------------------- */
-function openReportFrom(btn){
-  const li = btn.closest('.chat-item');
-  if(!li) return;
-
-  const chatCode = parseInt(li.dataset.code||'0',10);
-  const author   = li.dataset.uid || '-';
-  const message  = li.dataset.text || '';
-
-  const ov = document.getElementById('reportOverlay');
-  ov.style.display = 'flex';
-  ov.setAttribute('aria-hidden','false');
-  ov.dataset.chatCode = String(chatCode);
-
-  document.getElementById('rpAuthor').textContent  = author;
-  document.getElementById('rpMessage').textContent = message;
-
-  document.querySelectorAll('#rpForm input[name="reason"]').forEach(r=>r.checked=false);
-  document.getElementById('rpEtc').value = '';
-  document.querySelectorAll('.rp-reason-detail').forEach(d=>d.hidden=true);
-  document.querySelectorAll('.rp-toggle').forEach(b=>b.setAttribute('aria-expanded','false'));
-}
-window.openReportFrom = openReportFrom;
-
-function rpClose(){
-  const ov = document.getElementById('reportOverlay');
-  ov.style.display = 'none';
-  ov.setAttribute('aria-hidden','true');
-}
-window.rpClose = rpClose;
-
-document.addEventListener('click', function(e){
-  const head = e.target.closest('.rp-reason-head');
-  if(!head) return;
-  const box = head.parentElement;
-  const detail = box.querySelector('.rp-reason-detail');
-  const toggle = box.querySelector('.rp-toggle');
-  const expanded = toggle.getAttribute('aria-expanded') === 'true';
-  toggle.setAttribute('aria-expanded', String(!expanded));
-  detail.hidden = expanded;
-  const r = head.querySelector('input[type="radio"]'); if(r) r.checked = true;
-});
-
-async function rpSubmit(){
-  const ov = document.getElementById('reportOverlay');
-  const chatCode = parseInt(ov.dataset.chatCode||'0',10);
-  const reason   = document.querySelector('#rpForm input[name="reason"]:checked')?.value;
-  const etc      = document.getElementById('rpEtc').value.trim();
-
-  if(!LOGGED_IN){ alert('로그인 후 신고 가능합니다.'); return; }
-  if(!chatCode){ alert('대상 메시지 코드가 없습니다.'); return; }
-  if(!reason){   alert('사유를 선택해 주세요.'); return; }
-
-  const headers = {'Content-Type':'application/json'};
-  if (CSRF_HEADER && CSRF_TOKEN) headers[CSRF_HEADER] = CSRF_TOKEN;
-
-  const r = await fetch(CP + '/report', {
-    method:'POST',
-    headers, credentials:'same-origin',
-    body: JSON.stringify({ chatCode, reason, reasonDetail: etc })
-  }).catch(e => { console.error(e); alert('전송 오류'); });
-  if(!r) return;
-
-  const res = await r.json().catch(()=>({}));
-  alert(res?.message || (res?.ok ? '신고가 접수되었습니다.' : '신고 실패'));
-  if(res?.ok) rpClose();
-}
-window.rpSubmit = rpSubmit;
-
-/* ------------------- 생명주기 ------------------- */
-document.addEventListener('DOMContentLoaded', connectWS);
-window.addEventListener('beforeunload', function(){
-  try { if (subscription && subscription.id) subscription.unsubscribe(); } catch(e){}
-  try { if (stomp && stomp.connected) stomp.disconnect(function(){}); } catch(e){}
-});
 </script>
+
+
 
 </body>
 </html>
