@@ -24,7 +24,7 @@
 <body>
 <div class="dict-widget" role="search" aria-label="뉴스 사전 검색">
   <form id="dictForm" class="dict-form" autocomplete="off">
-    <input id="dictQuery" type="text" name="query" placeholder="용어를 입력하세요" required aria-label="검색어 입력" />
+    <input id="dictQuery" type="text" name="query" placeholder="궁금한 용어를 검색해보세요" required aria-label="검색어 입력" />
     <button id="dictSearchBtn" type="submit" aria-label="검색">검색</button>
   </form>
 
@@ -111,4 +111,3 @@
 })();
 </script>
 </body>
-</html>
