@@ -65,6 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const el = document.getElementById('wordCloud');
   if (!el) return;
 
+  // 너무 작게 그려지는 것 방지
+  if (!el.style.minHeight) el.style.minHeight = '260px';
+
   fetch('${CP}/mypage/api/mypage/wordcloud')
     .then(response => {
       if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -72,20 +75,44 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
-        el.innerHTML = '<div class="empty">워드 클라우드 데이터가 없습니다.</div>';
+        el.innerHTML = '<div class="empty">오늘의 토픽을 살펴보세요!</div>';
         return;
       }
 
-      const list = data.map(item => [item.keyword, item.count]);  // ✨ 중요: 변환
-      console.log("list:", list);
+      const list = data.map(item => [item.keyword, item.count]);
+
+      // 컨테이너 크기 기준으로 스케일
+      const w = el.clientWidth  || 600;
+      const h = el.clientHeight || 300;
+
+      // count 범위
+      const counts = data.map(d => d.count);
+      const minC = Math.min(...counts);
+      const maxC = Math.max(...counts);
+
+      // 글자 크기(원하면 값만 조절)
+      const MIN_PX = 18;
+      const MAX_PX = Math.floor(Math.min(w, h) * 0.36);
+
+      // 단어 1개면 큼직, 여러 개면 선형 매핑
+      const wf = (size) => {
+        if (list.length <= 1) return MAX_PX;
+        const denom = (maxC - minC) || 1;
+        const ratio = (size - minC) / denom;
+        return Math.round(MIN_PX + ratio * (MAX_PX - MIN_PX));
+      };
+
+      const gridSize = Math.max(4, Math.round(8 * w / 800));
+
       WordCloud(el, {
-        list: list,
-        gridSize: 8,
-        weightFactor: 10,
+        list,
+        gridSize,
+        weightFactor: wf,
         fontFamily: 'Arial',
         color: 'random-dark',
         rotateRatio: 0,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        clearCanvas: true
       });
     })
     .catch(err => {
@@ -99,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div id="container">
   <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
   <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+  <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
 
   <main id="main">
     <div class="main-container">
@@ -108,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <div id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
         <div class="grid top">
           <div id="piechart_3d" style="height:240px;"></div>
-          <div class="wordCloud" id="wordCloud" style="height:240px;"></div>
+          <div class="wordCloud" id="wordCloud"></div>
         </div>
 
         <!-- 중단: 좌(북마크) / 우(신고) -->

@@ -137,7 +137,8 @@ $(document).ready(function() {
                         let rankingItem = $('<div>').addClass('ranking-item');
                         let rankInfo = $('<div>').addClass('rank-info');
                         
-                        let nickname = $('<span>').addClass('nickname').text(rank.userId);
+                        // userId 대신 NickNm을 표시하도록 수정
+                        let nickname = $('<span>').addClass('nickname').text(rank.nickNm);
                         let score = $('<span>').addClass('score').text(rank.totalScore + '점');
 
                         rankInfo.append(nickname).append(score);

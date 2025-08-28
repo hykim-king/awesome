@@ -28,4 +28,6 @@ public interface ArticleService {
 	//가민경 메인사용
 	  ArticleDTO getTopArticleByCategory(int category);
 	    List<ArticleDTO> getPopularTop1PerCategory();
+	    
+	
 }

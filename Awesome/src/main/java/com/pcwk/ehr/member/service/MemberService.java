@@ -43,13 +43,14 @@ public interface MemberService {
      */
     int update(MemberDTO dto) throws SQLException;
 
+    //파라미터 타입 String으로 수정!!!!!!!!!!
     /**
      * 회원 삭제
      * @param dto
      * @return 1(성공)/0(실패)
      * @throws SQLException
      */
-    int delete(MemberDTO dto) throws SQLException;
+    int delete(String dto) throws SQLException;
 
     /**
      * 이메일 인증 메일 전송
