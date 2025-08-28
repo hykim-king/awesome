@@ -181,6 +181,13 @@
 	color: #FFD54F;
 	font-weight: 700; /* 조금 굵게 */
 }
+
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none; 
+}
 </style>
 
 </head>
