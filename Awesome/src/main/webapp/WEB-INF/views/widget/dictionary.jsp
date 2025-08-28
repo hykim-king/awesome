@@ -15,13 +15,12 @@
 <div class="dict-widget" role="search" aria-label="뉴스 사전 검색">
 <!-- 헤더 -->
 <div class="dict-header">
-  <strong class="dict-title"></strong>
-  <img src="${ctx}/resources/file/terms_001.png" alt="사전 헤더 이미지" class="dict-img" />
+  <strong class="dict-title">🔍 용어 사전</strong>
 </div>
 
   <!-- 검색 폼 -->
   <form id="dictForm" class="dict-form" autocomplete="off">
-    <input id="dictQuery" type="text" name="query" placeholder="궁금한 용어를 검색해보세요" required aria-label="검색어 입력" />
+    <input id="dictQuery" type="text" name="query" placeholder="궁금한 용어를 검색해보세요." required aria-label="검색어 입력" />
     <button id="dictSearchBtn" type="submit" aria-label="검색">검색</button>
   </form>
 
@@ -112,3 +111,4 @@
 })();
 </script>
 </body>
+</html>
