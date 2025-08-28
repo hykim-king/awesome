@@ -15,16 +15,16 @@ pageEncoding="UTF-8"%>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <style>
-    /* 요청하신 스타일은 그대로 유지합니다. */
+    /*스타일은 그대로 유지 */
     .quiz-form-container { max-width: 768px; margin: 20px auto; padding: 20px; background-color: #f0f2f5; border-radius: 8px; }
     .quiz-info-box { background-color: #ffffff; padding: 15px; margin-bottom: 20px; border-top: 10px solid #673ab7; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; font-size: 0.9em; color: #555; }
-    .quiz-card { background-color: #ffffff; border-radius: 8px; padding: 24px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .quiz-card { background-color: #ffffff; border-radius: 8px; padding: 24px; margin-bottom: 0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .quiz-card h3 { font-size: 1.1em; margin-bottom: 16px; color: #333; }
     .quiz-options { display: flex; flex-direction: column; gap: 12px; }
     .quiz-options label { display: flex; align-items: center; cursor: pointer; padding: 10px; border: 1px solid #ddd; border-radius: 4px; transition: background-color 0.2s; }
     .quiz-options label:hover { background-color: #f5f5f5; }
     .quiz-options input[type="radio"] { margin-right: 12px; }
-    .submit-button-container { text-align: right; margin-top: 20px; }
+    .submit-button-container { text-align: center; margin-top: 20px; }
     #submitQuizBtn:disabled { background-color: #cccccc; cursor: not-allowed; }
 
     /* --- 결과 확인 모드 전용 스타일 --- */
@@ -44,8 +44,9 @@ pageEncoding="UTF-8"%>
 <body>
     <div id="container">
     
-    <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
-    <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
       <main id="main">
       <div class="main-container">
 
@@ -56,8 +57,8 @@ pageEncoding="UTF-8"%>
             
             <form action="${CP}/quiz/submit.do" method="post" id="quizForm">
                 <c:forEach var="quiz" items="${quizList}" varStatus="status">
-                    <div class="quiz-card">
-                        <h3>문제 ${status.count}. ${quiz.question}</h3>
+                    <div class="quiz-card" style="padding-bottom: 24px;">
+                        <h3 style="margin-bottom: 12px;">문제 ${status.count}. ${quiz.question}</h3>
                         <div class="quiz-options">
                             <label>
                                 <input type="radio" name="answer_${quiz.qqCode}" value="O" required> O
@@ -70,7 +71,18 @@ pageEncoding="UTF-8"%>
                 </c:forEach>
                 
                 <div class="submit-button-container">
-                    <button type="submit" id="submitQuizBtn" class="btn" disabled>>정답 제출</button>
+                    <button type="submit" id="submitQuizBtn" class="btn" disabled style="
+							    background-color: #0047FF !important; /* !important 추가 */
+							    color: white !important; /* !important 추가 */
+							    font-size: 1.5em !important; /* !important 추가 */
+							    padding: 15px 50px !important; /* !important 추가 */
+							    border-radius: 10px !important; /* !important 추가 */
+							    font-weight: bold !important; /* !important 추가 */
+							    border: none !important; /* !important 추가 */
+							    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) !important; /* !important 추가 */
+							    cursor: pointer !important; /* !important 추가 */
+							    transition: background-color 0.3s ease, box-shadow 0.3s ease !important; /* !important 추가 */
+							">정답 제출</button>
                 </div>
             </form>
         </div>
@@ -86,8 +98,20 @@ pageEncoding="UTF-8"%>
 
                     if (answeredCount === totalQuestions) {
                         submitBtn.prop('disabled', false);
+                        submitBtn.css({
+	                            "background-color": "#0047FF !important",
+	                            "color": "white !important",
+	                            "box-shadow": "0 5px 10px rgba(0, 0, 0, 0.2) !important",
+	                            "cursor": "pointer !important"
+	                        });
                     } else {
-                        submitBtn.prop('disabled', true);
+                         submitBtn.prop('disabled', true);
+                         submitBtn.css({
+	                            "background-color": "#cccccc !important",
+	                            "color": "#666666 !important",
+	                            "box-shadow": "none !important",
+	                            "cursor": "not-allowed !important"
+	                        });
                     }
                 }
 
@@ -106,22 +130,6 @@ pageEncoding="UTF-8"%>
                 });
             });
         </script>
-        <c:choose>
-      <c:when test="${empty sessionScope.loginUser}">
-        <div style="display:flex; gap:12px;">
-          <a class="btn" href="<c:url value='/member/login.do'/>">로그인</a>
-          <a class="btn" href="<c:url value='/member/register.do'/>">회원가입</a>
-        </div>
-      </c:when>
-    
-      <c:otherwise>
-        <div style="display:flex; gap:12px; align-items:center;">
-          <span><strong>${sessionScope.loginUser.userId}</strong>님 환영합니다!</span>
-          <a class="btn" href="<c:url value='/member/logout.do'/>">로그아웃</a>
-        </div>
-      </c:otherwise>
-    </c:choose>
-
         
 
       </div>
