@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 <c:set var="CP" value="${pageContext.request.contextPath }" /> 
 <!DOCTYPE html>
@@ -20,9 +21,20 @@
    
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+    <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
+    
       <!--main-->
       <main id="main">
       <div class="main-container">
+		
+	  <!-- 알림 메시지 -->
+	  <c:if test="${not empty msg}">
+        <div id="flash-msg" style="display:none;">${fn:escapeXml(msg)}</div>
+          <script>
+            alert(document.getElementById('flash-msg').textContent);
+          </script>
+      </c:if>
+		
 		<h2>회원정보 수정</h2>
 		<form action="${pageContext.request.contextPath}/mypage/update.do" method="post">
 		  <label>아이디</label>
@@ -65,10 +77,11 @@
         </form>
       </div>
     </div>
+  
     
   <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
    </div> 
-	<!-- ▼ 모달 열고 닫는 스크립트(이 페이지 맨 아래) -->
+	<!-- ▼ 모달 열고 닫는 스크립트-->
 	<script>
 	(function(){
 	  const modal=document.getElementById('pwModal');

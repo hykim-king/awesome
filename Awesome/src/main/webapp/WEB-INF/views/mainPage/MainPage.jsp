@@ -185,6 +185,15 @@
 
 </head>
 <body>
+  
+    <!-- 알림 메시지!!!!!!!!!!!!!!! -->
+  <c:if test="${not empty msg}">
+    <div id="flash-msg" style="display:none;">${fn:escapeXml(msg)}</div>
+    <script>
+      alert(document.getElementById('flash-msg').textContent);
+    </script>
+   </c:if>
+  
 	<!--header-->
 	<header id="header">
 		<div class="navbar">
@@ -220,7 +229,7 @@
 		</div>
 	</header>
 
-	<!---------------------- #1 Today’s HOT ISSUE + 키워드 6개 -->
+	<!---------------------- #1 Today's HOT ISSUE + 키워드 6개 -->
 	<section id="main-hot-issue">
 		<!-- 배경이랑 키워드 섹션분리 -->
 		<div class="hot-issue-inner">
