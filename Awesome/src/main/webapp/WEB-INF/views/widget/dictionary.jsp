@@ -6,34 +6,31 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>뉴스 사전</title>
-  <style>
-    .dict-widget { font-size:14px; }
-    .dict-form { display:flex; gap:8px; }
-    .dict-form input { flex:1; padding:6px 8px; border:1px solid #ddd; border-radius:6px; }
-    .dict-form button { padding:6px 10px; border:1px solid #0046FF; background:#0046FF; color:#fff; border-radius:6px; cursor:pointer; }
-    .dict-form button:disabled { opacity:.6; cursor:not-allowed; }
-    .dict-results { margin-top:10px; border-top:1px solid #e5e5e5; padding-top:8px; display:none; }
-    .dict-item { padding:8px 0; border-bottom:1px dashed #eee; }
-    .dict-term { font-weight:700; margin-bottom:4px; }
-    .dict-summary { color:#555; line-height:1.4; margin-bottom:6px; }
-    .dict-actions a { text-decoration:underline; }
-    .dict-empty, .dict-error, .dict-loading { color:#666; padding:8px 0; }
-  </style>
+  <title>뉴스 사전 위젯</title>
+
+  <!-- 분리된 CSS 파일 -->
+  <link rel="stylesheet" href="<c:url value='/resources/css/dictionary01.css'/>">
 </head>
 <body>
 <div class="dict-widget" role="search" aria-label="뉴스 사전 검색">
+<!-- 헤더 -->
+<div class="dict-header">
+  <strong class="dict-title"></strong>
+  <img src="${ctx}/resources/file/terms_001.png" alt="사전 헤더 이미지" class="dict-img" />
+</div>
+
+  <!-- 검색 폼 -->
   <form id="dictForm" class="dict-form" autocomplete="off">
     <input id="dictQuery" type="text" name="query" placeholder="궁금한 용어를 검색해보세요" required aria-label="검색어 입력" />
     <button id="dictSearchBtn" type="submit" aria-label="검색">검색</button>
   </form>
 
+  <!-- 결과 -->
   <div id="dictResults" class="dict-results" aria-live="polite" aria-busy="false"></div>
 </div>
 
 <script>
 (function () {
-  // 안전한 절대경로: 컨텍스트 자동 부착됨
   var searchUrl = '<c:url value="/widget/dict/search.do"/>';
   var form = document.getElementById('dictForm');
   var input = document.getElementById('dictQuery');
@@ -94,9 +91,13 @@
         var link = it.link || '#';
         return (
           '<div class="dict-item">' +
-            '<div class="dict-term">' + term + '</div>' +
+            // ✅ 한 줄짜리 좌우 배치(용어 왼쪽 / 자세히보기 오른쪽)
+            '<div class="dict-row">' +
+              '<div class="dict-term">' + term + '</div>' +
+              '<div class="dict-actions"><a href="' + link + '" target="_blank" rel="noopener">자세히보기</a></div>' +
+            '</div>' +
+            // 요약은 다음 줄
             '<div class="dict-summary">' + summary + '</div>' +
-            '<div class="dict-actions"><a href="' + link + '" target="_blank" rel="noopener">자세히보기</a></div>' +
           '</div>'
         );
       }).join('');
