@@ -197,18 +197,19 @@ const toggleUrl   = '<c:url value="/mypage/toggleBookmark.do"/>';
 const checkOneUrl = '<c:url value="/mypage/checkOne"/>';
 //북마크
 function loadBookmarks(pageNo, pageSize) {
-	  pageNo = pageNo || 1;
-	  pageSize = pageSize || 5;
+	pageNo = Number(pageNo); 
+	pageSize = Number(pageSize);
 
+	 // NaN 방지
+	  if (isNaN(pageNo)) pageNo = 1;
+	  if (isNaN(pageSize)) pageSize = 5;
 
- const url =
-    `/ehr/mypage/bookmarks` +
-    `?pageNo=${pageNo}` +              // 혹시 커스텀 컨트롤러가 쓰는 경우 대비
-    `&page=${pageNo - 1}` +            // Spring Data JPA Pageable (0-based)
-    `&size=${pageSize}` +              // Spring Data JPA Pageable
-    `&pageSize=${pageSize}` +          // 커스텀 대비
-    `&_=${Date.now()}`;                // 캐시 방지
-
+  const url =
+	  "/ehr/mypage/bookmarks" +
+	  "?pageNo=" + pageNo +
+	  "&pageSize=" + pageSize +
+	  "&_=" + Date.now();       // 캐시 방지
+    
   fetch(url, { headers: { 'Accept':'application/json' }, cache: 'no-store' })
     .then(res => res.json())
     .then(data => {
@@ -264,11 +265,14 @@ function loadBookmarks(pageNo, pageSize) {
     	  for (let i = 1; i <= totalPage; i++) {
     	    if (i === pageNo) {
     	      pgHtml += '<span class="current">' + i + '</span>';
-    	    } else {
-    	      pgHtml += '<a href="#" onclick="loadBookmarks(' + i + ', ' + pageSize + ')">' + i + '</a>';
-    	    }
+    	    } else { 
+    	    	pgHtml += '<a href="#" onclick="loadBookmarks(' + i + ', ' + pageSize + ')">' + i + '</a>';
+    	    } console.log("pgHtml:",pgHtml);
+    	    console.log("pageNo:",i);
+            console.log("pageSize:",pageSize);
     	  }
     	  document.getElementById("bookmarkPagination").innerHTML = pgHtml;
+ 
     	}
     }); 
 }
@@ -277,7 +281,7 @@ function loadBookmarks(pageNo, pageSize) {
 function loadReports(pageNo, pageSize) {
 	  pageNo = pageNo || 1;
 	  pageSize = pageSize || 5;
-  fetch(`/ehr/mypage/reports?pageNo=${pageNo}&pageSize=${pageSize}`)
+  fetch("/ehr/mypage/reports" + "?pageNo=" + pageNo + "&pageSize=" + pageSize)
     .then(res => res.json())
     .then(data => {
       const list = data?.list;
