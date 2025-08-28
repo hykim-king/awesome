@@ -16,6 +16,8 @@
   --al-letter-spacing:-0.2px;
 }
 
+
+
 /* 배경/기본 폰트 */
 body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
 .page-article-list #main{
@@ -37,6 +39,8 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
   display: grid;
   grid-template-columns: minmax(0,1fr) 320px;  /* 좌측 유연, 우측 고정폭 */
   gap: 16px;
+  column-gap: 24px;
+  row-gap: 16px;
 
   width: 100%;
   max-width: 1480px;
@@ -44,6 +48,8 @@ body.page-article-list{ background:var(--al-bg); color:var(--al-text); }
   padding: 0 24px;            /* 좌우 여백 */
   box-sizing: border-box;
 }
+
+
 
 /* 본문 칼럼은 내용 넘침 방지 */
 .page-article-list .main{ min-width:0; }

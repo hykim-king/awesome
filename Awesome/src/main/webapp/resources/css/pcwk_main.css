@@ -23,17 +23,20 @@
      "leftsidebar main main sidebar"
      "footer footer footer footer"
      ;
-     grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
+     grid-template-columns: 0.5fr 0.8fr 0.8fr 0.5fr;
      grid-template-rows: 100px minmax(650px,auto) 100px;
-     gap: 0px;
+     gap: 20px;
+
+     background-color: #ffffff;
+
    }
    #sidebar{
-      background-color: #F6F4F7;
+      background-color: #FFFFFF;
       grid-area: sidebar;
    }
 
    #leftsidebar{
-      background-color: #F6F4F7;
+      background-color: #FFFFFF;
       grid-area: leftsidebar;
    }
 
@@ -42,7 +45,7 @@
       grid-area: header;
    }
    #main{
-      background-color:#f6f4f7;
+      background-color:#FFFFFF;
       grid-area: main;
 
    }
