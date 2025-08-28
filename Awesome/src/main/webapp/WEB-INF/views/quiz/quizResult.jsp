@@ -87,8 +87,9 @@
 <body>
    <div id="container">
     
-    <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
-    <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
       <main id="main">
       <div class="main-container">
 
@@ -119,7 +120,7 @@
         </div>
         
         <div class="button-container">
-            <a href="${CP}/" id="goToMainBtn" class="btn">메인으로 돌아가기</a>
+            <a href="${CP}/mainPage/main.do" id="goToMainBtn" class="btn">메인으로 돌아가기</a>
         </div>
       </div>
 

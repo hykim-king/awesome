@@ -19,14 +19,42 @@
     
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+    <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
       <main id="main">
       <div class="main-container">
 
-      <div class="quiz-section" style="text-align:center; padding: 40px 0;">
-          <h3>Today's Quiz</h3>
-          <h2>퀴즈를 시작하시겠습니까?</h2>
-          <button type="button" class="btn" id="quizStartBtn" style="margin-top:20px; font-size: 1.2em; padding: 10px 24px;">>시작</button>
-      </div>
+      <div class="quiz-section" style="text-align:center; padding: 100px 0;"> <h3 style="
+                font-family: 'Times New Roman', Times, serif; /* 폰트 변경 */
+                font-size: 3.5em; /* 글자 크기 키움 */
+                font-weight: bold; /* 굵게 */
+                color: #333; /* 글자색 */
+                margin-bottom: 60px; /* 아래 여백 */
+            ">Today's QUIZ</h3>
+
+            <h2 style="
+                font-size: 2.2em; /* 글자 크기 키움 */
+                font-weight: bold; /* 굵게 */
+                color: #333; /* 글자색 */
+                margin-bottom: 150px; /* 아래 여백 */
+                text-decoration: none; /* 이전 밑줄 제거 */
+            ">퀴즈풀이를 <br> 시작하시겠습니까?</h2>
+
+            <button type="button" class="btn" id="quizStartBtn" style="
+                margin-top:20px;
+                font-size: 2em; /* 버튼 글자 크기 키움 */
+                padding: 15px 40px; /* 버튼 패딩 키움 */
+                border-radius: 10px; /* 모서리를 더 둥글게 */
+                box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 강화 */
+                background-color: #0047FF; /* 이미지와 유사한 파란색 */
+                color: white; /* 흰색 글자 */
+                border: none;
+                font-weight: bold; /* 글자 굵게 */
+                cursor: pointer; /* 마우스 오버 시 포인터 변경 */
+                transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 부드러운 전환 효과 */
+            ">
+            > 시작!
+            </button>
+        </div>
 
       <script>
         // jQuery의 $(document).ready() : HTML 문서가 모두 로드된 후 스크립트를 실행합니다.
@@ -53,13 +81,15 @@
 
             // 3. 시간 조건에 따라 버튼 상태 변경
             if(isQuizTime){
-                // 퀴즈 풀이 가능 시간일 경우
                 quizBtn.text(">시작");
-                quizBtn.prop("disabled", false); // 버튼 활성화
+                quizBtn.prop("disabled", false);
+                // 활성화된 버튼 스타일
+                quizBtn.css({"background-color": "#007bff", "color": "white", "box-shadow": "0 4px 6px rgba(0,0,0,0.1)"});
             } else {
-                // 퀴즈 풀이 가능 시간이 아닐 경우
                 quizBtn.text("금일 정오에 열립니다");
-                quizBtn.prop("disabled", true); // 버튼 비활성화
+                quizBtn.prop("disabled", true);
+                // 비활성화된 버튼 스타일
+                quizBtn.css({"background-color": "#cccccc", "color": "#666666", "box-shadow": "none"});
             }
 
             // 4. 버튼 클릭 이벤트 처리
@@ -72,24 +102,6 @@
             });
         });
       </script>
-      <c:choose>
-      <c:when test="${empty sessionScope.loginUser}">
-        <div style="display:flex; gap:12px;">
-          <a class="btn" href="<c:url value='/member/login.do'/>">로그인</a>
-          <a class="btn" href="<c:url value='/member/register.do'/>">회원가입</a>
-        </div>
-      </c:when>
-    
-      <c:otherwise>
-        <div style="display:flex; gap:12px; align-items:center;">
-          <span><strong>${sessionScope.loginUser.userId}</strong>님 환영합니다!</span>
-          <a class="btn" href="<c:url value='/member/logout.do'/>">로그아웃</a>
-        </div>
-      </c:otherwise>
-    </c:choose>
-
-        
-
       </div>
       </main>
       <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>

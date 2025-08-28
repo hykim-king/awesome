@@ -112,6 +112,23 @@
 	.page-find #main { padding-left:0 !important; }
 	.page-find #main .main-container { margin-left:0 !important; width:100% !important; }
     
+    /* === 공통: page-find 화면 중앙 정렬 === */
+.page-find #main { padding-left:0 !important; }
+.page-find #main .main-container{
+  width:100% !important;
+  margin:0 auto !important;
+  display:flex;
+  justify-content:center;   /* 가로 가운데 */
+}
+
+/* 카드(.wrap) 위치값 초기화 + 가운데 배치 */
+.page-find .wrap{
+  position:static !important;
+  left:auto !important;
+  transform:none !important;
+  width:min(420px, 92vw);
+  margin:64px auto;         /* 위아래 여백 + 가운데 */
+}
     
     
   

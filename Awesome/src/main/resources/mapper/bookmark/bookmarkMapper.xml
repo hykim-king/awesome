@@ -64,7 +64,8 @@
 	          bm.reg_dt,
 	          ar.title,
 	          SUBSTR(ar.summary, 1, 50) AS summary,
-	          ar.press
+	          ar.press,
+	          ar.url
 	        FROM bookmark bm
 	        JOIN article ar
 	          ON bm.article_code = ar.article_code

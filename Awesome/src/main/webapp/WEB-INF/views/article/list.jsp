@@ -15,6 +15,68 @@
 <link rel="stylesheet" href="${mainCss}">
 <link rel="stylesheet" href="${headerCss}">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sidebar_category.css?v=1" />
+<c:url var="bannerImg" value="/resources/file/banner.png"/>
+<style>
+/* 보이기/숨기기 */
+.hidden{ display:none !important; }
+
+/* 모달 전체 레이어 */
+.login-modal{ position:fixed; inset:0; z-index:1000; }
+
+/* 반투명 배경 */
+.login-modal_backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.4); }
+
+/* 모달 카드 */
+.login-modal_card{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);}
+/* 카테고리 배너(리스트 상단) */
+/* 배너 한 세트(가운데 정렬 + 전체폭 + 배경 이미지) */
+.page-article-list #container > .category-hero{
+  /* 그리드 위치 */
+  grid-area: banner;
+  grid-column: 1 / -1;
+
+  /* 레이아웃/크기 */
+  width: 100%;
+  max-width: none;
+  margin: 0 0 12px;
+  border-radius: 0;      /* 좌우 여백만 */
+
+  /* 배경(오버레이 + 이미지) */
+  background:
+    linear-gradient(to right, rgba(0,0,0,.30), rgba(0,0,0,.15)),
+    url('${bannerImg}') center/cover no-repeat;
+  color: #fff;
+  min-height: 100px;      /* 배너 높이: 취향대로 140~220 조절 */
+
+  /* 텍스트 중앙 정렬 */
+  display: grid;
+  place-items: center;    /* 수직·수평 중앙 한 줄 끝 */
+  padding: 0 20px;  
+}
+
+/* 배너 타이틀 스타일 */
+.page-article-list .category-hero h1{
+  margin: 0;
+  font-size: 28px;        /* 필요하면 24로 줄이기 */
+  font-weight: 800;
+  letter-spacing: .2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35); /* 가독성 */
+}
+#container > .category-hero { grid-column: 1 / -1; }
+.page-article-list #container{
+  display: grid; /* 안전망 */
+  grid-template-areas:
+    "header header header header"
+    "banner banner banner banner"   /* ← 이 행이 리스트 페이지에서만 생김 */
+    "leftsidebar main   main   sidebar"
+    "footer footer footer footer";
+  grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
+  grid-template-rows: 100px auto minmax(650px,auto) 100px;
+}
+</style>
 <script>
 /* 새로고침 시 검색 조건 초기화 (category만 유지) */
 (function (){
@@ -59,6 +121,23 @@
 <div id="container">
   <!-- 헤더(그리드: header) -->
   <jsp:include page="/WEB-INF/views/include/header.jsp" />
+    <c:set var="curCat" value="${empty category ? param.category : category}" />
+  <c:if test="${not empty curCat and fn:trim(curCat) ne 'ALL'}">
+    <c:set var="cat" value="${fn:trim(curCat)}" />
+    <c:choose>
+      <c:when test="${cat eq '10'}"><c:set var="catName" value="정치" /></c:when>
+      <c:when test="${cat eq '20'}"><c:set var="catName" value="경제" /></c:when>
+      <c:when test="${cat eq '30'}"><c:set var="catName" value="사회" /></c:when>
+      <c:when test="${cat eq '40'}"><c:set var="catName" value="스포츠" /></c:when>
+      <c:when test="${cat eq '50'}"><c:set var="catName" value="연예" /></c:when>
+      <c:when test="${cat eq '60'}"><c:set var="catName" value="IT/과학" /></c:when>
+      <c:otherwise><c:set var="catName" value="전체" /></c:otherwise>
+    </c:choose>
+
+    <div class="category-hero" role="banner" aria-label="${catName} 기사">
+      <h1>${catName} 기사</h1>
+    </div>
+  </c:if>
 
   <!-- 메인(그리드: main) -->
   <main id="main">
@@ -243,9 +322,11 @@
   <c:set var="currentCategory" value="${empty category ? param.category : category}" />
   <c:choose>
     <c:when test="${empty currentCategory or fn:trim(currentCategory) eq 'ALL'}">
+      <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp" />  
       <jsp:include page="/WEB-INF/views/include/sidebar.jsp" />
     </c:when>
     <c:otherwise>
+      <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp" />
       <jsp:include page="/WEB-INF/views/include/sidebar_category.jsp">
         <jsp:param name="category" value="${fn:trim(currentCategory)}" />
       </jsp:include>
@@ -402,8 +483,12 @@
 })();
 </script>
 
-<!-- 로그인 안내 모달 (페이지 하단에 둬도 OK) -->
-<div id="login-modal" class="login-modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+<!-- 로그인 안내 모달 -->
+<div id="login-modal"
+     class="login-modal hidden"
+     aria-hidden="true"
+     role="dialog"
+     aria-modal="true">
   <div class="login-modal_backdrop"></div>
   <div class="login-modal_card">
     <div class="login-modal_title">로그인이 필요합니다.</div>
