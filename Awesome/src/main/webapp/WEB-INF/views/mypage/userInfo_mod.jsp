@@ -53,7 +53,7 @@
     <div id="pwModal" class="modal-backdrop" aria-hidden="true">
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
         <h2 id="pwTitle">비밀번호 변경</h2>
-        <form action="${CP}/mypage/chagePassword.do" method="post" class="modal-form">
+        <form action="${CP}/mypage/changePassword.do" method="post" class="modal-form">
           <label for="newPwd">새 비밀번호</label>
           <input id="newPwd" type="password" name="newPwd" required minlength="8" autocomplete="new-password">
 	      <label for="confirmPwd">비밀번호 확인</label>
