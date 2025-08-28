@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="CP" value="${pageContext.request.contextPath}"/>
 
 <!DOCTYPE html>
@@ -162,6 +163,15 @@ body{
     <main id="main">
       <div class="main-container">
         <div class="wrap">
+        
+        <!-- 알림 메시지 !!!!! -->
+        <c:if test="${not empty msg}">
+          <div id="flash-msg" style="display:none;">${fn:escapeXml(msg)}</div>
+          <script>
+            alert(document.getElementById('flash-msg').textContent);
+          </script>
+         </c:if>
+      
           <h1>로그인</h1>
 
           <!-- 플래시 메시지 -->

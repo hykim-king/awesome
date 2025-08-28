@@ -178,6 +178,15 @@
 
 </head>
 <body>
+
+    <!-- 알림 메시지!!!!!!!!!!!!!!! -->
+    <c:if test="${not empty msg}">
+      <div id="flash-msg" style="display:none;">${fn:escapeXml(msg)}</div>
+      <script>
+        alert(document.getElementById('flash-msg').textContent);
+      </script>
+     </c:if>
+
 <!--header-->
 <header id="header">
   <div class="navbar">
