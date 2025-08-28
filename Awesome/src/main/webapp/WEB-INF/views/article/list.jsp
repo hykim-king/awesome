@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="${mainCss}">
 <link rel="stylesheet" href="${headerCss}">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sidebar_category.css?v=1" />
+<c:url var="bannerImg" value="/resources/file/banner.png"/>
 <style>
 /* 보이기/숨기기 */
 .hidden{ display:none !important; }
@@ -31,21 +32,38 @@
   width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.2);}
 /* 카테고리 배너(리스트 상단) */
-.page-article-list .category-hero{
-  max-width: 1280px;
-  margin: 10px auto 12px;       /* 위아래 여백 */
-  padding: 18px 20px;
-  border-radius: 12px;
-  background: linear-gradient(135deg,#1e3a8a 0%, #2563eb 60%, #60a5fa 100%);
-  color:#fff;
-  text-align:center;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+/* 배너 한 세트(가운데 정렬 + 전체폭 + 배경 이미지) */
+.page-article-list #container > .category-hero{
+  /* 그리드 위치 */
+  grid-area: banner;
+  grid-column: 1 / -1;
+
+  /* 레이아웃/크기 */
+  width: 100%;
+  max-width: none;
+  margin: 0 0 12px;
+  border-radius: 0;      /* 좌우 여백만 */
+
+  /* 배경(오버레이 + 이미지) */
+  background:
+    linear-gradient(to right, rgba(0,0,0,.30), rgba(0,0,0,.15)),
+    url('${bannerImg}') center/cover no-repeat;
+  color: #fff;
+  min-height: 100px;      /* 배너 높이: 취향대로 140~220 조절 */
+
+  /* 텍스트 중앙 정렬 */
+  display: grid;
+  place-items: center;    /* 수직·수평 중앙 한 줄 끝 */
+  padding: 0 20px;  
 }
+
+/* 배너 타이틀 스타일 */
 .page-article-list .category-hero h1{
-  margin:0;
-  font-size:24px;
-  font-weight:800;
-  letter-spacing:.2px;
+  margin: 0;
+  font-size: 28px;        /* 필요하면 24로 줄이기 */
+  font-weight: 800;
+  letter-spacing: .2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35); /* 가독성 */
 }
 #container > .category-hero { grid-column: 1 / -1; }
 .page-article-list #container{
@@ -57,21 +75,6 @@
     "footer footer footer footer";
   grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
   grid-template-rows: 100px auto minmax(650px,auto) 100px;
-}
-
-/* 배너 요소를 banner 영역에 꽂기 (리스트 페이지에서만 적용) */
-.page-article-list #container > .category-hero{
-  grid-area: banner;
-  grid-column: 1 / -1;   /* 전체 폭 */
-  margin-bottom: 12px;
-}
-/* 리스트 페이지 배너: 전체 폭으로 */
-.page-article-list #container > .category-hero{
-  width: 100%;
-  max-width: none;      /* ← 핵심 */
-  margin: 0 0 12px;     /* 좌우 가운데 정렬 제거 */
-  border-radius: 0;     /* 모서리 라운드 없애고 싶으면 */
-  /* 배경 그라디언트는 기존 값 유지 */
 }
 </style>
 <script>
