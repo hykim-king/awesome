@@ -23,7 +23,7 @@
      "leftsidebar main main sidebar"
      "footer footer footer footer"
      ;
-     grid-template-columns: 0.5fr 0.8fr 0.8fr 0.5fr;
+     grid-template-columns: 0.5fr 0.7fr 0.7fr 0.5fr;
      grid-template-rows: 100px minmax(650px,auto) 100px;
      gap: 20px;
 

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.pcwk.ehr.chatmessage.domain.ChatMessageDTO;
 import com.pcwk.ehr.mapper.ChatMessageMapper;
+import com.pcwk.ehr.member.domain.MemberDTO;
 import com.pcwk.ehr.report.domain.ReportDTO;
 import com.pcwk.ehr.report.domain.ReportSearchDTO;
 import com.pcwk.ehr.report.service.ReportService;
@@ -62,11 +63,9 @@ public class ReportController {
         log.debug("신고요청 chatCode={}, reason={}", dto.getChatCode(), dto.getReason());
 
         // 2. 신고자 ID 세션에서 꺼내기
-        String uid = (session != null && session.getAttribute("USER_ID") != null)
-        		? session.getAttribute("USER_ID").toString()
-        		: "user01";
+        MemberDTO uid = (MemberDTO)session.getAttribute("loginUser");
         
-       dto.setUserId(uid);
+       dto.setUserId(uid.getUserId());
        log.debug("신고자 user={}" , uid);
        
        // 3. chatCode -> 대상 작성자(ctId)조회
