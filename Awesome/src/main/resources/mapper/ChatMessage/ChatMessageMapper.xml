@@ -105,7 +105,7 @@
 	  <!-- 어드민신고관리용 본문 숨김 처리 -->
 	  <update id="hideMessage" parameterType="int">
 	    UPDATE CHAT_MESSAGE
-	       SET MESSAGE = '[숨김처리]'
+	       SET MESSAGE = '[신고된 메세지]'
 	     WHERE CHAT_CODE = #{chatCode}
 	  </update>
   

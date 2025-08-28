@@ -1,11 +1,5 @@
-/* ===========================
-   MainPage.css
-   - 섹션만 깔끔 정렬 + 기본 카드 스타일
-   - HTML은 MainPage.jsp(뼈대 버전) 기준
-   =========================== */
-
 /* 기본 */
-:root{
+:root {
   --brand:#0046FF;
   --bg:#111;
   --fg:#eee;
@@ -15,163 +9,285 @@
   --accent:#FFC265;
 }
 
-*{box-sizing:border-box}
+* { box-sizing:border-box }
 html,body{margin:0;padding:0}
 body{
-  background:#fff;            /* 지금은 라이트 테마로 간단히 */
-  color:#111;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,AppleSDGothicNeo,Helvetica,Arial,"Noto Sans KR",sans-serif;
+  min-height: 100vh; /* 뷰포트 높이만큼 최소 확보 */
+  background: linear-gradient(to bottom, #022ca8, #001759, #abb7cf);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   line-height:1.6;
 }
 
 /* 공통 레이아웃: 모든 section을 중앙 고정 폭으로 */
-section{
+section {
   max-width:1100px;
   margin:28px auto;
   padding:0 16px;
 }
 
 /* 제목 */
-h1{
+h1 {
   margin:24px 0 8px;
   font-size:36px;
   line-height:1.2;
   letter-spacing:.2px;
 }
-h2{
+h2 {
   margin:28px 0 12px;
   font-size:26px;
 }
 
-/* ---------------------------------
+/*---------------------------------
    #1 Today’s HOT ISSUE (키워드)
 ----------------------------------*/
-#main-hot-issue{
+#main-hot-issue {
   padding-top:8px;
   padding-bottom:8px;
   border-bottom:1px solid #eee;
 }
-#main-keywords{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:12px;
-  margin-top:10px;
-}
-#main-keywords .keyword{
-  display:inline-block;
-  padding:8px 14px;
-  border:1px solid #ddd;
-  border-radius:999px;
-  background:#f7f8fa;
-  color:#222;
-  font-weight:600;
-  font-size:14px;
-  transition:transform .15s ease, box-shadow .15s ease;
+.keyword {
+  display:inline-block;              
+  padding:18px 36px;                 
+  min-width:220px;                   
+  max-width:600px;   
+  min-height:60px;                   
+
+  font-size:24px;
+  font-weight:bold;
+  line-height:1.2;                   
+  text-align:center;
+  color:#111;
+
+  background:rgba(204,204,204,0.8);
+  border-radius:32px;
+  box-shadow:1px 1px 3px rgba(0,0,0,0.3);
+
+  white-space:normal;                
+  word-wrap:break-word;              
+  word-break:keep-all;               
+
+  transition:all 0.2s ease;
   cursor:pointer;
 }
-#main-keywords .keyword:hover{
-  transform:translateY(-1px);
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
+.keyword:hover {
+  background-color:var(--brand);     
+  color:#fff;
 }
 
 /* ---------------------------------
    #2 조회수 기반 인기 기사
 ----------------------------------*/
-/* 3열 × 2줄 */
 .popular-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  list-style: none;
-  padding: 0;
-  margin: 12px 0 0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  list-style:none;
+  padding:0;
+  margin:12px 0 0;
 }
-@media (max-width: 1024px) {
-  .popular-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width:1024px) {
+  .popular-grid { grid-template-columns:repeat(2,1fr); }
 }
-@media (max-width: 640px) {
-  .popular-grid { grid-template-columns: 1fr; }
+@media (max-width:640px) {
+  .popular-grid { grid-template-columns:1fr; }
 }
 
 .popular-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.06);
-  transition: transform .12s ease, box-shadow .12s ease;
+  background:#fff;
+  border-radius:14px;
+  padding:14px 16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  transition:transform .12s ease, box-shadow .12s ease;
 }
 .popular-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(0,0,0,.08);
 }
 .popular-card a {
-  text-decoration: none;
-  color: inherit;
-  display: block;
+  text-decoration:none;
+  color:inherit;
+  display:block;
 }
-
-/* 아이콘 이미지 */
 .popular-card .icon {
-  text-align: center;
-  margin-bottom: 8px;
+  text-align:center;
+  margin-bottom:8px;
 }
 .popular-card .icon img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  display: inline-block;
+  width:32px;
+  height:32px;
+  object-fit:contain;
+  display:inline-block;
+}
+.popular-card .title {
+  font-size:15px;
+  line-height:1.35;
+  font-weight:600;
+  word-break:keep-all;
+  text-align:center;
 }
 
-/* 제목 */
-.popular-card .title {
-  font-size: 15px;
-  line-height: 1.35;
-  font-weight: 600;
-  word-break: keep-all;
-  text-align: center;
-}
 /* ---------------------------------
    #3 회원별 추천 기사
 ----------------------------------*/
-#main-recommended ul{
-  list-style:none; padding:0; margin:0;
+#main-recommended .rec-cards {
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
-  gap:14px;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:8px;
 }
-#main-recommended li{
-  border:1px solid #e9e9e9;
-  border-radius:12px;
-  padding:12px;
-  background:#fff;
-  min-height:84px;
+#main-recommended .rec-card {
+  display:block;
+  padding:14px 16px;
+  border-radius:14px;
+  background:#fff;                 
+  color:#111;
+  text-decoration:none;
+  border:1px solid #eee;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
 }
-
-/* 안내문 */
-#main-recommended p, #main-popular p{
+#main-recommended .rec-card:hover {
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(0,0,0,.09);
+  border-color:#e6e6e6;
+}
+#main-recommended .press-badge {
+  display:inline-block;
+  font-size:11px;
+  line-height:1;
+  color:#555;
+  background:#f4f6ff;             
+  border:1px solid #e3e9ff;
+  border-radius:999px;
+  padding:6px 10px;
+}
+#main-recommended .title {
+  display:block;
+  margin:10px 0 6px;
+  font-size:15px;
+  font-weight:700;
+  line-height:1.35;
+  color:#111;
+  word-break:keep-all;
+}
+#main-recommended .summary {
+  margin:0;
+  font-size:13px;                
+  line-height:1.45;
+  color:#666;
+  display:-webkit-box;
+  -webkit-line-clamp:3;          
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+#main-recommended .top-text a {
+  color:#111;
+  text-decoration:none;
+}
+#main-recommended .top-text a:hover {
+  text-decoration:underline;
+}
+#main-recommended p, #main-popular p {
   color:#666; margin:6px 0 0;
 }
 
 /* ---------------------------------
    #4 오늘의 날씨
 ----------------------------------*/
-#main-weather{
+#main-weather {
   border-top:1px solid #eee;
   padding-top:16px;
 }
-#main-weather p{
-  margin:8px 0 12px;
-}
-#main-weather ul{
-  list-style:disc; margin:0 0 0 18px; padding:0;
-}
+#main-weather p { margin:8px 0 12px; }
+#main-weather ul { list-style:disc; margin:0 0 0 18px; padding:0; }
 
 /* ---------------------------------
    반응형
 ----------------------------------*/
-@media (max-width:720px){
-  h1{font-size:28px}
-  h2{font-size:22px}
-  #main-keywords .keyword{font-size:13px; padding:7px 12px}
+@media (max-width:720px) {
+  h1 { font-size:28px }
+  h2 { font-size:22px }
+  #main-keywords .keyword { font-size:13px; padding:7px 12px }
+}
+
+/* 대표 추천 1개 강조 */
+#main-recommended .top-feature {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px;
+  border:1px solid #eaeaea;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+#main-recommended .label-rank {
+  padding:6px 10px;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+  color:#1b4cff;
+  background:#eef2ff;
+  border:1px solid #dbe3ff;
+  border-radius:999px;
+  flex:0 0 auto;
+}
+#main-recommended .top-feature .press-badge {
+  padding:6px 10px;
+  font-size:11px;
+  line-height:1;
+  color:#555;
+  background:#f4f6ff;
+  border:1px solid #e3e9ff;
+  border-radius:999px;
+  flex:0 0 auto;
+}
+#main-recommended .top-title {
+  margin:0;
+  font-size:18px;           
+  line-height:1.35;
+  font-weight:800;
+  color:#111;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+#main-recommended .top-title a {
+  color:inherit;
+  text-decoration:none;
+}
+#main-recommended .top-title a:hover {
+  text-decoration:underline;
+}
+#main-recommended .top-feature.is-empty .top-title {
+  font-weight:600;
+  font-size:16px;
+  color:#444;
+}
+#main-recommended .top-feature.is-empty .label-rank {
+  color:#6b7280;
+  background:#f3f4f6;
+  border-color:#e5e7eb;
+}
+@media (max-width:720px) {
+  #main-recommended .top-title { font-size:16px }
+}
+#main-recommended .top-summary { margin:0 0 14px; }
+#main-recommended .more-recs { margin-top:14px; }
+
+
+
+/* 전역 section 고정폭(1100px) 덮어쓰기: 하단 내부 섹션은 100% 쓰게 */
+#main-bottom-section section{
+  max-width: 100%;
+  padding: 0;
+}
+
+
+@media (max-width: 900px){
+  #main-bottom-section{
+    grid-template-columns: 1fr;   /* 모바일에서는 세로로 쌓기 */
+  }
 }

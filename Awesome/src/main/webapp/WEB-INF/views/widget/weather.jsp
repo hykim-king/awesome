@@ -15,12 +15,12 @@
   /* 라벨 공통 */
   .city-label{
     position:absolute; transform:translate(-50%, -100%);
-    background:rgba(255,255,255,.9); border:1px solid rgba(0,0,0,.06);
+    background:rgba(255,255,255,.8); border:1px solid rgba(0,0,0,.06);
     padding:6px 8px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,.08);
-    font-size:12px; line-height:1.2; white-space:nowrap; text-align:center;
+    font-size:10px; line-height:1.1; white-space:nowrap; text-align:center;
   }
-  .city-label .city-name{ font-weight:700; }
-  .city-label .temp{ font-weight:700; }
+  .city-label .city-name{ font-weight:600; }
+  .city-label .temp{ font-weight:600; }
   .weather-error{
     position:absolute; left:50%; top:50%; transform:translate(-50%, -50%);
     background:rgba(0,0,0,.6); color:#fff; padding:8px 12px; border-radius:8px;
@@ -30,16 +30,16 @@
 
   .city-label.서울 { top:19%; left:41%; }
   .city-label.인천 { top:25%; left:20%; }
-  .city-label.춘천 { top:17%; left:49%; }
+  .city-label.춘천 { top:17%; left:59%; }
 
   /* 중부 */
-  .city-label.세종 { top:39%; left:45%; }
-  .city-label.대전 { top:42%; left:46%; }
+  .city-label.세종 { top:37%; left:43%; }
+  .city-label.대전 { top:46%; left:47%; }
 
   /* 영남 */
   .city-label.대구 { top:62%; left:60%; }
 
-  .city-label.울산 { top:68%; left:73%; }
+  .city-label.울산 { top:64%; left:77%; }
   .city-label.부산 { top:73%; left:71%; }
 
   /* 호남 */

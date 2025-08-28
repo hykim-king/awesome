@@ -49,7 +49,7 @@ body{
     .wrap{
       max-width: 420px;
       margin: 60px 0;
-      position: relative; left:50vw; transform: translateX(-50%);
+      position: relative; flex;
       background:var(--card); border-radius:16px;
       box-shadow:0 10px 30px rgba(15,23,42,.08);
       padding:28px 22px;
@@ -86,49 +86,67 @@ body{
     .ghost{background:#eef6d0; color:#3f6212; border:0; padding:10px 16px; border-radius:10px; cursor:pointer;}
     
     
-	   /* 로그인 폼 아래 유틸 링크 크기/간격 조정 */
-	.utils{
-	  display:flex;
-	  justify-content:center;
-	  align-items:center;
-	  gap:6px;
-	  margin-top:10px;
-	  font-size:13px;    /* ↓ 작게 */
-	  color:#475569;
-	}
-	.utils a{
-	  font-size:inherit; /* 부모 크기(13px) 사용 */
-	  text-decoration:none;
-	  color:#4f46e5;
-	}
-	.utils a:hover{ text-decoration:underline; }
-	    /* 아이디 찾기 페이지: 바깥 배경(오른쪽 여백 포함)도 전부 흰색 */
-	    body.page-find,
-	    .page-find #container,
-	    .page-find #main,
-	    .page-find #main .main-container{
-	      background:#fff !important;
-	    }
+       /* 로그인 폼 아래 유틸 링크 크기/간격 조정 */
+    .utils{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:6px;
+      margin-top:10px;
+      font-size:13px;    /* ↓ 작게 */
+      color:#475569;
+    }
+    .utils a{
+      font-size:inherit; /* 부모 크기(13px) 사용 */
+      text-decoration:none;
+      color:#4f46e5;
+    }
+    .utils a:hover{ text-decoration:underline; }
+        /* 아이디 찾기 페이지: 바깥 배경(오른쪽 여백 포함)도 전부 흰색 */
+        body.page-find,
+        .page-find #container,
+        .page-find #main,
+        .page-find #main .main-container{
+          background:#fff !important;
+        }
 
 
-    /* 사이드바 공간 없애기 */
-    .page-find #main { padding-left:0 !important; }
-    .page-find #main .main-container { margin-left:0 !important; width:100% !important; }
+    
     
     
     /* 로그인 페이지 전체를 흰색으로 */
-	.page-login,
-	.page-login #container,
-	.page-login #main,
-	.page-login #main .main-container{
-	  background:#fff !important;
-	}
-	
-	/* (옵션) 헤더 아래 보조 바/구분선이 보이면 없애기 */
-	.page-login #main::before{ display:none; }
-	    
-	    
-	    
+    .page-login,
+    .page-login #container,
+    .page-login #main,
+    .page-login #main .main-container{
+      background:#fff !important;
+    }
+    
+   /* 사이드바 여백 제거 */
+  .content { margin-left:0 !important; }
+  /* 혹시 보이면 숨김 */
+  .sidebar, .admin-wrap .sidebar { display:none !important; }
+ 
+
+        /* 로그인 페이지 레이아웃을 가운데 정렬 */
+.page-login #main { padding-left:0 !important; }
+.page-login #main .main-container{
+  width:100% !important;
+  margin:0 auto !important;
+  display:flex;
+  justify-content:center;   /* 가로 가운데 */
+}
+
+/* 카드 자체는 위치값 초기화 + 가운데 */
+.page-login .wrap{
+  position:static;     /* 기존 relative 무효화 */
+  left:auto; 
+  transform:none;      /* 기존 translateX(-50%) 무효화 */
+  width:min(420px, 92vw);
+  margin:64px auto;    /* 가운데 */
+        
+        
+        
     
   </style>
   
@@ -154,23 +172,23 @@ body{
             <div class="msg err">${error}</div>
           </c:if>
 
-	         <form id="loginForm" method="post" action="<c:url value='/member/login.do'/>">
-	  <div class="group">
-	    <label for="userId">아이디</label>
-	    <input id="userId" name="userId" type="text" required placeholder="아이디를 입력해주세요">
-	  </div>
-	
-	  <div class="group">
-	    <label for="pwd">비밀번호</label>
-	    <input id="pwd" name="pwd" type="password" required placeholder="비밀번호를 입력해주세요">
-	  </div>
-	
-	  <button class="btn" type="submit">로그인</button>
+             <form id="loginForm" method="post" action="<c:url value='/member/login.do'/>">
+      <div class="group">
+        <label for="userId">아이디</label>
+        <input id="userId" name="userId" type="text" required placeholder="아이디를 입력해주세요">
+      </div>
+    
+      <div class="group">
+        <label for="pwd">비밀번호</label>
+        <input id="pwd" name="pwd" type="password" required placeholder="비밀번호를 입력해주세요">
+      </div>
+    
+      <button class="btn" type="submit">로그인</button>
             <div class="utils">
-			  <a href="<c:url value='/member/findId.do'/>">아이디 찾기</a>
-			  <span>│</span>
-			  <a href="<c:url value='/member/findPwd.do'/>">비밀번호 찾기</a>
-			</div>
+              <a href="<c:url value='/member/findId.do'/>">아이디 찾기</a>
+              <span>│</span>
+              <a href="<c:url value='/member/findPwd.do'/>">비밀번호 찾기</a>
+            </div>
             <p class="note">
               아직 회원이 아니신가요?
               <a href="<c:url value='/member/register.do'/>">회원가입</a>
