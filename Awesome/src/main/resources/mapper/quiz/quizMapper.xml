@@ -83,31 +83,34 @@
                 SELECT Q.ANSWER FROM QUIZ_QUESTIONS Q WHERE Q.QQ_CODE = R.QQ_CODE
             )
     </update>
-
-	 <select id="selectUserRankingTop10" resultType="com.pcwk.ehr.quiz.domain.RankingDTO">
-		  <![CDATA[
-	    SELECT
-	        USER_ID as userId,
-	        TOTAL_SCORE as totalScore,
-	        USER_RANK as userRank
-	    FROM (
-	        SELECT
-	            USER_ID,
-	            SUM(SCORE) AS TOTAL_SCORE,
-	            RANK() OVER (ORDER BY SUM(SCORE) DESC) AS USER_RANK
-	        FROM
-	            QUIZ_RESULT
-	        WHERE
-	            TO_CHAR(SOLVED_DT, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
-	        GROUP BY
-	            USER_ID
-	        HAVING
-	            SUM(SCORE) > 0
-	    )
-	    WHERE
-	        USER_RANK <= 10
-	    ]]>
-	 </select>
+    
+    <select id="selectUserRankingTop10" resultType="com.pcwk.ehr.quiz.domain.RankingDTO">
+         <![CDATA[
+		   SELECT
+		      R.USER_ID AS userId,
+		      M.NICK_NM AS nickNm,
+		      R.TOTAL_SCORE AS totalScore,
+		      R.USER_RANK AS userRank
+		   FROM (
+		      SELECT
+		         USER_ID,
+		         SUM(SCORE) AS TOTAL_SCORE,
+		         RANK() OVER (ORDER BY SUM(SCORE) DESC) AS USER_RANK
+		      FROM
+		         QUIZ_RESULT
+		      WHERE
+		         TO_CHAR(SOLVED_DT, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+		      GROUP BY
+		         USER_ID
+		      HAVING
+		         SUM(SCORE) > 0
+		   ) R
+		   JOIN
+		      MEMBER M ON R.USER_ID = M.USER_ID
+		   WHERE
+		      R.USER_RANK <= 10
+		      ]]>
+	</select>
     
     <select id="selectQuizResult" parameterType="com.pcwk.ehr.quiz.domain.QuizDTO" resultType="com.pcwk.ehr.quiz.domain.QuizDTO">
        SELECT

@@ -32,4 +32,9 @@ public interface ArticleMapper extends WorkDiv<ArticleDTO> {
 	//가민경 메인사용
     ArticleDTO findTopByCategoryWithinDaysWithMin(Map<String, Object> params);
     ArticleDTO findLatestByCategory(int category);
+    
+    
+	 // 챗봇용 기사 검색
+	 List<ArticleDTO> doChatbotRetrieve(ArticleSearchDTO param) throws SQLException;
+    
 }

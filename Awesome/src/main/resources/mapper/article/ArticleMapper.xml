@@ -260,6 +260,36 @@
            )
            WHERE ROWNUM = 1
          </select>
+         
+         <!-- chatBot전용 쿼리 -->
+         <select id="doChatbotRetrieve"
+        parameterType="com.pcwk.ehr.article.domain.ArticleSearchDTO"
+        resultType="com.pcwk.ehr.article.domain.ArticleDTO">
+			    SELECT *
+			    FROM (
+			        SELECT A.*, ROWNUM RN
+			        FROM (
+			            SELECT
+			                ARTICLE_CODE, CATEGORY,
+			                <include refid="category_label_sql"/> AS CATEGORY_LABEL,
+			                PRESS, TITLE, SUMMARY, URL,
+			                PUBLIC_DT, VIEWS, REG_DT, MOD_DT
+			            FROM ARTICLE
+			            WHERE 1=1
+			            
+			            <if test="searchDiv != null and searchDiv == '20' and searchWord != null and searchWord != ''">
+			                AND SUMMARY LIKE '%' || #{searchWord} || '%'
+			            </if>
+			            
+			            <if test="category != null and category != 0">
+			                AND CATEGORY = #{category}
+			            </if>
+			            
+			            ORDER BY REG_DT DESC
+			        ) A
+			    )
+			    WHERE RN BETWEEN #{startRow} AND #{endRow}
+			</select>
  
   
   

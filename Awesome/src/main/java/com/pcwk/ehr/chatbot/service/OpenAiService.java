@@ -41,7 +41,7 @@ public class OpenAiService {
 
     // 검색에서 제외할 불필요한 단어들
     private static final Set<String> STOP_WORDS = new HashSet<>(Arrays.asList(
-            "오늘", "최신", "핫한", "뭐야", "알려줘"
+    		"오늘", "최신", "핫한", "뭐야", "알려줘", "있어", "뉴스", "기사", "추천해줘"
     ));
 
     public String getChatResponse(String userMessage) {
@@ -130,21 +130,31 @@ public class OpenAiService {
             searchDto.setCategory(60);
         }
 
-        // 2. 검색어 추출
-        // 불필요한 단어 제거
+        // 2. 검색에 불필요한 단어 제거 (STOP_WORDS는 기존대로 사용)
         List<String> keywords = Arrays.stream(lowerCaseMessage.split("\\s+"))
                                     .filter(word -> !STOP_WORDS.contains(word))
                                     .collect(Collectors.toList());
 
         String keywordString = String.join(" ", keywords).trim();
 
-        // 검색어 설정 (키워드가 없는 경우 빈 문자열로 설정)
-        searchDto.setSearchDiv("20");
-        searchDto.setSearchWord(keywordString);
+        // 3. 검색어 설정
+        //    keywordString이 비어있지 않은 경우에만 SUMMARY LIKE 조건을 사용합니다.
+        if (!keywordString.isEmpty()) {
+            searchDto.setSearchDiv("20");
+            searchDto.setSearchWord(keywordString);
+        } else {
+            // 키워드가 없는 경우, searchDiv와 searchWord를 null로 설정합니다.
+            // 이렇게 하면 SQL 쿼리에서 SUMMARY LIKE 조건이 제외됩니다.
+            searchDto.setSearchDiv(null);
+            searchDto.setSearchWord(null);
+        }
+        
+        // 검색할 행 범위 설정
         searchDto.setStartRow(1);
-        searchDto.setEndRow(5); // 최신 기사 5개만 조회
+        searchDto.setEndRow(5);
 
         return searchDto;
+        
     }
     
     /**
