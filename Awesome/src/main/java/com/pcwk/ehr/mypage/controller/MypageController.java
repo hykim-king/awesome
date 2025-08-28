@@ -266,6 +266,9 @@ public class MypageController {
 	                                            @RequestParam(defaultValue = "5") int pageSize,
 	                                            HttpSession session) throws Exception {
 	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+		log.debug("┌───────────────────────────────────────┐");
+		log.debug("                pageNO: {}", pageNo       );
+		log.debug("└───────────────────────────────────────┘");
 
 	    BookmarkDTO param = new BookmarkDTO();
 	    param.setUserId(loginUser.getUserId());
