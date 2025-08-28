@@ -21,6 +21,24 @@
     margin-bottom: 15px;
 }
 
+.ranking-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.ranking-header h2 {
+    margin: 0;
+}
+
+.current-date {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 5px;
+}
+
 .ranking-item {
     display: flex;
     align-items: center;
@@ -69,7 +87,10 @@
 </style>
 
 <div class="quiz-ranking-sidebar">
-    <h2>🏆 오늘의 퀴즈 랭킹</h2>
+    <div class="ranking-header">
+        <h2>🏆 오늘의 퀴즈 랭킹</h2>
+        <span id="current-date" class="current-date"></span>
+    </div>
     <div id="ranking-list-container">
         <p class="no-data-message">랭킹을 불러오는 중...</p>
     </div>
@@ -78,6 +99,17 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
+    // 현재 날짜를 가져와서 포맷팅하는 함수
+    function displayCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const formattedDate = `${year}년 ${month}월 ${day}일`;
+        $('#current-date').text(formattedDate);
+    }
+
+    // 랭킹 데이터를 로드하는 함수
     function loadRanking() {
         $.ajax({
             url: "${CP}/quiz/ranking.do",
@@ -102,7 +134,6 @@ $(document).ready(function() {
                             rankHtml = '<span class="rank-icon">' + userRank + '</span>';
                         }
                         
-                        // Create elements one by one to avoid potential string errors
                         let rankingItem = $('<div>').addClass('ranking-item');
                         let rankInfo = $('<div>').addClass('rank-info');
                         
@@ -125,7 +156,11 @@ $(document).ready(function() {
         });
     }
 
+    // 페이지 로드 시 랭킹 및 날짜 표시
+    displayCurrentDate();
     loadRanking();
+    
+    // 30초마다 랭킹 데이터 갱신
     setInterval(loadRanking, 30000);
 });
 </script>
