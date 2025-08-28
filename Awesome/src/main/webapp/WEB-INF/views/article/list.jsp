@@ -29,7 +29,49 @@
 .login-modal_card{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  box-shadow:0 10px 30px rgba(0,0,0,.2);}
+/* 카테고리 배너(리스트 상단) */
+.page-article-list .category-hero{
+  max-width: 1280px;
+  margin: 10px auto 12px;       /* 위아래 여백 */
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#1e3a8a 0%, #2563eb 60%, #60a5fa 100%);
+  color:#fff;
+  text-align:center;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+.page-article-list .category-hero h1{
+  margin:0;
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+#container > .category-hero { grid-column: 1 / -1; }
+.page-article-list #container{
+  display: grid; /* 안전망 */
+  grid-template-areas:
+    "header header header header"
+    "banner banner banner banner"   /* ← 이 행이 리스트 페이지에서만 생김 */
+    "leftsidebar main   main   sidebar"
+    "footer footer footer footer";
+  grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
+  grid-template-rows: 100px auto minmax(650px,auto) 100px;
+}
+
+/* 배너 요소를 banner 영역에 꽂기 (리스트 페이지에서만 적용) */
+.page-article-list #container > .category-hero{
+  grid-area: banner;
+  grid-column: 1 / -1;   /* 전체 폭 */
+  margin-bottom: 12px;
+}
+/* 리스트 페이지 배너: 전체 폭으로 */
+.page-article-list #container > .category-hero{
+  width: 100%;
+  max-width: none;      /* ← 핵심 */
+  margin: 0 0 12px;     /* 좌우 가운데 정렬 제거 */
+  border-radius: 0;     /* 모서리 라운드 없애고 싶으면 */
+  /* 배경 그라디언트는 기존 값 유지 */
 }
 </style>
 <script>
@@ -76,6 +118,23 @@
 <div id="container">
   <!-- 헤더(그리드: header) -->
   <jsp:include page="/WEB-INF/views/include/header.jsp" />
+    <c:set var="curCat" value="${empty category ? param.category : category}" />
+  <c:if test="${not empty curCat and fn:trim(curCat) ne 'ALL'}">
+    <c:set var="cat" value="${fn:trim(curCat)}" />
+    <c:choose>
+      <c:when test="${cat eq '10'}"><c:set var="catName" value="정치" /></c:when>
+      <c:when test="${cat eq '20'}"><c:set var="catName" value="경제" /></c:when>
+      <c:when test="${cat eq '30'}"><c:set var="catName" value="사회" /></c:when>
+      <c:when test="${cat eq '40'}"><c:set var="catName" value="스포츠" /></c:when>
+      <c:when test="${cat eq '50'}"><c:set var="catName" value="연예" /></c:when>
+      <c:when test="${cat eq '60'}"><c:set var="catName" value="IT/과학" /></c:when>
+      <c:otherwise><c:set var="catName" value="전체" /></c:otherwise>
+    </c:choose>
+
+    <div class="category-hero" role="banner" aria-label="${catName} 기사">
+      <h1>${catName} 기사</h1>
+    </div>
+  </c:if>
 
   <!-- 메인(그리드: main) -->
   <main id="main">
