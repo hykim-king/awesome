@@ -97,7 +97,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int delete(MemberDTO dto) throws SQLException {
+    public int delete(String dto) throws SQLException {
         return mapper.doDelete(dto);
     }
 

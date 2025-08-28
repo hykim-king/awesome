@@ -73,7 +73,9 @@ public class MypageController {
 	 * 마이페이지 진입 컨트롤러
 	 */
 	@GetMapping
-	public String mypage(Model model, HttpSession session) {
+	public String mypage(Model model, 
+			             HttpSession session,
+			             RedirectAttributes redirect) {
 		log.debug("┌───────────────────────────────────────┐");
 		log.debug("│ mypage()                              │");
 		log.debug("└───────────────────────────────────────┘");
@@ -82,9 +84,7 @@ public class MypageController {
 		
 		 // 1) 로그인 체크: 모달만 띄우고 바로 반환 (조회 X)
 		if(loginUser  == null) {
-			log.warn("로그인 없이 마이페이지 조회 시도 차단됨");
-			model.addAttribute("loginRequired", true);
-			model.addAttribute("message", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
+			redirect.addFlashAttribute("msg", "로그인이 필요한 기능입니다. 먼저 로그인해 주세요.");
 			return "redirect:/member/login.do";
 		}
 		return "mypage/mypage";
@@ -126,11 +126,29 @@ public class MypageController {
 	
 	/**
 	 * 회원정보 수정 컨트롤러/ 닉네임 중복 확인 
+	 * @throws Exception 
 	 */
 	@PostMapping("/update.do")
-	public String updateUser(MemberDTO user, RedirectAttributes redirect) throws SQLException {
-		memberService.updateNickNmByUserId(user);
-	    redirect.addFlashAttribute("msg", "회원정보가 수정되었습니다.");
+	public String updateUser(MemberDTO user, 
+							RedirectAttributes redirect,
+							HttpSession session) throws Exception {
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+	        redirect.addFlashAttribute("msg", "로그인이 필요합니다.");
+	        return "redirect:/login/login.do";
+	    }
+	
+		
+		String nickNm = user.getNickNm();
+		boolean result = memberService.existsByNick(nickNm);
+		if(result != false) {
+			redirect.addFlashAttribute("msg", "중복된 닉네임입니다.");
+			return "redirect:/mypage/edit.do";
+		}
+		
+		user.setUserId(loginUser.getUserId());
+		memberService.updateNickNmByUserId(user); 
+		redirect.addFlashAttribute("msg", "회원정보가 수정되었습니다.");
 	    return "redirect:/mypage/userInfo.do";
 	}
 	
@@ -138,38 +156,47 @@ public class MypageController {
 	 * 회원 탈퇴 컨트롤러/ 팝업 창 추가
 	 */
 	@PostMapping("/delete.do")
-	public String deleteUser(MemberDTO user, RedirectAttributes redirect) throws SQLException {
-		memberService.delete(user);
+	public String deleteUser(HttpSession session, RedirectAttributes redirect) throws SQLException {
+		
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+	    if (loginUser == null) {
+			redirect.addFlashAttribute("msg", "로그인이 필요합니다.");
+		    return "redirect:member/login.do";
+	    }
+		
+		memberService.delete(loginUser.getUserId());
 	    redirect.addFlashAttribute("msg", "회원 탈퇴되었습니다.");
-	    return "redirect:/mainpage/main.do";
+	    return "redirect:/mainPage/main.do";
 	}
 	
 	/**
 	 * 비밀번호 변경 컨트롤러
 	 */
-	@PostMapping(value="/changePassword.do", produces="text/html; charset=UTF-8")
-	@ResponseBody
-	public ResponseEntity<String> changePassword(
+	@PostMapping(value="/changePassword.do")
+	public String changePassword(
 	        @RequestParam String newPwd,
 	        @RequestParam String confirmPwd,
+	        RedirectAttributes redirect,
 	        HttpSession session
 	) {
 	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
 	    if (loginUser == null) {
-	        return htmlScript("로그인이 필요합니다.", "/login.do");
+			redirect.addFlashAttribute("msg", "로그인이 필요합니다.");
+		    return "redirect:/member/login.do";
 	    }
 
 	    if (newPwd == null || newPwd.trim().isEmpty() || !newPwd.equals(confirmPwd)) {
-	        return htmlScript("비밀번호 확인이 일치하지 않습니다.", "/member/changePasswordForm.do");
+			redirect.addFlashAttribute("msg", "비밀번호 확인이 일치하지 않습니다.");
+		    return "redirect:/mypage/edit.do";
 	    }
 
 	    MemberDTO dto = new MemberDTO();
-	    dto.setUserId(loginUser.getUserId()); // ★ 하드코딩 금지
+	    dto.setUserId(loginUser.getUserId()); 
 	    dto.setPwd(newPwd);                   // 서비스에서 해시 처리
 	    memberService.updatePwdByUserId(dto);
-
-	    // 성공 시: 뒤로가기 방지용 replace 권장
-	    return htmlScript("비밀번호가 변경되었습니다.", "/mainpage/main.do", true);
+	    
+		redirect.addFlashAttribute("msg", "비밀번호가 변경되었습니다.");
+	    return "redirect:/mainPage/main.do";
 	}
 
 	// ----- helpers -----
