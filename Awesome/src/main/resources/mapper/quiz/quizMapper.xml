@@ -5,6 +5,13 @@
 
 <mapper namespace="com.pcwk.ehr.mapper.QuizMapper">
 
+ <select id="checkTodayQuizCompletion" resultType="int">
+    SELECT COUNT(*) 
+    FROM QUIZ_RESULT 
+    WHERE USER_ID = #{userId}
+    AND TRUNC(SOLVED_DT) = TRUNC(SYSDATE)
+   </select>
+
  <select id="selectTodaysQuizAndUserAnswers" parameterType="java.lang.String" resultType="com.pcwk.ehr.quiz.domain.QuizDTO">
         <![CDATA[
         SELECT

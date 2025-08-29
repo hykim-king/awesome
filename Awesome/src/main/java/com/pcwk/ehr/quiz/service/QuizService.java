@@ -33,5 +33,7 @@ public interface QuizService {
 	boolean hasUserPlayedToday(String userId) throws SQLException;
 	
 	public List<QuizDTO> getTodaysQuizAndUserAnswers(String userId) throws SQLException;
+	
+	boolean isQuizCompletedToday(String userId);
 
 }
