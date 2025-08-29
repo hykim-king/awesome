@@ -2,6 +2,7 @@ package com.pcwk.ehr.member.service;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -230,5 +231,37 @@ public class MemberServiceImpl implements MemberService {
 	}
 	
 
+	
+	@Override
+	@Transactional
+	public int deleteMany(List<String> ids) {
+	    if (ids == null || ids.isEmpty()) return 0;
 
+	    
+		/*
+		 * // 1) 자식 데이터 먼저 삭제 (존재하지 않으면 0건만 처리됨) mapper.deleteQuizByUserIds(ids); //
+		 * QUIZ_RESULT.USER_ID mapper.deleteReportByReporterIds(ids); // REPORT.USER_ID
+		 * (신고자) mapper.deleteReportByTargetIds(ids); // REPORT.CT_ID (신고대상)
+		 * mapper.deleteChatByUserIds(ids); // CHAT_MESSAGE.USER_ID
+		 * mapper.deleteReportByUserIds(ids);
+		 */
+	    
+	    
+	    
+	    int quizCnt   = mapper.countQuizByIds(ids);
+	    int reportCnt = 0; // 필요 시 mapper.countReportByUserIds(ids)+mapper.countReportByTargetIds(ids);
+	    int chatCnt   = 0; // 필요 시 mapper.countChatByUserIds(ids);
+
+	    if (quizCnt > 0 || reportCnt > 0 || chatCnt > 0) {
+	        // 자식이 하나라도 있으면 예외 발생시켜 컨트롤러에서 메시지 처리
+	        throw new org.springframework.dao.DataIntegrityViolationException(
+	            "연결된 데이터 존재: quiz=" + quizCnt + ", report=" + reportCnt + ", chat=" + chatCnt);
+	    }
+
+	    return mapper.deleteMembersByIds(ids);
+	}
+	
+	
+	
+	
 }
