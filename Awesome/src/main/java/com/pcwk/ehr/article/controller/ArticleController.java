@@ -21,6 +21,7 @@ import com.pcwk.ehr.article.domain.ArticleDTO;
 import com.pcwk.ehr.article.domain.ArticleSearchDTO;
 import com.pcwk.ehr.article.service.ArticleService;
 import com.pcwk.ehr.member.domain.MemberDTO;
+import com.pcwk.ehr.userKeyword.service.UserKeywordService;
 import com.pcwk.ehr.userLog.service.UserLogService;
 
 
@@ -35,6 +36,9 @@ public class ArticleController {
 	
 	@Autowired
 	UserLogService userLogService; // 로그 저장용_가민경
+	
+	@Autowired
+    UserKeywordService userKeywordService; // UserKeywordService 주입
 
 
 
@@ -134,12 +138,32 @@ public class ArticleController {
 	    if (loginUser != null) {
 	        userLogService.logArticleClick(loginUser.getUserId(), articleCode);
 	        log.debug("****기사 클릭 로그 저장: {}, articleCode={}", loginUser.getUserId(), articleCode);
+	        
+	     // 키워드 추출 및 저장 요청 추가
+	     	try {
+	     		userKeywordService.processArticleKeywords(loginUser.getUserId(), article.getTitle());
+	     		log.info("키워드 추출 및 저장 요청 완료: {}", article.getTitle());
+	     	} catch (Exception e) {
+	     		log.error("키워드 처리 중 오류 발생", e);
+	     		}
 	    } else {
 	        log.debug("비로그인, 로그 저장 생략");
 	    }
 
 	    log.debug(" session loginUser = {}", loginUser);
 		//여기까지_로그기록용
+	    
+	    // 3. 키워드 추출 로직 추가 (로그인 상태일 때만)
+	    if (loginUser != null) {
+            try {
+                // 키워드 추출 서비스를 호출하여 파이썬 서버와 통신
+                userKeywordService.processArticleKeywords(loginUser.getUserId(), article.getTitle());
+                log.info("키워드 추출 및 저장 요청 완료: {}", article.getTitle());
+            } catch (Exception e) {
+                log.error("키워드 처리 중 오류 발생", e);
+                // 오류가 발생해도 리다이렉트는 진행
+            }
+        }
 		
 		return "redirect:"+url;
 	}
