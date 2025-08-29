@@ -21,10 +21,9 @@ public class ChatbotController {
         return "chatBot/chatBot"; // chatBot.jsp를 반환
     }
 
-    @RequestMapping(value = "/chatbot/ask", method = RequestMethod.POST)
+    @RequestMapping(value = "/chatbot/ask", method = RequestMethod.POST, produces = "text/plain; charset=UTF-8")
     @ResponseBody
     public String askChatbot(@RequestParam("message") String message) {
-        String response = openAiService.getChatResponse(message);
-        return response;
+    	return openAiService.getChatResponse(message);
     }
 }

@@ -77,6 +77,9 @@
         .send-button:hover {
             background-color: #0056b3;
         }
+         /*-- 챗봇 메시지(종민 추가) --*/
+        .bot-list { margin: 0; padding-left: 18px; }
+        .bot-list li { margin: 2px 0; }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
@@ -97,17 +100,43 @@
             var chatWindow = $('#chat-window');
             var chatInput = $('.chat-input');
             var sendButton = $('.send-button');
+            //XSS 방지용 이스케이프(XSS가 된다면 사용자 권한으로 들어가서 여러가지 문제를 일으킬수 잇어서!!(예: 세션 탈취, 악성 스크립트 유포))
+            function escapeHtml(s){
+                return String(s).replace(/[&<>"']/g, function(c){
+                  return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+                });
+              }
 
             // 메시지를 화면에 추가하는 함수
-            function addMessage(sender, message) {
-                var containerClass = (sender === 'user') ? 'user-message' : 'bot-message';
-                var bubbleHtml = '<div class="message-container ' + containerClass + '">' +
-                                 '<div class="bubble">' + message + '</div>' +
-                                 '</div>';
-                chatWindow.append(bubbleHtml);
-                chatWindow.scrollTop(chatWindow[0].scrollHeight);
-            }
-
+		    function addMessage(sender, message) {
+		      var containerClass = (sender === 'user') ? 'user-message' : 'bot-message';
+		
+		      // 기존: 문자열 템플릿 → 변경: jQuery로 엘리먼트 생성
+		      var $wrap   = $('<div class="message-container '+containerClass+'"></div>');   
+		      var $bubble = $('<div class="bubble"></div>');                                 
+		
+		      if (sender === 'bot') {                                                        
+		        var lines = String(message).split(/\r?\n/).map(function(s){                   
+		          return s.trim();
+		        }).filter(Boolean);
+		
+		        if (lines.length >= 2) {                                                  
+		          var $ul = $('<ul class="bot-list"></ul>');                                  
+		          $.each(lines, function(_, t){
+		            $ul.append('<li>'+escapeHtml(t)+'</li>');                           
+		          });
+		          $bubble.append($ul);                                                      
+		        } else {
+		          $bubble.text(message);                                                    
+		        }
+		      } else {
+		        $bubble.text(message);                                                      
+		      }
+		
+		      $wrap.append($bubble);                                                         
+		      chatWindow.append($wrap);                                                       
+		      chatWindow.scrollTop(chatWindow[0].scrollHeight);
+		    }
             // 메시지 전송 함수
             function sendMessage() {
                 var userMessage = chatInput.val().trim();
