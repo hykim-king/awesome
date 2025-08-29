@@ -33,26 +33,26 @@
   .city-label.춘천 { top:17%; left:59%; }
 
   /* 중부 */
-  .city-label.세종 { top:37%; left:43%; }
+
   .city-label.대전 { top:46%; left:47%; }
 
   /* 영남 */
-  .city-label.대구 { top:62%; left:60%; }
+  .city-label.대구 { top:62%; left:65%; }
 
-  .city-label.울산 { top:64%; left:77%; }
-  .city-label.부산 { top:73%; left:71%; }
+  .city-label.울산 { top:64%; left:83%; }
+  .city-label.부산 { top:75%; left:71%; }
 
   /* 호남 */
   .city-label.광주 { top:62%; left:36%; }
 
   /* 제주 */
-  .city-label.제주 { top:98%; left:16%; }
+  .city-label.제주 { top:98%; left:20%; }
 </style>
 
 <div class="weather-map">
   <!-- 지도 배경 (로드 실패 시 폴백 이미지/색) -->
   <img
-    src="${ctx}/resources/file/map_of_Korea.png"
+    src="${ctx}/resources/file/map_of_Korea_3.png"
     alt="대한민국 지도"
     class="map-image"
     onerror="this.onerror=null; this.style.background='#ddd'; this.alt='지도 로드 실패';"
