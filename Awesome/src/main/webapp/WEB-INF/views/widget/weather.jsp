@@ -30,10 +30,10 @@
 
   .city-label.서울 { top:19%; left:41%; }
   .city-label.인천 { top:25%; left:20%; }
-  .city-label.춘천 { top:17%; left:59%; }
+  .city-label.강릉 { top:24%; left:73%; }
 
-  /* 중부 */
-
+  /* 충청 */
+  .city-label.태안 { top:40%; left:20%; }
   .city-label.대전 { top:46%; left:47%; }
 
   /* 영남 */
