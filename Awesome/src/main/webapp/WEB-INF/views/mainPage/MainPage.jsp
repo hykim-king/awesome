@@ -456,8 +456,8 @@ a:hover {
     const left  = document.querySelector('.keywords-left');
     const right = document.querySelector('.keywords-right');
 
-    // (선택) 같은 페이지에서 뒤로가기/새로고침 시 중복 애니메이션 막기
-    const played = sessionStorage.getItem('kw_anim_played') === '1';
+    // 같은 페이지에서 뒤로가기/새로고침 시 중복 애니메이션 막기
+   // const played = sessionStorage.getItem('kw_anim_played') === '1';
 
     if (!played) {
         // 왼쪽 박스 먼저
