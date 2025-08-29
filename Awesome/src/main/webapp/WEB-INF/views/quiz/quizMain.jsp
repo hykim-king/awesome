@@ -45,14 +45,13 @@
                 padding: 15px 40px; /* 버튼 패딩 키움 */
                 border-radius: 10px; /* 모서리를 더 둥글게 */
                 box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 강화 */
-                background-color: #0047FF; /* 이미지와 유사한 파란색 */
+                background-color: #0047FF; /*파란색 */
                 color: white; /* 흰색 글자 */
                 border: none;
                 font-weight: bold; /* 글자 굵게 */
                 cursor: pointer; /* 마우스 오버 시 포인터 변경 */
                 transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 부드러운 전환 효과 */
-            ">
-            > 시작!
+            ">시작!
             </button>
         </div>
 
@@ -81,7 +80,7 @@
 
             // 3. 시간 조건에 따라 버튼 상태 변경
             if(isQuizTime){
-                quizBtn.text(">시작");
+                quizBtn.text("시작");
                 quizBtn.prop("disabled", false);
                 // 활성화된 버튼 스타일
                 quizBtn.css({"background-color": "#007bff", "color": "white", "box-shadow": "0 4px 6px rgba(0,0,0,0.1)"});
