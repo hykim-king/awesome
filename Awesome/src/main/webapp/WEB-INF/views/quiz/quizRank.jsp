@@ -99,15 +99,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
-    // 현재 날짜를 가져와서 포맷팅하는 함수
-    function displayCurrentDate() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const formattedDate = `${year}년 ${month}월 ${day}일`;
-        $('#current-date').text(formattedDate);
-    }
 
     // 랭킹 데이터를 로드하는 함수
     function loadRanking() {
@@ -125,11 +116,11 @@ $(document).ready(function() {
                         let userRank = parseInt(rank.userRank, 10);
                         
                         if (userRank === 1) {
-                            rankHtml = '<img src="https://i.imgur.com/gold_crown_icon.png" alt="1위" class="rank-icon">';
+                            rankHtml = '<img src="https://img.icons8.com/?size=100&id=X6CJMckcVrBj&format=png&color=000000" alt="1위" class="rank-icon">';
                         } else if (userRank === 2) {
-                            rankHtml = '<img src="https://i.imgur.com/silver_crown_icon.png" alt="2위" class="rank-icon">';
+                            rankHtml = '<img src="https://img.icons8.com/?size=100&id=dgAxfaiZaNr6&format=png&color=000000" alt="2위" class="rank-icon">';
                         } else if (userRank === 3) {
-                            rankHtml = '<img src="https://i.imgur.com/bronze_crown_icon.png" alt="3위" class="rank-icon">';
+                            rankHtml = '<img src="https://img.icons8.com/?size=100&id=lMwvkoCmvpSJ&format=png&color=000000" alt="3위" class="rank-icon">';
                         } else {
                             rankHtml = '<span class="rank-icon">' + userRank + '</span>';
                         }
@@ -147,7 +138,7 @@ $(document).ready(function() {
                         rankingContainer.append(rankingItem);
                     });
                 } else {
-                    rankingContainer.append('<p class="no-data-message">아직 랭킹 정보가 없습니다.</p>');
+                    rankingContainer.append('<p class="no-data-message">정오 이후 업데이트됩니다.</p>');
                 }
             },
             error: function(xhr, status, error) {
@@ -158,7 +149,6 @@ $(document).ready(function() {
     }
 
     // 페이지 로드 시 랭킹 및 날짜 표시
-    displayCurrentDate();
     loadRanking();
     
     // 30초마다 랭킹 데이터 갱신
