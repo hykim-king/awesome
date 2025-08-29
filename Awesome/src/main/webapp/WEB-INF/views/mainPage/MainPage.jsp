@@ -241,7 +241,7 @@ a:hover {
 	<!---------------------- #1 Today's HOT ISSUE + 키워드 6개 -->
 	<section id="main-hot-issue">
 		<!-- 배경이랑 키워드 섹션분리 -->
-		  <video autoplay muted loop playsinline id="bg-video" preload="auto" poster="${ctx}/resources/file/main_poster.jpg">
+		  <video autoplay muted loop playsinline id="bg-video" preload="auto">
     <source src="${ctx}/resources/file/main_mp4_1.mp4" type="video/mp4">
   </video>
 		<div class="hot-issue-inner">
