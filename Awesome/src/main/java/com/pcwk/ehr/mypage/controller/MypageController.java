@@ -161,10 +161,14 @@ public class MypageController {
 	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
 	    if (loginUser == null) {
 			redirect.addFlashAttribute("msg", "로그인이 필요합니다.");
-		    return "redirect:member/login.do";
+		    return "redirect:/member/login.do";
 	    }
 		
 		memberService.delete(loginUser.getUserId());
+		
+	    // ✅ 세션 무효화 (로그아웃 처리)
+	    session.invalidate();
+		
 	    redirect.addFlashAttribute("msg", "회원 탈퇴되었습니다.");
 	    return "redirect:/mainPage/main.do";
 	}
@@ -195,6 +199,9 @@ public class MypageController {
 	    dto.setPwd(newPwd);                   // 서비스에서 해시 처리
 	    memberService.updatePwdByUserId(dto);
 	    
+	    // ✅ 세션 무효화 (로그아웃 처리)
+	    session.invalidate();
+	    
 		redirect.addFlashAttribute("msg", "비밀번호가 변경되었습니다.");
 	    return "redirect:/mainPage/main.do";
 	}
@@ -217,41 +224,6 @@ public class MypageController {
 	    return ResponseEntity.ok().headers(headers).body(script);
 	}
 	
-//	@PostMapping("/changePassword.do")
-//	public String changePassword(
-//	        @RequestParam String newPwd,
-//	        @RequestParam String confirmPwd,
-//	        HttpSession session,
-//	        RedirectAttributes redirect
-//	) {
-//		log.debug("┌───────────────────────────────────────┐");
-//		log.debug("│ changePassword()                      │");
-//		log.debug("└───────────────────────────────────────┘");
-//		MemberDTO userId = (MemberDTO) session.getAttribute("loginUser");
-//	    if (userId == null) {
-//	        redirect.addFlashAttribute("error", "로그인이 필요합니다.");
-//	        return "redirect:/login.do";
-//	    }
-//
-//	    // 새 비밀번호 확인
-//	    if (newPwd == null || newPwd.trim().isEmpty() || !newPwd.equals(confirmPwd)) {
-//	        redirect.addFlashAttribute("error", "비밀번호 확인이 일치하지 않습니다.");
-//	        return "redirect:/member/changePasswordForm.do";
-//	    }
-//
-//	    // DTO 하나로 전달
-//	    MemberDTO dto = new MemberDTO();
-//	    dto.setUserId(userId.getUserId());     // 세션에서 강제
-//	    dto.setPwd(newPwd);        // 평문(서비스에서 해시)
-//	    
-//	    // 서비스에서 encode + update
-//	    memberService.updatePwdByUserId(dto);
-//
-//	    redirect.addFlashAttribute("msg", "비밀번호가 변경되었습니다.");
-//	    return "redirect:/mainpage/main.do";
-//	}
-	
-	//각 컨트롤러 마다 로그인 되어있는지 확인
 	
 	/**
 	 * -----------회원정보 END
@@ -266,9 +238,6 @@ public class MypageController {
 	                                            @RequestParam(defaultValue = "5") int pageSize,
 	                                            HttpSession session) throws Exception {
 	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
-		log.debug("┌───────────────────────────────────────┐");
-		log.debug("                pageNO: {}", pageNo       );
-		log.debug("└───────────────────────────────────────┘");
 
 	    BookmarkDTO param = new BookmarkDTO();
 	    param.setUserId(loginUser.getUserId());
@@ -394,6 +363,7 @@ public class MypageController {
 
 	    UserLogDTO param = new UserLogDTO();
 	    param.setUserId(loginUser.getUserId());
+	    param.setNickNm(loginUser.getNickNm());
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
 
@@ -402,7 +372,7 @@ public class MypageController {
 	    }
 
 	    UserChartDTO top = list.get(0);
-	    return "안녕하세요 " + param.getUserId()+"님" + "\n이번 주 " + top.getCategory() + " 분야를 유심히 보셨네요.";
+	    return "안녕하세요 " + param.getNickNm()+"님" + "\n이번 주 " + "'" + top.getCategory() + "'" + " 분야를 유심히 보셨네요.";
 	}
 	
 	/**

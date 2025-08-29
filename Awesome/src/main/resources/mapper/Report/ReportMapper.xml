@@ -132,7 +132,13 @@
           R.CT_ID,
           R.REASON,
           <include refid="reason_label_sql"/> AS REASON_LABEL,
-          R.REASON_DETAIL,   
+          R.REASON_DETAIL,  
+	      CASE R.STATUS
+	         WHEN 'RECEIVED' THEN '접수'
+	         WHEN 'REVIEWING' THEN '검토중'
+	         WHEN 'RESOLVED' THEN '조치완료'
+	         ELSE '알 수 없음'
+	      END AS STATUS_LABEL, 
           R.STATUS,
           R.REG_DT,
           R.MOD_DT,

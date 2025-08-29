@@ -49,7 +49,7 @@ public class MemberController {
     @GetMapping("/logout.do")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/mypage";
+        return "redirect:/mainPage/main.do";
     }
     
     /* ===== Logout admin ===== */
