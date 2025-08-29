@@ -55,7 +55,7 @@
 
        <form method="get" action="<c:url value='/admin/articles.do'/>">
 		  <select name="searchDiv" class="select">
-		    <option value="">전체</option>
+		    <!-- <option value="">전체</option> -->
 		    <option value="30" ${param.searchDiv=='30' ? 'selected' : ''}>언론사</option>
 		    <option value="10" ${param.searchDiv=='10' ? 'selected' : ''}>기사제목</option>
 		    <%-- <option value="20" ${param.searchDiv=='20' ? 'selected' : ''}>요약</option> --%>

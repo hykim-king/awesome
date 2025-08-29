@@ -1,6 +1,7 @@
 package com.pcwk.ehr.member.service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.pcwk.ehr.member.domain.MemberDTO;
 
@@ -50,7 +51,17 @@ public interface MemberService {
      * @return 1(성공)/0(실패)
      * @throws SQLException
      */
+
+    int delete(MemberDTO dto) throws SQLException;
+    
+    
+    
+    
+    /** FK 제약으로 실패할 수 있으니 컨트롤러에서 메시지 처리 */
+    int deleteMany(List<String> ids);
+
     int delete(String dto) throws SQLException;
+
 
     /**
      * 이메일 인증 메일 전송

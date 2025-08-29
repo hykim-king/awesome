@@ -11,50 +11,23 @@ import com.pcwk.ehr.member.domain.MemberDTO;
 
 @Mapper
 public interface MemberMapper extends WorkDiv<MemberDTO> {
-	
-	int doDelete(String userId);
 
-    int deleteAll() throws SQLException;
+    // ===== 참조 카운트 =====
+    int countQuizByIds(@Param("ids") List<String> ids);
+    int countReportByUserIds(@Param("ids") List<String> ids);
+    int countReportByTargetIds(@Param("ids") List<String> ids);
+    int countChatByUserIds(@Param("ids") List<String> ids);
 
-    int getCount();
+    // ===== 자식 삭제 =====
+    int deleteQuizByUserIds(@Param("ids") List<String> ids);
+    int deleteReportByUserIds(@Param("ids") List<String> ids);
+    int deleteReportByTargetIds(@Param("ids") List<String> ids);
+    int deleteChatByUserIds(@Param("ids") List<String> ids);
 
-    int idCheck(String userId);
-    
-    int existsById(@Param("userId") String userId);
-    
-    int existsByEmail(@org.apache.ibatis.annotations.Param("mailAddr") String mailAddr);
+    // ===== MEMBER 다건 삭제 =====
+    int deleteMembersByIds(@Param("ids") List<String> ids);
 
-    MemberDTO findByUserId(@Param("userId") String userId);
-    
-    int markEmailVerifiedByToken(@Param("token") String token);
-
-    //닉네임 중복
-    int existsByNick(@Param("nickNm") String nickNm);
-
-    String findUserId(@Param("userNm") String userNm,
-            @Param("mailAddr") String mailAddr);
-    
-    /** 메일주소 기준으로 인증토큰만 갱신 */
-    int updateEmailAuthTokenByEmail(@Param("email") String email,
-                                    @Param("token") String token) throws SQLException;
-
-    /** (선택) userId 기준 버전 */
-    int updateEmailAuthTokenByUserId(@Param("userId") String userId,
-                                     @Param("token") String token) throws SQLException;
-
-    /** 토큰으로 회원 1건 조회 */
-    MemberDTO findByEmailAuthToken(@Param("token") String token) throws SQLException;
-    
-    int updateResetToken(@Param("userId") String userId,
-            @Param("mailAddr") String mailAddr,
-            @Param("token") String token);
-
-    int updatePasswordByToken(@Param("token") String token,
-                 				@Param("pwd") String pwd);
-
-    
-    
- 
+    // ===== 관리자 목록/검색/등급 =====
     int countMembersForAdmin(@Param("type") String type,
                              @Param("keyword") String keyword,
                              @Param("grade") Integer grade);
@@ -68,9 +41,6 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
     int updateGradeByUserId(@Param("userId") String userId,
                             @Param("grade") int grade);
 
-    int deleteMembersByIds(@Param("list") List<String> ids);
 
-    int updateNickNmByUserId(MemberDTO param);
     
-    int updatePwdByUserId(MemberDTO param);
 }
