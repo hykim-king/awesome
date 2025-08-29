@@ -9,14 +9,16 @@
     INSERT INTO CHAT_MESSAGE (
         CHAT_CODE, 
         CATEGORY, 
-        USER_ID, 
+        USER_ID,
+        NICK_NM, 
         MESSAGE, 
         SEND_DT
         )
     VALUES (
         #{chatCode}, 
         #{category}, 
-        #{userId}, 
+        #{userId},
+        #{nickNm},
         #{message},
          <choose>
         <!-- 테스트에서 명시 시간 주면 그대로 저장 -->
@@ -41,7 +43,8 @@
     SELECT 
         CHAT_CODE, 
         CATEGORY, 
-        USER_ID, 
+        USER_ID,
+        NICK_NM,   
         MESSAGE, 
         SEND_DT
         FROM CHAT_MESSAGE
@@ -62,7 +65,8 @@
 	    SELECT 
 	       CHAT_CODE, 
 	       CATEGORY,  
-	       USER_ID, 
+	       USER_ID,
+	       NICK_NM, 	        
 	       MESSAGE, 
 	       SEND_DT
 	    FROM CHAT_MESSAGE
@@ -81,7 +85,8 @@
 	    SELECT 
 	       CHAT_CODE, 
 	       CATEGORY, 
-	       USER_ID, 
+	       USER_ID,
+	       NICK_NM, 
 	       MESSAGE, 
 	       SEND_DT
 	    FROM CHAT_MESSAGE
