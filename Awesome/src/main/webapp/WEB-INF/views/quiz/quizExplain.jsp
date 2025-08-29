@@ -132,7 +132,7 @@ pageEncoding="UTF-8"%>
             </div>
             
             <div class="button-container">
-                <button type="button" id="goToResultBtn">> 결과화면</button>
+                <button type="button" id="goToResultBtn">결과화면</button>
             </div>
         </div>
         
