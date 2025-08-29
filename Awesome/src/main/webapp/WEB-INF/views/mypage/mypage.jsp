@@ -212,10 +212,13 @@ function loadBookmarks(pageNo, pageSize) {
         list.forEach(item => {
           
           html += 
-            '<div class="item" data-article-code="' + item.articleCode + '">' +
-              '<div class="title"><a href="' + escapeHtml(item.url) + '" target="_blank">'
-                  + escapeHtml(item.title) + '</div>' +
-              '<div class="summary">' + escapeHtml(item.summary) + '</div>' +
+       	  '<article class="item" data-article-code="' + item.articleCode + '">' +
+       	    '<h4 class="title">' +
+       	      '<a class="title-link" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener">' +
+       	        escapeHtml(item.title) +
+       	      '</a>' +
+       	    '</h4>' +
+       	    '<p class="summary">' + escapeHtml(item.summary) + '</p>' +
         	  '<div class="meta">' +
                  '<span class="press">' + escapeHtml(item.press) + '</span>' +
                  '<span class="date">' + escapeHtml(item.regDt) + '</span>' +
@@ -321,10 +324,13 @@ function loadRecommend() {
     } else {
       list.forEach(item => {
         html += 
-          '<div class="item" data-article-code="' + item.articleCode + '">' +
-            '<div class="title"><a href="' + escapeHtml(item.url) + '" target="_blank">'
-               + escapeHtml(item.title) + '</div>' +
-            '<div class="summary">' + escapeHtml(item.summary) + '</div>' +
+       	  '<article class="item" data-article-code="' + item.articleCode + '">' +
+       	    '<h4 class="title">' +
+       	      '<a class="title-link" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener">' +
+       	        escapeHtml(item.title) +
+       	      '</a>' +
+       	    '</h4>' +
+       	    '<p class="summary">' + escapeHtml(item.summary) + '</p>' +
             '<div class="meta">' +
                '<span class="press">' + escapeHtml(item.press) + '</span>' +
                '<span class="date">' + escapeHtml(item.regDt) + '</span>' +
