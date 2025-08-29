@@ -45,14 +45,13 @@
                 padding: 15px 40px; /* 버튼 패딩 키움 */
                 border-radius: 10px; /* 모서리를 더 둥글게 */
                 box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* 그림자 효과 강화 */
-                background-color: #0047FF; /* 이미지와 유사한 파란색 */
+                background-color: #0047FF; /*파란색 */
                 color: white; /* 흰색 글자 */
                 border: none;
                 font-weight: bold; /* 글자 굵게 */
                 cursor: pointer; /* 마우스 오버 시 포인터 변경 */
                 transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 부드러운 전환 효과 */
-            ">
-            > 시작!
+            ">시작!
             </button>
         </div>
 
@@ -81,7 +80,7 @@
 
             // 3. 시간 조건에 따라 버튼 상태 변경
             if(isQuizTime){
-                quizBtn.text(">시작");
+                quizBtn.text("시작");
                 quizBtn.prop("disabled", false);
                 // 활성화된 버튼 스타일
                 quizBtn.css({"background-color": "#007bff", "color": "white", "box-shadow": "0 4px 6px rgba(0,0,0,0.1)"});
@@ -93,12 +92,16 @@
             }
 
             // 4. 버튼 클릭 이벤트 처리
+            // 비로그인/로그인 alert문구 및 페이지 이동 다르게 처리
             quizBtn.on("click", function(){
-                // 퀴즈 주의사항 안내
-                alert("퀴즈 주의사항:\n\n1. 퀴즈는 하루에 한 번만 참여 가능합니다.\n2. 모든 문제를 풀어야 제출이 완료됩니다.\n3. 제출 후에는 답을 수정할 수 없습니다.");
-                
-                // 확인 클릭 시 퀴즈 페이지로 이동
-                window.location.href = "${CP}/quiz/quizPaging.do"; // quizPaging 화면으로 이동
+            	const isLoggedIn = "${not empty sessionScope.loginUser}";
+            	if(isLoggedIn === "false") {
+            		 alert("로그인이 필요한 서비스입니다.");
+            		 window.location.href = "${CP}/member/login.do";
+              } else {
+            		alert("퀴즈 주의사항:1. 퀴즈는 하루에 한 번만 참여 가능합니다. 2. 모든 문제를 풀어야 제출이 완료됩니다. 3. 제출 후에는 답을 수정할 수 없습니다. 4. 이미 참여를 완료하셨으면 메인페이지로 넘어갑니다.");
+            		window.location.href = "${CP}/quiz/quizPaging.do";
+            	}
             });
         });
       </script>

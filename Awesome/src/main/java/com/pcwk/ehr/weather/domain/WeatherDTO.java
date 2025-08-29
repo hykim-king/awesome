@@ -43,9 +43,9 @@ public class WeatherDTO {
 
 	public String getSkyText() {
         switch (sky) {
-            case 1: return "맑음";
-            case 3: return "구름많음";
-            case 4: return "흐림";
+            case 1: return "☀️";
+            case 3: return "⛅";
+            case 4: return "☁️";
             default: return "알수없음";
         }
     }
@@ -53,12 +53,12 @@ public class WeatherDTO {
     public String getPtyText() {
         switch (pty) {
             case 0: return "강수없음";
-            case 1: return "비";
+            case 1: return "☔";
             case 2: return "비/눈";
-            case 3: return "눈";
-            case 5: return "빗방울";
+            case 3: return "🌨️";
+            case 5: return "🌧️";
             case 6: return "빗방울/눈날림";
-            case 7: return "눈날림";
+            case 7: return "❄️";
             default: return "알수없음";
         }
     }
