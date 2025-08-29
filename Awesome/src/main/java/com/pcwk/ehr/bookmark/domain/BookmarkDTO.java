@@ -2,6 +2,8 @@ package com.pcwk.ehr.bookmark.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class BookmarkDTO {
 
 	private int bmCode;      //북마크 코드
@@ -11,6 +13,8 @@ public class BookmarkDTO {
 	private String summary;  //기사 요약
 	private String press;	 //언론사
 	private String url;      //url
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date regDt;	 //북마크 날짜
 	private int totalCnt;	 //총 개수
 	
