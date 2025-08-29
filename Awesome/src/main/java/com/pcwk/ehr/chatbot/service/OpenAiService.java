@@ -46,58 +46,76 @@ public class OpenAiService {
 
     public String getChatResponse(String userMessage) {
         try {
-            // 사용자 질문에서 핵심 키워드 및 카테고리 추출
+            // 1) 키워드/카테고리 추출 → DB 검색
             ArticleSearchDTO searchDto = extractSearchKeywords(userMessage);
-
-            // 데이터베이스 검색
             List<ArticleDTO> articles = articleMapper.doRetrieve(searchDto);
-
-            // 검색 결과가 없는 경우, 사용자에게 안내 메시지 반환
             if (articles.isEmpty()) {
-                return "죄송합니다. 요청하신 내용과 관련된 기사를 찾을 수 없습니다. " +
-                       "혹시 '오늘 정치 뉴스 알려줘' 또는 '최신 AI 기술 기사'처럼 구체적으로 질문해주시겠어요?";
+                return "죄송합니다. 요청하신 내용과 관련된 기사를 찾을 수 없습니다. "
+                     + "혹시 '오늘 정치 뉴스 알려줘' 또는 '최신 AI 기술 기사'처럼 구체적으로 질문해주시겠어요?";
             }
 
-            // 검색된 기사 정보를 OpenAI에 전달할 프롬프트로 가공
+            // 2) 프롬프트용 기사 정보(원하면 제목만 보내도록 바꿔도 됨)
             String dbInfo = formatArticlesForPrompt(articles);
-            
+
+            // 3) OpenAI 요청 준비
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(openAIApiKey);
+            headers.set("Authorization", "Bearer " + openAIApiKey.trim());
 
             ObjectNode requestBody = objectMapper.createObjectNode();
-            requestBody.put("model", "gpt-3.5-turbo");
+            requestBody.put("model", "gpt-4o-mini");
+            requestBody.put("max_tokens", 300);
+            requestBody.put("temperature", 0.2);
 
+            // ✅ 여기서 messages를 "반드시" 선언해야 함
             ArrayNode messages = objectMapper.createArrayNode();
-            
+
             ObjectNode systemRole = objectMapper.createObjectNode();
             systemRole.put("role", "system");
-            systemRole.put("content", "당신은 제공된 기사 정보를 활용하여 사용자의 질문에 답변하는 챗봇입니다. 제공된 정보 외의 내용에 대해서는 '모른다'고 답하세요.");
+            systemRole.put("content",
+                "역할: 뉴스 추천 비서.\n"
+              + "- 제공된 기사 목록 안에서만 선택할 것.\n"
+              + "- 출력 형식: '제목'만 한 줄에 하나씩.\n"
+              + "- 번호/불릿/설명/링크/언론사/날짜 금지. 제목 문자열만.\n"
+              + "- 최대 5줄.\n"
+              + "- 제목은 제공된 값 그대로 사용할 것."
+            );
             messages.add(systemRole);
 
             ObjectNode dbInfoPrompt = objectMapper.createObjectNode();
             dbInfoPrompt.put("role", "system");
             dbInfoPrompt.put("content", dbInfo);
             messages.add(dbInfoPrompt);
-            
+
             ObjectNode userMessageNode = objectMapper.createObjectNode();
             userMessageNode.put("role", "user");
             userMessageNode.put("content", userMessage);
             messages.add(userMessageNode);
 
             requestBody.set("messages", messages);
-            requestBody.put("temperature", 0.7);
 
             HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
-            
-            // OpenAI API 호출
-            ResponseEntity<String> response = restTemplate.postForEntity(API_URL, entity, String.class);
+
+            // 4) 호출
+            ResponseEntity<String> response =
+                restTemplate.postForEntity(API_URL, entity, String.class);
+
+            // 5) 응답 파싱 + "제목만" 후처리
             JsonNode rootNode = objectMapper.readTree(response.getBody());
             JsonNode choices = rootNode.path("choices");
-
             if (choices.isArray() && choices.size() > 0) {
-                String content = choices.get(0).path("message").path("content").asText();
-                return content.trim();
+                String content = choices.get(0).path("message").path("content").asText("");
+
+                String titlesOnly = Arrays.stream(content.split("\\r?\\n"))
+                    .map(s -> s.replaceAll("^\\s*[-*•]+\\s*", ""))   // 불릿 제거
+                    .map(s -> s.replaceAll("^\\s*\\d+[.)]\\s*", "")) // 번호 제거 (1. / 1) 등)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .distinct()
+                    .limit(5)
+                    .collect(Collectors.joining("\n"));
+
+                return titlesOnly.isEmpty() ? "추천 결과가 없습니다." : titlesOnly;
             }
 
             return "챗봇 응답을 받지 못했습니다.";
