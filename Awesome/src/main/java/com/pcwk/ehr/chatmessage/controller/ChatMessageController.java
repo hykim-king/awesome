@@ -1,7 +1,7 @@
 package com.pcwk.ehr.chatmessage.controller;
 
 import java.security.Principal;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,11 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,24 +59,32 @@ public class ChatMessageController {
 	                      SimpMessageHeaderAccessor accessor) throws Exception {
 
 	    String uid = null;
+	    String outnick = null;
+
 	    
 	    Map<String,Object> attrs = accessor.getSessionAttributes();
 	    if (attrs != null) {
 	        Object lu = attrs.get("loginUser");
 	        if (lu instanceof MemberDTO) {
 	            uid = ((MemberDTO) lu).getUserId();
-	        } else if (attrs.get("USER_ID") != null) {
-	            uid = String.valueOf(attrs.get("USER_ID"));
+	        } else if (attrs.get("loginUser") != null) {
+	            uid = String.valueOf(attrs.get("loginUser"));
 	        }
+	        
 	    }
 	    if (uid == null || uid.trim().isEmpty()) {
 	        log.warn("비로그인 채팅 차단");
 	        return;
 	    }
-
+	    
+	    	outnick = String.valueOf(attrs.get("USER_NICK"));
+	    	log.debug("outnick:{}",outnick);
+	    	log.debug("uid:{}",uid);
+	    	
 	    payload.setCategory(category);
 	    payload.setUserId(uid);
-	    payload.setSendDt(new java.util.Date());
+	    payload.setNickNm(outnick);
+	    payload.setSendDt(new Date());
 	    service.doSave(payload);
 	    messagingTemplate.convertAndSend("/topic/chat/" + category, payload);
 	    log.info("채팅 수신: category={}, userId={}, message={}", category, uid, payload.getMessage());

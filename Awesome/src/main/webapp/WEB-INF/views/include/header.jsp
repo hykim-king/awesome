@@ -8,9 +8,7 @@
 response.setHeader("Pragma","no-cache");
 response.setDateHeader("Expires", 0);%>
 
-<head>
-<link href="https://fonts.googleapis.com/earlyaccess/nanumbarungothic.css" rel="stylesheet">
-</head>
+
 
 <!--header-->
 <header id="header">

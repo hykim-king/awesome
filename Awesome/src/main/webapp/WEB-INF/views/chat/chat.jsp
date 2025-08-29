@@ -410,13 +410,14 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
     li.className   = 'chat-item';
     li.dataset.code = m.chatCode || 0;
     li.dataset.uid  = m.userId   || 'user***';
+    li.dataset.outnick  = m.nickNm   || 'nick***';
     li.dataset.text = m.message  || '';
 
     var html = ''
       + '<div class="avatar">'+ esc((li.dataset.uid.charAt(0)||'u')) +'</div>'
       + '<div class="bubble">'
       +   '<div class="meta">'
-      +     '<span class="uid">'+ esc(li.dataset.uid) +'</span>'
+      +     '<span class="uid">'+ esc(li.dataset.outnick) +'</span>'
       +     '<span class="time">'+ esc(fmt(m.sendDt)) +'</span>'
       +     '<button class="report" type="button" title="신고">🚨 신고</button>'
       +   '</div>'
