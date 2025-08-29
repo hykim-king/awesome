@@ -3,6 +3,9 @@ package com.pcwk.ehr.userLog.domain;
 import java.util.Date;
 
 public class UserLogDTO {
+	
+	private String nickNm;  //닉네임
+	
     /*
      * LOG_CODE      로그 고유 코드      NUMBER(15)
      * USER_ID       회원아이디         VARCHAR2(30)
@@ -13,6 +16,7 @@ public class UserLogDTO {
     private String userId;      // USER_ID
     private Long articleCode;   // ARTICLE_CODE
     private Date clickedAt;     // CLICKED_AT
+    
     
 
     // 기본 생성자
@@ -29,6 +33,10 @@ public class UserLogDTO {
 
 	
 	// Getter / Setter
+    
+	public String getNickNm() {return nickNm;}
+	public void setNickNm(String nickNm) {this.nickNm = nickNm;}
+    
     public Long getLogCode() { return logCode; }
     public void setLogCode(Long logCode) { this.logCode = logCode; }
 

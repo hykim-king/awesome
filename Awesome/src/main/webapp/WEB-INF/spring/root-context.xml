@@ -161,7 +161,9 @@
         <property name="password" value="" />
         <property name="protocol" value="smtp" />
         <property name="javaMailProperties"> -->
-
+    <context:property-placeholder
+    location="classpath:application.properties"
+    ignore-unresolvable="true"/>
 
 
 

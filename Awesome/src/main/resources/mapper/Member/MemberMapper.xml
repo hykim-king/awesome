@@ -5,83 +5,148 @@
 
 <mapper namespace="com.pcwk.ehr.mapper.MemberMapper">
 
-  <!-- ====================== 참조 카운트 ====================== -->
-  <select id="countQuizByIds" parameterType="list" resultType="int">
-    SELECT COUNT(*)
-      FROM QUIZ_RESULT
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
+  <!-- ====================== 공통/회원 기본 CRUD ====================== -->
+
+  <insert id="doSave" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
+    INSERT INTO MEMBER (
+      USER_ID, PWD, USER_NM, NICK_NM, BIRTH_DT,
+      MAIL_ADDR, EMAIL_AUTH_YN, EMAIL_AUTH_TOKEN, USER_GRADE_CD,
+      REG_DT, MOD_DT
+    ) VALUES (
+      #{userId}, #{pwd}, #{userNm}, #{nickNm}, #{birthDt},
+      #{mailAddr}, #{emailAuthYn}, #{emailAuthToken}, #{userGradeCd},
+      #{regDt}, #{modDt}
+    )
+  </insert>
+
+  <select id="doSelectOne"
+          parameterType="com.pcwk.ehr.member.domain.MemberDTO"
+          resultType="com.pcwk.ehr.member.domain.MemberDTO">
+    SELECT *
+      FROM MEMBER
+     WHERE USER_ID = #{userId}
   </select>
 
-  <select id="countReportByUserIds" parameterType="list" resultType="int">
-    SELECT COUNT(*) FROM REPORT
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
+  <select id="existsByEmail" parameterType="string" resultType="int">
+    SELECT COUNT(1)
+      FROM MEMBER
+     WHERE UPPER(TRIM(MAIL_ADDR)) = UPPER(TRIM(#{mailAddr}))
   </select>
 
-  <select id="countReportByTargetIds" parameterType="list" resultType="int">
-    SELECT COUNT(*) FROM REPORT
-     WHERE CT_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </select>
+  <update id="doUpdate" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
+    UPDATE MEMBER
+       SET PWD              = #{pwd, jdbcType=VARCHAR},
+           USER_NM          = #{userNm, jdbcType=VARCHAR},
+           NICK_NM          = #{nickNm, jdbcType=VARCHAR},
+           BIRTH_DT         = #{birthDt, jdbcType=VARCHAR},
+           MAIL_ADDR        = #{mailAddr, jdbcType=VARCHAR},
+           EMAIL_AUTH_YN    = #{emailAuthYn, jdbcType=VARCHAR},
+           EMAIL_AUTH_TOKEN = #{emailAuthToken, jdbcType=VARCHAR},
+           USER_GRADE_CD    = #{userGradeCd, jdbcType=NUMERIC},
+           MOD_DT           = #{modDt, jdbcType=DATE}
+     WHERE USER_ID          = #{userId, jdbcType=VARCHAR}
+  </update>
 
-  <select id="countChatByUserIds" parameterType="list" resultType="int">
-    SELECT COUNT(*) FROM CHAT_MESSAGE
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </select>
-
-  <!-- ====================== 자식 삭제 ====================== -->
-  <delete id="deleteQuizByUserIds" parameterType="list">
-    DELETE FROM QUIZ_RESULT
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
-
-  <delete id="deleteReportByUserIds" parameterType="list">
-    DELETE FROM REPORT
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
-
-  <delete id="deleteReportByTargetIds" parameterType="list">
-    DELETE FROM REPORT
-     WHERE CT_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
-
-  <delete id="deleteChatByUserIds" parameterType="list">
-    DELETE FROM CHAT_MESSAGE
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
-
-  <!-- ====================== MEMBER 다건 삭제 ====================== -->
-  <delete id="deleteMembersByIds" parameterType="list">
+  <delete id="doDelete" parameterType="String">
     DELETE FROM MEMBER
-     WHERE USER_ID IN
-    <foreach collection="ids" item="id" open="(" separator="," close=")">
-      #{id}
-    </foreach>
+     WHERE USER_ID = #{userId}
   </delete>
 
-  <!-- ====================== 관리자 목록/검색/등급 ====================== -->
+  <delete id="deleteAll">
+    DELETE FROM MEMBER
+  </delete>
+
+  <select id="findByEmailAuthToken" parameterType="String"
+          resultType="com.pcwk.ehr.member.domain.MemberDTO">
+    SELECT *
+      FROM MEMBER
+     WHERE EMAIL_AUTH_TOKEN = #{token}
+  </select>
+
+  <update id="updateEmailAuthTokenByEmail">
+    UPDATE MEMBER
+       SET EMAIL_AUTH_TOKEN = #{token},
+           MOD_DT           = SYSDATE
+     WHERE MAIL_ADDR        = #{email}
+  </update>
+
+  <update id="updateEmailAuthTokenByUserId">
+    UPDATE MEMBER
+       SET EMAIL_AUTH_TOKEN = #{token},
+           MOD_DT           = SYSDATE
+     WHERE USER_ID          = #{userId}
+  </update>
+
+  <update id="markEmailVerifiedByToken">
+    UPDATE MEMBER
+       SET EMAIL_AUTH_YN = 'Y',
+           MOD_DT        = SYSDATE
+     WHERE EMAIL_AUTH_TOKEN = #{token}
+  </update>
+
+  <update id="updateResetToken">
+    UPDATE MEMBER
+       SET EMAIL_AUTH_TOKEN = #{token},
+           MOD_DT = SYSDATE
+     WHERE USER_ID  = #{userId}
+       AND MAIL_ADDR = #{mailAddr}
+  </update>
+
+  <update id="updatePasswordByToken">
+    UPDATE MEMBER
+       SET PWD = #{pwd},
+           EMAIL_AUTH_TOKEN = 'USED_' || #{token},
+           MOD_DT = SYSDATE
+     WHERE EMAIL_AUTH_TOKEN = #{token}
+  </update>
+
+  <select id="existsById" parameterType="string" resultType="int">
+    SELECT COUNT(1)
+      FROM MEMBER
+     WHERE UPPER(USER_ID) = UPPER(TRIM(#{userId}))
+  </select>
+
+  <select id="existsByNick" parameterType="string" resultType="int">
+    SELECT COUNT(*)
+      FROM MEMBER
+     WHERE NICK_NM = #{nickNm}
+  </select>
+
+  <select id="findByUserId" parameterType="string"
+          resultType="com.pcwk.ehr.member.domain.MemberDTO">
+    SELECT USER_ID, PWD, USER_NM, NICK_NM, BIRTH_DT,
+           MAIL_ADDR, EMAIL_AUTH_YN, EMAIL_AUTH_TOKEN, USER_GRADE_CD,
+           REG_DT, MOD_DT
+      FROM MEMBER
+     WHERE USER_ID = #{userId}
+  </select>
+
+  <select id="findUserId" resultType="string">
+    SELECT USER_ID
+      FROM MEMBER
+     WHERE USER_NM  = #{userNm}
+       AND MAIL_ADDR = #{mailAddr}
+     ORDER BY REG_DT DESC
+     FETCH FIRST 1 ROW ONLY
+  </select>
+
+  <update id="updatePwdByUserId" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
+    UPDATE MEMBER
+       SET PWD    = #{pwd},
+           MOD_DT = SYSDATE
+     WHERE USER_ID = #{userId}
+  </update>
+
+  <update id="updateNickNmByUserId" parameterType="com.pcwk.ehr.member.domain.MemberDTO">
+    UPDATE MEMBER
+       SET NICK_NM = #{nickNm},
+           MOD_DT  = SYSDATE
+     WHERE USER_ID = #{userId}
+  </update>
+
+  <!-- ====================== 관리자 전용 섹션 ====================== -->
+
+  <!-- 공통 where -->
   <sql id="admin_member_where">
     WHERE 1=1
     <if test="type == 'id' and keyword != null and keyword != ''">
@@ -95,11 +160,14 @@
     </if>
   </sql>
 
+  <!-- 총 개수 -->
   <select id="countMembersForAdmin" resultType="int">
-    SELECT COUNT(*) FROM MEMBER
+    SELECT COUNT(*)
+      FROM MEMBER
     <include refid="admin_member_where"/>
   </select>
 
+  <!-- 목록 (OFFSET/FETCH: Oracle 12c+) -->
   <select id="listMembersForAdmin"
           resultType="com.pcwk.ehr.member.domain.MemberDTO">
     SELECT USER_ID, USER_NM, NICK_NM, MAIL_ADDR, BIRTH_DT,
@@ -110,10 +178,21 @@
     OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
   </select>
 
+  <!-- 등급 변경 -->
   <update id="updateGradeByUserId">
     UPDATE MEMBER
        SET USER_GRADE_CD = #{grade},
            MOD_DT        = SYSDATE
      WHERE USER_ID      = #{userId}
   </update>
+
+  <!-- 일괄 삭제: 인터페이스 @Param("ids")와 동일한 이름 사용 -->
+  <delete id="deleteMembersByIds">
+    DELETE FROM MEMBER
+     WHERE USER_ID IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+
 </mapper>

@@ -2,13 +2,15 @@ package com.pcwk.ehr.report.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class ReportDTO {
 
 	
 	
 	
 	private String reasonLabel; // 화면 표시용 라벨(한글)
-
+    private String statusLabel; //화면 표시용 라벨(한글)
 	
 	private String reasonDetail; // 신고 기타사항 상세 텍스트
 
@@ -23,6 +25,7 @@ public class ReportDTO {
     private String ctId;      // 신고 대상 ID
     private String reason;    // 신고 사유 (SPAM, OBSCENITY 등)
     private String status;    // 처리 상태 (검토중/조치완료)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;       // 신고일
     private Date modDt;       // 수정일
 
@@ -64,7 +67,11 @@ public class ReportDTO {
     
     
 
-    public String getReasonLabel() { return reasonLabel; }
+
+	public String getStatusLabel() {return statusLabel;}
+	public void setStatusLabel(String statusLabel) {this.statusLabel = statusLabel;}
+	
+	public String getReasonLabel() { return reasonLabel; }
     public void setReasonLabel(String reasonLabel) { this.reasonLabel = reasonLabel; }
     
     public int getReportCode() { return reportCode; }
@@ -99,24 +106,15 @@ public class ReportDTO {
 
     public Date getTargetSendDt() { return targetSendDt; }
     public void setTargetSendDt(Date targetSendDt) { this.targetSendDt = targetSendDt; }
+	
     
-  
-
     @Override
-    public String toString() {
-        return "ReportDTO{" +
-                "reportCode=" + reportCode +
-                ", chatCode=" + chatCode +
-                ", userId='" + userId + '\'' +
-                ", ctId='" + ctId + '\'' +
-                ", reason='" + reason + '\'' +
-                ", status='" + status + '\'' +
-                ", regDt=" + regDt +
-                ", modDt=" + modDt +
-                ", targetUserId='" + targetUserId + '\'' +
-                ", targetMessage='" + targetMessage + '\'' +
-                ", targetSendDt=" + targetSendDt +
-                ",reasonDetail='" + reasonDetail + "'}";
-               
-    }
+	public String toString() {
+		return "ReportDTO [reasonLabel=" + reasonLabel + ", statusLabel=" + statusLabel + ", reasonDetail="
+				+ reasonDetail + ", reportCode=" + reportCode + ", chatCode=" + chatCode + ", userId=" + userId
+				+ ", ctId=" + ctId + ", reason=" + reason + ", status=" + status + ", regDt=" + regDt + ", modDt="
+				+ modDt + ", targetUserId=" + targetUserId + ", targetMessage=" + targetMessage + ", targetSendDt="
+				+ targetSendDt + "]";
+	}
+    
 }

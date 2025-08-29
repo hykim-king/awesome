@@ -10,6 +10,8 @@ public class ChatMessageDTO {
 	
 	private String userId; //사용자Id
 	
+	private String nickNm;
+	
 	private String message; //메시지 내용
 	
 	private Date sendDt; // 메시지 전송 시간
@@ -25,6 +27,16 @@ public class ChatMessageDTO {
 		this.userId = userId;
 		this.message = message;
 		this.sendDt = sendDt;
+	}
+	
+	
+
+	public String getNickNm() {
+		return nickNm;
+	}
+
+	public void setNickNm(String nickNm) {
+		this.nickNm = nickNm;
 	}
 
 	public int getChatCode() {
@@ -67,10 +79,11 @@ public class ChatMessageDTO {
 		this.sendDt = sendDt;
 	}
 
+
 	@Override
 	public String toString() {
-		return "ChatMessageDTO [chatCode=" + chatCode + ", category=" + category + ", userId=" + userId + ", message="
-				+ message + ", sendDt=" + sendDt + ", toString()=" + super.toString() + "]";
+		return "ChatMessageDTO [chatCode=" + chatCode + ", category=" + category + ", userId=" + userId + ", nickNm="
+				+ nickNm + ", message=" + message + ", sendDt=" + sendDt + ", toString()=" + super.toString() + "]";
 	}
 
 	public void setReason(int i) {

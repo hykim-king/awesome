@@ -64,7 +64,7 @@ public class QuizController {
         
         if (quizService.hasUserPlayedToday(loginUser.getUserId())) {
             redirectAttributes.addFlashAttribute("message", "오늘의 퀴즈에 이미 참여하셨습니다. 내일 다시 도전해주세요!");
-            return "redirect:/quiz/main.do";
+            return "redirect:/mainPage/main.do";
         }
         
         List<QuizDTO> quizList = quizService.getTodaysQuiz();

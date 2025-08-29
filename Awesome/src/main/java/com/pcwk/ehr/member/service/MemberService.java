@@ -44,12 +44,14 @@ public interface MemberService {
      */
     int update(MemberDTO dto) throws SQLException;
 
+    //파라미터 타입 String으로 수정!!!!!!!!!!
     /**
      * 회원 삭제
      * @param dto
      * @return 1(성공)/0(실패)
      * @throws SQLException
      */
+<<<<<<< HEAD
     int delete(MemberDTO dto) throws SQLException;
     
     
@@ -57,6 +59,9 @@ public interface MemberService {
     
     /** FK 제약으로 실패할 수 있으니 컨트롤러에서 메시지 처리 */
     int deleteMany(List<String> ids);
+=======
+    int delete(String dto) throws SQLException;
+>>>>>>> main
 
     /**
      * 이메일 인증 메일 전송

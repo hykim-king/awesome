@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="${mainCss}">
 <link rel="stylesheet" href="${headerCss}">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/sidebar_category.css?v=1" />
+<c:url var="bannerImg" value="/resources/file/banner.png"/>
 <style>
 /* 보이기/숨기기 */
 .hidden{ display:none !important; }
@@ -29,7 +30,51 @@
 .login-modal_card{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  box-shadow:0 10px 30px rgba(0,0,0,.2);}
+/* 카테고리 배너(리스트 상단) */
+/* 배너 한 세트(가운데 정렬 + 전체폭 + 배경 이미지) */
+.page-article-list #container > .category-hero{
+
+  grid-area: banner;
+  grid-column: 1 / -1;
+
+  /* 레이아웃/크기 */
+  width: 100%;
+  max-width: none;
+  margin: 0 0 12px;
+  border-radius: 0;      
+
+  /* 배경(오버레이 + 이미지) */
+  background:
+    linear-gradient(to right, rgba(0,0,0,.30), rgba(0,0,0,.15)),
+    url('${bannerImg}') center/cover no-repeat;
+  color: #fff;
+  min-height: 100px;      
+
+  /* 텍스트 중앙 정렬 */
+  display: grid;
+  place-items: center;    
+  padding: 0 20px;  
+}
+
+/* 배너 타이틀 스타일 */
+.page-article-list .category-hero h1{
+  margin: 0;
+  font-size: 28px;        
+  font-weight: 800;
+  letter-spacing: .2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35); 
+}
+#container > .category-hero { grid-column: 1 / -1; }
+.page-article-list #container{
+  display: grid; /* 안전망 */
+  grid-template-areas:
+    "header header header header"
+    "banner banner banner banner"   /* ← 이 행이 리스트 페이지에서만 생김 */
+    "leftsidebar main   main   sidebar"
+    "footer footer footer footer";
+  grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
+  grid-template-rows: 100px auto minmax(650px,auto) 100px;
 }
 </style>
 <script>
@@ -74,10 +119,27 @@
 
 <body class="page-article-list" data-cat="${empty category ? param.category : category}">
 <div id="container">
-  <!-- 헤더(그리드: header) -->
+  <!-- 헤더 -->
   <jsp:include page="/WEB-INF/views/include/header.jsp" />
+    <c:set var="curCat" value="${empty category ? param.category : category}" />
+  <c:if test="${not empty curCat and fn:trim(curCat) ne 'ALL'}">
+    <c:set var="cat" value="${fn:trim(curCat)}" />
+    <c:choose>
+      <c:when test="${cat eq '10'}"><c:set var="catName" value="정치" /></c:when>
+      <c:when test="${cat eq '20'}"><c:set var="catName" value="경제" /></c:when>
+      <c:when test="${cat eq '30'}"><c:set var="catName" value="사회" /></c:when>
+      <c:when test="${cat eq '40'}"><c:set var="catName" value="스포츠" /></c:when>
+      <c:when test="${cat eq '50'}"><c:set var="catName" value="연예" /></c:when>
+      <c:when test="${cat eq '60'}"><c:set var="catName" value="IT/과학" /></c:when>
+      <c:otherwise><c:set var="catName" value="전체" /></c:otherwise>
+    </c:choose>
 
-  <!-- 메인(그리드: main) -->
+    <div class="category-hero" role="banner" aria-label="${catName} 기사">
+      <h1>${catName} 기사</h1>
+    </div>
+  </c:if>
+
+  <!-- 메인 -->
   <main id="main">
     <!-- 검색 폼 -->
     <c:url var="searchAction" value="/article/list.do" />
@@ -256,7 +318,7 @@
     </div>
   </main>
 
-  <!-- 사이드바(그리드: sidebar) — 포함만 함. 포함된 JSP의 루트가 <div id="sidebar"> 이어야 함 -->
+  <!-- 사이드바 -->
   <c:set var="currentCategory" value="${empty category ? param.category : category}" />
   <c:choose>
     <c:when test="${empty currentCategory or fn:trim(currentCategory) eq 'ALL'}">
@@ -271,11 +333,11 @@
     </c:otherwise>
   </c:choose>
 
-  <!-- 푸터(그리드: footer) -->
+  <!-- footer -->
   <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </div>
 
-<!-- ===== 스크립트 ===== -->
+
 <script>
 /* 리스트 화면에서만 즉시 조회수 +1 (UI 반영용) */
 (function(){

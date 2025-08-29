@@ -87,8 +87,9 @@
 <body>
    <div id="container">
     
-    <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
-    <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
+     <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
       <main id="main">
       <div class="main-container">
 
@@ -96,7 +97,7 @@
         <div class="result-summary-card">
             <div class="icon">🏆</div>
             <h3>수고하셨습니다!</h3>
-            <h2><strong>${sessionScope.loginUser.userId}</strong>님의 최종 점수입니다.</h2>
+            <h2><strong>${sessionScope.loginUser.nickNm}</strong>님의 최종 점수입니다.</h2>
             
             <%-- 컨트롤러에서 전달받은 correctCount와 totalCount로 점수 계산 --%>
             <c:if test="${totalCount > 0}">
@@ -119,30 +120,9 @@
         </div>
         
         <div class="button-container">
-            <a href="${CP}/" id="goToMainBtn" class="btn">메인으로 돌아가기</a>
+            <a href="${CP}/mainPage/main.do" id="goToMainBtn" class="btn">메인으로 돌아가기</a>
         </div>
       </div>
-
-
-        <c:choose>
-     <c:when test="${empty sessionScope.loginUser}">
-        <div style="display:flex; gap:12px;">
-           <a class="btn" href="<c:url value='/member/login.do'/>">로그인</a>
-           <a class="btn" href="<c:url value='/member/register.do'/>">회원가입</a>
-        </div>
-     </c:when>
-    
-     <c:otherwise>
-        <div style="display:flex; gap:12px; align-items:center;">
-           <span><strong>${sessionScope.loginUser.userId}</strong>님 환영합니다!</span>
-           <a class="btn" href="<c:url value='/member/logout.do'/>">로그아웃</a>
-        </div>
-     </c:otherwise>
-   </c:choose>
-
-         
-
-
       </div>
       </main>
       <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
