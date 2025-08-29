@@ -57,6 +57,9 @@ public interface QuizMapper {
      * @return List<QuizDTO>
      */
     List<QuizDTO> selectTodaysQuizAndUserAnswers(String userId);
+    
+    // 특정 사용자가 오늘 퀴즈를 풀었는지 확인하는 메서드
+    int checkTodayQuizCompletion(String userId);
 	
 	//======================================================================
 	// 테스트 지원용 메서드 (Test Support Methods)

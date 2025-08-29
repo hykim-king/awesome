@@ -3,7 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
-  background-color: #f9f9fb; /* 전체 배경 톤 살짝 부드럽게 */
+  background-color: transparent;
 }
 
 .grid {
@@ -154,12 +154,4 @@
 }
 .userInfo-btn:hover {
   background-color: #0836cc;
-}
-
-.main-container {
-  max-width: 1280px;   /* 메인 영역 최대 폭 */
-  margin: 0 auto;      /* 수평 중앙 정렬 */
-  padding-left: 40px;  /* 좌우 여백 확보 */
-  padding-right: 40px;
-  box-sizing: border-box;
 }

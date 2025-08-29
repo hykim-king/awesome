@@ -2,6 +2,8 @@ package com.pcwk.ehr.article.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class ArticleDTO {
 
 	// 1. 기사 코드
@@ -29,6 +31,7 @@ public class ArticleDTO {
 	private int views;
 
 	// 9. 등록일
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date regDt;
 
 	// 10. 수정일

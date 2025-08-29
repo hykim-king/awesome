@@ -49,7 +49,7 @@ public class MemberController {
     @GetMapping("/logout.do")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/mypage";
+        return "redirect:/mainPage/main.do";
     }
     
     /* ===== Logout admin ===== */
@@ -208,6 +208,8 @@ public class MemberController {
         MemberDTO loginUser = memberService.login(dto);
         if (loginUser != null) {
             session.setAttribute("loginUser", loginUser);
+            session.setAttribute("USER_ID",   loginUser.getUserId());
+            session.setAttribute("USER_NICK", loginUser.getNickNm()); // 닉네임 세션 추가
             session.setAttribute("userGradeCd", loginUser.getUserGradeCd());
             ra.addFlashAttribute("message", loginUser.getUserId() + "님 로그인 성공!");
             if (Integer.valueOf(0).equals(loginUser.getUserGradeCd())) {

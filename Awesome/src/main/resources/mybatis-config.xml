@@ -12,6 +12,7 @@
     <typeAlias alias="BookmarkDTO" type="com.pcwk.ehr.bookmark.domain.BookmarkDTO"/>
     <typeAlias alias="UserLogDTO" type="com.pcwk.ehr.userLog.domain.UserLogDTO"/>
     <typeAlias alias="UserChartDTO" type="com.pcwk.ehr.userLog.domain.UserChartDTO"/>
+    <typeAlias alias="UserKeywordDTO" type="com.pcwk.ehr.userKeyword.domain.UserKeywordDTO"/>
   </typeAliases>
  
 </configuration> 

@@ -29,13 +29,15 @@ public class WeatherService {
     static {
         CITY_COORDS.put("서울", new int[]{60, 127});
         CITY_COORDS.put("인천", new int[]{55, 124});
+        CITY_COORDS.put("강릉", new int[]{92, 131});  
+        // CITY_COORDS.put("춘천", new int[]{73, 134}); 강를으로 변경
         CITY_COORDS.put("대전", new int[]{67, 100});
         CITY_COORDS.put("대구", new int[]{89, 90});
         CITY_COORDS.put("부산", new int[]{98, 76});
         CITY_COORDS.put("광주", new int[]{58, 74});
         CITY_COORDS.put("울산", new int[]{102, 84});
-        CITY_COORDS.put("세종", new int[]{66, 103});
-        CITY_COORDS.put("춘천", new int[]{73, 134});
+      //  CITY_COORDS.put("세종", new int[]{66, 103}); 태안으로 변경
+        CITY_COORDS.put("태안", new int[]{48, 109});
         CITY_COORDS.put("제주", new int[]{52, 38});
     }
 

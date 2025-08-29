@@ -67,7 +67,7 @@ public class QuizServiceImpl implements QuizService{
     
     @Override
     public boolean hasUserPlayedToday(String userId) throws SQLException {
-        return mapper.checkIfUserPlayedToday(userId) > 0;
+        return mapper.checkTodayQuizCompletion(userId) > 0;
     }
 	
 	
@@ -76,5 +76,10 @@ public class QuizServiceImpl implements QuizService{
         return mapper.selectTodaysQuizAndUserAnswers(userId);
     }
 	
+    @Override
+    public boolean isQuizCompletedToday(String userId) {
+        int count = mapper.checkTodayQuizCompletion(userId);
+        return count > 0;
+        }
 
 }
