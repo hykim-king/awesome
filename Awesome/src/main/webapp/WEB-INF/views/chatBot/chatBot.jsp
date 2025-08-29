@@ -114,7 +114,7 @@
   <!-- 플로팅 챗봇 패널 (처음엔 닫힘: is-open 없음) -->
   <div id="chatbot-panel" class="chatbot-container" aria-hidden="true">
     <div class="chatbot-header">
-      AI 기사 챗봇
+      이슈봇
       <!-- (선택) 닫기 버튼: 스타일이 있다면 예쁘게 보입니다 -->
       <button type="button" class="chatbot-close" aria-label="닫기" style="position:absolute;right:8px;top:8px;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer;">×</button>
     </div>
