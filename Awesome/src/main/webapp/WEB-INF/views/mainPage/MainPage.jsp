@@ -12,7 +12,7 @@
 <meta charset="UTF-8">
 <title>HOT ISSUE - 오늘의 흐름을 잡다</title>
 
-<link rel="stylesheet" href="${ctx}/resources/css/MainPage.css">
+<link rel="stylesheet" href="${ctx}/resources/css/mainPage.css">
 
 
 <!--  더보기 박스 강제주입 -->
@@ -92,7 +92,7 @@
 	overflow: hidden;
 }
 
-/* 상단 텍스트 링크는 라이트에 맞춰 밑줄 제거 정도만 */
+/* 상단 텍스트 링크는 라이트에 맞춰 밑줄 제거 */
 #main-recommended .top-text a {
 	color: #111;
 	text-decoration: none;
@@ -104,7 +104,7 @@
 
 /* 해더 */
 :root { -
-	-blue: #0a45ff; /* 상단 바 색 */ -
+	-blue: #28396E; /* 상단 바 색 */ -
 	-text: #111;
 }
 
@@ -119,7 +119,7 @@
 
 #header .menu-bar {
 	height: 100px;
-	background: 022ca8;
+	/*background: 022ca8;*/
 	display: flex;
 	align-items: center;
 	padding: 0 20px;
@@ -188,6 +188,8 @@ a {
 a:hover {
   text-decoration: none; 
 }
+
+
 </style>
 
 </head>
@@ -207,7 +209,7 @@ a:hover {
 			<div class="menu-bar">
 				<div class="navbar-left">
 					<a href="http://localhost:8080/ehr/mainPage/main.do" class="logo"><img
-						src="${ctx}/resources/file/logo_5.png" alt="HotIssue Logo"
+						src="${ctx}/resources/file/logo_007.png" alt="HotIssue Logo"
 						style="height: 60px;"> </a>
 					<ul class="main-menu">
 						<li><a href="http://localhost:8080/ehr/mainPage/main.do">홈</a></li>
@@ -239,6 +241,9 @@ a:hover {
 	<!---------------------- #1 Today's HOT ISSUE + 키워드 6개 -->
 	<section id="main-hot-issue">
 		<!-- 배경이랑 키워드 섹션분리 -->
+		  <video autoplay muted loop playsinline id="bg-video" preload="auto" poster="${ctx}/resources/file/main_poster.jpg">
+    <source src="${ctx}/resources/file/main_mp4_1.mp4" type="video/mp4">
+  </video>
 		<div class="hot-issue-inner">
 
 			<div class="keywords-left">
@@ -276,7 +281,7 @@ a:hover {
 				</c:forEach>
 			</div>
 			<div class="hot-title">
-				<!--  텍스트 삭제 GIF로 대체 -->
+				<!--  텍스트 삭제 GIF 배경으로 대체 -->
 			</div>
 			<div class="keywords-right">
 				<c:forEach var="k" items="${keywords}" varStatus="st">
@@ -438,8 +443,6 @@ a:hover {
 		<!-- 오른쪽: 날씨 -->
 		<div class="right">
 			<section id="main-weather">
-
-				<h4>현재날씨</h4>
 				<jsp:include page="/widget/weather" />
 
 
@@ -448,6 +451,31 @@ a:hover {
 		</div>
 
 	</section>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const left  = document.querySelector('.keywords-left');
+    const right = document.querySelector('.keywords-right');
 
+    // (선택) 같은 페이지에서 뒤로가기/새로고침 시 중복 애니메이션 막기
+    const played = sessionStorage.getItem('kw_anim_played') === '1';
+
+    if (!played) {
+        // 왼쪽 박스 먼저
+        setTimeout(() => {
+          left && left.classList.add('active');
+        }, 2000); // 2초 뒤 시작
+
+        // 오른쪽 박스는 조금 뒤에
+        setTimeout(() => {
+          right && right.classList.add('active');
+        }, 2300);
+
+        sessionStorage.setItem('kw_anim_played', '1');
+      } else {
+        left && left.classList.add('active');
+        right && right.classList.add('active');
+      }
+    });
+  </script>
 </body>
 </html>

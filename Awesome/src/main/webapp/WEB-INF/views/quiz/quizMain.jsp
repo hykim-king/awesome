@@ -93,12 +93,16 @@
             }
 
             // 4. 버튼 클릭 이벤트 처리
+            // 비로그인/로그인 alert문구 및 페이지 이동 다르게 처리
             quizBtn.on("click", function(){
-                // 퀴즈 주의사항 안내
-                alert("퀴즈 주의사항:\n\n1. 퀴즈는 하루에 한 번만 참여 가능합니다.\n2. 모든 문제를 풀어야 제출이 완료됩니다.\n3. 제출 후에는 답을 수정할 수 없습니다.");
-                
-                // 확인 클릭 시 퀴즈 페이지로 이동
-                window.location.href = "${CP}/quiz/quizPaging.do"; // quizPaging 화면으로 이동
+            	const isLoggedIn = "${not empty sessionScope.loginUser}";
+            	if(isLoggedIn === "false") {
+            		 alert("로그인이 필요한 서비스입니다.");
+            		 window.location.href = "${CP}/member/login.do";
+              } else {
+            		alert("퀴즈 주의사항:1. 퀴즈는 하루에 한 번만 참여 가능합니다. 2. 모든 문제를 풀어야 제출이 완료됩니다. 3. 제출 후에는 답을 수정할 수 없습니다. 4. 이미 참여를 완료하셨으면 메인페이지로 넘어갑니다.");
+            		window.location.href = "${CP}/quiz/quizPaging.do";
+            	}
             });
         });
       </script>

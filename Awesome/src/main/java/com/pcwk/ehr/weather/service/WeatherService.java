@@ -34,7 +34,7 @@ public class WeatherService {
         CITY_COORDS.put("부산", new int[]{98, 76});
         CITY_COORDS.put("광주", new int[]{58, 74});
         CITY_COORDS.put("울산", new int[]{102, 84});
-        CITY_COORDS.put("세종", new int[]{66, 103});
+      //  CITY_COORDS.put("세종", new int[]{66, 103});
         CITY_COORDS.put("춘천", new int[]{73, 134});
         CITY_COORDS.put("제주", new int[]{52, 38});
     }
