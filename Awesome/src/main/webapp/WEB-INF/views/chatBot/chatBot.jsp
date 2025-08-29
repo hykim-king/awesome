@@ -80,26 +80,86 @@
          /*-- 챗봇 메시지(종민 추가) --*/
         .bot-list { margin: 0; padding-left: 18px; }
         .bot-list li { margin: 2px 0; }
+        /* 플로팅 런처 버튼 */
+		.chat-launcher{
+		  position: fixed; right: 24px; bottom: 24px;
+		  width: 56px; height: 56px; border-radius: 50%;
+		  border: 0; background:#007bff; color:#fff; font-size:24px;
+		  display:flex; align-items:center; justify-content:center;
+		  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+		  cursor:pointer; z-index: 9998;
+		}
+		.chat-launcher:hover{ background:#0056b3; }
+		
+		/* 플로팅 챗봇 패널(처음엔 숨김). 기존 .chatbot-container 스타일을 덮어쓰기 위해 id 선택자 사용 */
+		#chatbot-panel{
+		  position: fixed; right: 24px; bottom: 90px;
+		  width: 360px; max-height: 70vh;
+		  box-shadow: 0 12px 28px rgba(0,0,0,.25);
+		  border-radius: 12px; overflow: hidden; z-index: 9999;
+		
+		  transform: translateY(8px); opacity: 0; pointer-events: none;
+		  transition: transform .2s ease, opacity .2s ease;
+		}
+		#chatbot-panel.is-open{
+		  transform: translateY(0); opacity: 1; pointer-events: auto;
+		}
+		
+		/* 패널 안 채팅 영역 높이(플로팅에 맞게 조정) */
+		#chat-window{ height: 320px; }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-
-    <div class="chatbot-container">
-        <div class="chatbot-header">AI 기사 챗봇</div>
-        <div id="chat-window">
-        </div>
-        <div class="chat-input-container">
-            <input type="text" class="chat-input" placeholder="기사 관련 질문을 입력하세요...">
-            <button class="send-button">전송</button>
-        </div>
+  <!-- 플로팅 챗봇 패널 (처음엔 닫힘: is-open 없음) -->
+  <div id="chatbot-panel" class="chatbot-container" aria-hidden="true">
+    <div class="chatbot-header">
+      AI 기사 챗봇
+      <!-- (선택) 닫기 버튼: 스타일이 있다면 예쁘게 보입니다 -->
+      <button type="button" class="chatbot-close" aria-label="닫기" style="position:absolute;right:8px;top:8px;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer;">×</button>
     </div>
+
+    <div id="chat-window"></div>
+
+    <div class="chat-input-container">
+      <input type="text" class="chat-input" placeholder="기사 관련 질문을 입력하세요...">
+      <button class="send-button" type="button">전송</button>
+    </div>
+  </div>
+
+  <!-- 플로팅 런처 버튼 -->
+  <button id="chat-launcher"
+          class="chat-launcher"
+          aria-controls="chatbot-panel"
+          aria-expanded="false"
+          title="AI 챗봇 열기">💬</button>
 
     <script>
         $(document).ready(function() {
             var chatWindow = $('#chat-window');
             var chatInput = $('.chat-input');
             var sendButton = $('.send-button');
+            
+            var $panel    = $('#chatbot-panel');
+            var $launcher = $('#chat-launcher');
+            var $closeBtn = $('.chatbot-close');
+            
+            function openPanel(){
+                $panel.addClass('is-open').attr('aria-hidden','false');
+                $launcher.attr('aria-expanded','true');
+                setTimeout(function(){ chatInput.focus(); }, 50);
+            }
+            function closePanel(){
+                $panel.removeClass('is-open').attr('aria-hidden','true');
+                $launcher.attr('aria-expanded','false');
+            }
+            
+            //런처 버튼/닫기 버튼 동작
+            $launcher.on('click', function(){
+              $panel.hasClass('is-open') ? closePanel() : openPanel();
+            });
+            $closeBtn.on('click', closePanel);
+
             //XSS 방지용 이스케이프(XSS가 된다면 사용자 권한으로 들어가서 여러가지 문제를 일으킬수 잇어서!!(예: 세션 탈취, 악성 스크립트 유포))
             function escapeHtml(s){
                 return String(s).replace(/[&<>"']/g, function(c){
@@ -115,13 +175,12 @@
 		      var $wrap   = $('<div class="message-container '+containerClass+'"></div>');   
 		      var $bubble = $('<div class="bubble"></div>');                                 
 		
-		      if (sender === 'bot') {                                                        
-		        var lines = String(message).split(/\r?\n/).map(function(s){                   
-		          return s.trim();
-		        }).filter(Boolean);
-		
-		        if (lines.length >= 2) {                                                  
-		          var $ul = $('<ul class="bot-list"></ul>');                                  
+		      if(sender === 'bot'){                                        
+		          var lines = String(message).split(/\r?\n/)                 
+		                        .map(function(s){ return s.trim(); })
+		                        .filter(Boolean);
+		          if(lines.length >= 2){                                     
+		            var $ul = $('<ul class="bot-list"></ul>');                                  
 		          $.each(lines, function(_, t){
 		            $ul.append('<li>'+escapeHtml(t)+'</li>');                           
 		          });
@@ -137,6 +196,12 @@
 		      chatWindow.append($wrap);                                                       
 		      chatWindow.scrollTop(chatWindow[0].scrollHeight);
 		    }
+            
+		    //후속질문 트리거 감지
+		    function isFollowUp(t){
+		      return /(다른|더|또|없어)/.test(String(t));
+		    }
+		    
             // 메시지 전송 함수
             function sendMessage() {
                 var userMessage = chatInput.val().trim();
@@ -145,12 +210,16 @@
                 }
                 addMessage('user', userMessage);
                 chatInput.val('');
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/chatbot/ask',
+                
+                var follow = isFollowUp(userMessage);
+                var url = follow
+                  ? '${pageContext.request.contextPath}/chatbot/more'
+                  : '${pageContext.request.contextPath}/chatbot/ask';
+                
+                  $.ajax({
+                	url: url,
                     type: 'POST',
-                    data: {
-                        message: userMessage
-                    },
+                    data: follow ? {} : { message: userMessage },
                     dataType: 'text',
                     success: function(response) {
                         addMessage('bot', response);
