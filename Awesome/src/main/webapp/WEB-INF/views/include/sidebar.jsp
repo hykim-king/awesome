@@ -13,6 +13,12 @@
     margin:0;
   }
   
+    #sidebar{
+    display:flex;
+    flex-direction:column;
+    gap:10px; 
+  }
+  
 </style>
 
 <div id="sidebar">
