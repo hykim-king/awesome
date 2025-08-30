@@ -21,7 +21,7 @@ public class UserKeywordService {
 	private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
     // Python 서버의 주소. 실제 배포 환경에 맞게 변경해야 합니다.
-    private static final String PYTHON_SERVER_URL = "http://192.168.100.60:5000/process_keyword";
+    private static final String PYTHON_SERVER_URL = "http://localhost:5000/process_keyword";
 
     public void processArticleKeywords(String userId, String articleTitle) throws IOException {
         

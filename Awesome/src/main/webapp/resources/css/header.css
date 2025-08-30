@@ -12,8 +12,8 @@
 
 /* 좌 로고 */
 #header .logo img{
-   height:50px; 
-   display:block; 
+	height: 100px;
+	display: block;
   }
 
 /* 중앙 메뉴: 딱 가운데 */
