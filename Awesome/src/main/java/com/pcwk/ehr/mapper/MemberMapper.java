@@ -68,7 +68,7 @@ public interface MemberMapper extends WorkDiv<MemberDTO> {
     int updateGradeByUserId(@Param("userId") String userId,
                             @Param("grade") int grade);
 
-    int deleteMembersByIds(@Param("list") List<String> ids);
+    int deleteMembersByIds(@Param("ids") List<String> ids);
 
     int updateNickNmByUserId(MemberDTO param);
     

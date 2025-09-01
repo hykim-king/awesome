@@ -14,10 +14,9 @@ response.setDateHeader("Expires", 0);%>
 <header id="header">
   <div class="navbar">
     <!-- 좌: 로고 -->
-    <div class="nav-left">
+    <div class="navbar-left">
       <a class="logo" href="http://localhost:8080/ehr/mainPage/main.do">
-        <img src="<c:url value='/resources/file/logo_hotissue.png'/>" alt="HotIssue">
-      </a>
+        <img src="/resources/file/logo_007.png" alt="HotIssue Logo"> </a>
     </div>
 
     <!-- 가운데: 메인 메뉴 (중앙 정렬) -->
@@ -27,6 +26,8 @@ response.setDateHeader("Expires", 0);%>
         <li><a href="http://localhost:8080/ehr/quiz/main.do">퀴즈</a></li>
         <li><a href="http://localhost:8080/ehr/article/list.do">기사 보기</a></li>
         <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
+        <li><a href="<c:url value='/intro/hotissue.do'/>">핫이슈 소개</a></li>        
+        
       </ul>
     </nav>
 
