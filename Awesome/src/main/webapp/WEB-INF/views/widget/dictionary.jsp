@@ -9,7 +9,7 @@
   <title>뉴스 사전 위젯</title>
 
   <!-- 분리된 CSS 파일 -->
-  <link rel="stylesheet" href="<c:url value='/resources/css/dictionary01.css'/>">
+  <link rel="stylesheet" href="<c:url value='/resources/css/dictionary02.css'/>">
 </head>
 <body>
 <div class="dict-widget" role="search" aria-label="뉴스 사전 검색">
