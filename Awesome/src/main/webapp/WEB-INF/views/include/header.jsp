@@ -26,6 +26,8 @@ response.setDateHeader("Expires", 0);%>
         <li><a href="http://localhost:8080/ehr/quiz/main.do">퀴즈</a></li>
         <li><a href="http://localhost:8080/ehr/article/list.do">기사 보기</a></li>
         <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
+        <li><a href="<c:url value='/intro/hotissue.do'/>">핫이슈 소개</a></li>        
+        
       </ul>
     </nav>
 
