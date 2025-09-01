@@ -50,7 +50,21 @@ public interface MemberService {
      * @return 1(성공)/0(실패)
      * @throws SQLException
      */
+<<<<<<< HEAD
+<<<<<<< HEAD
+    int delete(MemberDTO dto) throws SQLException;
+    
+    
+    
+    
+    /** FK 제약으로 실패할 수 있으니 컨트롤러에서 메시지 처리 */
+    int deleteMany(List<String> ids);
+=======
     int delete(String dto) throws SQLException;
+>>>>>>> main
+=======
+    int delete(String dto) throws SQLException;
+>>>>>>> main
 
     /**
      * 이메일 인증 메일 전송
