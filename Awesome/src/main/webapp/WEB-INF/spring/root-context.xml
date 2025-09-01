@@ -172,7 +172,7 @@
     <property name="host" value="smtp.naver.com"/>
     <property name="port" value="587"/> 
     <property name="username" value="com0494@naver.com"/>
-    <property name="password" value=""/>
+    <property name="password" value="WT6NMNN5CJL5"/>
      <property name="defaultEncoding" value="UTF-8"/>
     <property name="javaMailProperties">
         <props>
@@ -220,9 +220,9 @@
         <property name="driverClassName"
             value="oracle.jdbc.OracleDriver" />
         <property name="jdbcUrl"
-            value="jdbc:oracle:thin:@218.144.130.138:1522:XE" />
+            value="jdbc:oracle:thin:@192.168.100.30:1522:XE" />
         <property name="username" value="awesome" />
-        <property name="password" value="">
+        <property name="password" value="a4321">
         </property>
         
         
