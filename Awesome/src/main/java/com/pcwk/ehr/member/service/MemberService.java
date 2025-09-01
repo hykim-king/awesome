@@ -1,7 +1,6 @@
 package com.pcwk.ehr.member.service;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import com.pcwk.ehr.member.domain.MemberDTO;
 
@@ -52,6 +51,7 @@ public interface MemberService {
      * @throws SQLException
      */
 <<<<<<< HEAD
+<<<<<<< HEAD
     int delete(MemberDTO dto) throws SQLException;
     
     
@@ -59,6 +59,9 @@ public interface MemberService {
     
     /** FK 제약으로 실패할 수 있으니 컨트롤러에서 메시지 처리 */
     int deleteMany(List<String> ids);
+=======
+    int delete(String dto) throws SQLException;
+>>>>>>> main
 =======
     int delete(String dto) throws SQLException;
 >>>>>>> main

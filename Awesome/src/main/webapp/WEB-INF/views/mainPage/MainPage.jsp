@@ -457,7 +457,9 @@ a:hover {
     const right = document.querySelector('.keywords-right');
 
     // 같은 페이지에서 뒤로가기/새로고침 시 중복 애니메이션 막기
-   // const played = sessionStorage.getItem('kw_anim_played') === '1';
+
+   const played = false;
+
 
     if (!played) {
         // 왼쪽 박스 먼저
@@ -470,7 +472,7 @@ a:hover {
           right && right.classList.add('active');
         }, 2300);
 
-        sessionStorage.setItem('kw_anim_played', '1');
+     //   sessionStorage.setItem('kw_anim_played', '1');
       } else {
         left && left.classList.add('active');
         right && right.classList.add('active');
