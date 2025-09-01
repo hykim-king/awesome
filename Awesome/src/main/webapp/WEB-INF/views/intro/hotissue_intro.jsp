@@ -15,103 +15,63 @@
 </head>
 
 <style>
-/* 전체 컨테이너 중앙 */
-#container {
-  display: block;
+.intro-hero {
+  position: relative;
+  width: 100%;
+  height: 500px;        /* 섹션 높이 */
+  overflow: hidden;
+  padding: 60px 40px;
 }
 
-.intro-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-  text-align: center;
-}
-.intro-hero h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-    text-align: center;
-  
-}
-.intro-hero p {
-  font-size: 18px;
-  text-align: center;  
-  color: #555;
-}
-.intro-features {
+.hero-container {
   display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 40px;
-}
-.intro-features .feature {
-  width: 250px;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.05);
-}
-
-/* 공통 */
-.section-title {
-  text-align: center;
-  font-size: 2rem;
-  margin: 40px 0 20px;
-}
-
-/* 즁앙 정렬 */
-.features-container, .team-container {
+  align-items: center;
+  justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  text-align: center;
-}
-/* 카드들을 가운데 정렬 */
-.features-grid, .team-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  justify-items: center;
-}
-.feature-card, .team-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,.08);
-  transform: translateY(50px);
-  opacity: 0;
-  transition: all 0.6s ease;
-}
-.feature-card.show, .team-card.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-.team-card img {
-  border-radius: 50%;
-  margin-bottom: 10px;
+  gap: 40px;
 }
 
-/* 맨 위로 버튼 */
-#backToTop {
-  position: fixed;
-  bottom: 80px;
-  right: 25px;
-  z-index: 999;
-  display: none;
-  background: #0b5ed7;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  padding: 12px 15px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all .3s ease;
+.hero-bg img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* 화면 꽉 채우기 */
+  z-index: 1;
 }
-#backToTop:hover { background: #084298; }
+
+.hero-content {
+  flex: 1;
+  max-width: 500px;
+  text-align: left;
+}
+
+.hero-content h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.hero-content p {
+  font-size: 18px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: right;
+}
+
+.hero-image img {
+    width: 1500px; 
+  height: auto;
+}
 
 </style>
-
 <body>
    <div id="container">
    
@@ -119,27 +79,39 @@
     <jsp:include page="/WEB-INF/views/chatBot/chatBot.jsp"></jsp:include>
   
   
-      <!--main-->
-      <main id="intro-main">
-  <section class="intro-hero">
-    <h1>뉴스 빅데이터 플랫폼, HotIssue</h1>
-    <p>핫이슈는 최신 뉴스와 데이터를 분석하고, 사용자에게 맞춤형 정보를 제공합니다.</p>
-	  </section>
-	
-	  <section class="intro-features">
-	    <div class="feature">
-	      <h3>실시간 뉴스</h3>
-	      <p>정치, 경제, 스포츠, IT 등 다양한 카테고리의 실시간 뉴스 제공</p>
-	    </div>
-	    <div class="feature">
-	      <h3>커뮤니티</h3>
-	      <p>채팅 기능으로 사용자 간의 활발한 소통</p>
-	    </div>
-	    <div class="feature">
-	      <h3>퀴즈 & 랭킹</h3>
-	      <p>재미있는 퀴즈와 랭킹 시스템으로 뉴스 학습</p>
-	    </div>
-	  </section>
+  <!-- main -->
+  <main id="intro-main">
+
+<!-- Hero Section -->
+<section class="intro-hero">
+  <div class="hero-container">
+    <!-- 텍스트 -->
+    <div class="hero-content">
+      <h1>뉴스 빅데이터 플랫폼, HotIssue</h1>
+      <p>핫이슈는 최신 뉴스와 데이터를 분석하고, 사용자에게 맞춤형 정보를 제공합니다.</p>
+    </div>
+    <!-- 이미지 -->
+    <div class="hero-image">
+      <img src="${CP}/resources/file/intro1.png" alt="HotIssue 소개 이미지">
+    </div>
+  </div>
+</section>
+
+    <!-- Features -->
+    <section class="intro-features">
+      <div class="feature">
+        <h3>실시간 뉴스</h3>
+        <p>정치, 경제, 스포츠, IT 등 다양한 카테고리의 실시간 뉴스 제공</p>
+      </div>
+      <div class="feature">
+        <h3>커뮤니티</h3>
+        <p>채팅 기능으로 사용자 간의 활발한 소통</p>
+      </div>
+      <div class="feature">
+        <h3>퀴즈 & 랭킹</h3>
+        <p>재미있는 퀴즈와 랭킹 시스템으로 뉴스 학습</p>
+      </div>
+    </section>
 	  
 	  
 	<!-- intro section -->
