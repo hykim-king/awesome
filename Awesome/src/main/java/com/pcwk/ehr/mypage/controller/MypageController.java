@@ -378,6 +378,29 @@ public class MypageController {
 	/**
 	 * 차트 컨트롤러
 	 */
+	@GetMapping("/api/mypage/trend")
+	@ResponseBody
+	public List<UserChartDTO> getUserDate(HttpSession session) {
+	    log.debug("┌───────────────────────────────────────┐");
+	    log.debug("│ getUserDate()                         │");
+	    log.debug("└───────────────────────────────────────┘");
+
+	    MemberDTO loginUser = (MemberDTO) session.getAttribute("loginUser");
+	    
+
+	    UserLogDTO param = new UserLogDTO();
+	    param.setUserId(loginUser.getUserId());
+
+	    List<UserChartDTO> list = userLogService.selectWeeklyTrend(param);
+
+	    // 데이터 없을 경우 빈 리스트 반환 (JSON에서 []로 내려감)
+	    return list != null ? list : new ArrayList<>();
+	}
+	
+	
+	/**
+	 * 차트 컨트롤러
+	 */
 	@GetMapping("/api/mypage/chart")
 	@ResponseBody
 	public List<UserChartDTO> getUserChartData(HttpSession session) {

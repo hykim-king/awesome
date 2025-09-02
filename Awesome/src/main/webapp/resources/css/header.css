@@ -97,7 +97,15 @@
   gap: 12px; /* 닉네임-아이콘 간격 */
 }
 
+#header .nickname-name {
+  letter-spacing: 1.5px; 
+  color: #FFD54F;
+  font-size: 16px;
+  font-weight: 650;
+}
+
 #header .nickname {
+  letter-spacing: 1px;
   color: #fff;
   font-size: 16px;
   font-weight: 500;

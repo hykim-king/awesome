@@ -20,8 +20,6 @@
    <div id="container">
    
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
-    <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
-    <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
     
       <!--main-->
       <main id="main">
