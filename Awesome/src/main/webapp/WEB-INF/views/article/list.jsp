@@ -31,7 +31,15 @@
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   width:min(420px,90vw); background:#fff; border-radius:12px; padding:20px;
   box-shadow:0 10px 30px rgba(0,0,0,.2);}
-/* 카테고리 배너(리스트 상단) */
+/* 배너 행을 그리드에 추가(이 페이지에서만 적용) */
+.page-article-list #container{
+  grid-template-areas:
+    "header header header header"
+    "banner banner banner banner"   /* ← 헤더 아래 배너 */
+    "leftsidebar main   main   sidebar"
+    "footer footer footer footer";
+  grid-template-rows: auto auto minmax(650px,auto) 100px;
+}
 /* 배너 한 세트(가운데 정렬 + 전체폭 + 배경 이미지) */
 .page-article-list #container > .category-hero{
 
@@ -65,16 +73,14 @@
   letter-spacing: .2px;
   text-shadow: 0 2px 8px rgba(0,0,0,.35); 
 }
-#container > .category-hero { grid-column: 1 / -1; }
-.page-article-list #container{
-  display: grid; /* 안전망 */
-  grid-template-areas:
-    "header header header header"
-    "banner banner banner banner"   /* ← 이 행이 리스트 페이지에서만 생김 */
-    "leftsidebar main   main   sidebar"
-    "footer footer footer footer";
-  grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
-  grid-template-rows: 100px auto minmax(650px,auto) 100px;
+/* 헤더와 배너 사이 그리드 간격만 0으로 */
+.page-article-list #container { row-gap: 0 !important; }
+
+/* 헤더 여백/테두리는 건드리지 않음(초기화 코드가 있다면 제거) */
+
+/* 배너만 살짝 내리기 — 숫자만 조절해서 미세 튜닝 */
+.page-article-list #container > .category-hero{
+  margin-top: 0px !important;
 }
 </style>
 <script>
@@ -121,23 +127,34 @@
 <div id="container">
   <!-- 헤더 -->
   <jsp:include page="/WEB-INF/views/include/header.jsp" />
-    <c:set var="curCat" value="${empty category ? param.category : category}" />
-  <c:if test="${not empty curCat and fn:trim(curCat) ne 'ALL'}">
-    <c:set var="cat" value="${fn:trim(curCat)}" />
-    <c:choose>
-      <c:when test="${cat eq '10'}"><c:set var="catName" value="정치" /></c:when>
-      <c:when test="${cat eq '20'}"><c:set var="catName" value="경제" /></c:when>
-      <c:when test="${cat eq '30'}"><c:set var="catName" value="사회" /></c:when>
-      <c:when test="${cat eq '40'}"><c:set var="catName" value="스포츠" /></c:when>
-      <c:when test="${cat eq '50'}"><c:set var="catName" value="연예" /></c:when>
-      <c:when test="${cat eq '60'}"><c:set var="catName" value="IT/과학" /></c:when>
-      <c:otherwise><c:set var="catName" value="전체" /></c:otherwise>
-    </c:choose>
 
-    <div class="category-hero" role="banner" aria-label="${catName} 기사">
-      <h1>${catName} 기사</h1>
-    </div>
+  <%-- category 값 가져오기 (모델/파라미터 중 우선) --%>
+  <c:set var="curCat" value="${empty category ? param['category'] : category}" />
+
+  <%-- 문자열로 정규화: 공백 제거, 비어있으면 ALL로 --%>
+  <c:set var="catStr" value="${curCat}" />
+  <c:if test="${not empty catStr}">
+    <c:set var="catStr" value="${fn:trim(catStr)}" />
   </c:if>
+  <c:if test="${empty catStr}">
+    <c:set var="catStr" value="ALL" />
+  </c:if>
+
+  <%-- 표시 이름 매핑 --%>
+  <c:choose>
+    <c:when test="${catStr eq '10'}"><c:set var="catName" value="정치"/></c:when>
+    <c:when test="${catStr eq '20'}"><c:set var="catName" value="경제"/></c:when>
+    <c:when test="${catStr eq '30'}"><c:set var="catName" value="사회"/></c:when>
+    <c:when test="${catStr eq '40'}"><c:set var="catName" value="스포츠"/></c:when>
+    <c:when test="${catStr eq '50'}"><c:set var="catName" value="연예"/></c:when>
+    <c:when test="${catStr eq '60'}"><c:set var="catName" value="IT/과학"/></c:when>
+    <c:otherwise><c:set var="catName" value="전체"/></c:otherwise>
+  </c:choose>
+
+  <%-- 이제 전체/카테고리 상관없이 항상 배너 노출 --%>
+  <div class="category-hero" role="banner" aria-label="${catName} 기사">
+    <h1>${catName} 기사</h1>
+  </div>
 
   <!-- 메인 -->
   <main id="main">
