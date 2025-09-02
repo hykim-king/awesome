@@ -134,7 +134,7 @@
 
     <!-- 상단 중앙: 로고 -->
     <div class="logo-wrap">
-      <a class="logo" href="${ctx}/mainPage/main.do">HotIssue</a>
+      <a class="logo" href="${ctx}/mainPage/main.do">Hot Issue</a>
     </div>
 
     <!-- 중앙: 메인 메뉴 -->
