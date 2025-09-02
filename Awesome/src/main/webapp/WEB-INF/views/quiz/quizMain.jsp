@@ -11,15 +11,75 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/ehr/resources/css/pcwk_main.css">
 <link rel="stylesheet" href="/ehr/resources/css/header.css">
+<c:url var="bannerImg" value="/resources/file/banner.png"/>
+<style>
+/* 배너 행을 그리드에 추가(이 페이지에서만 적용) */
+.quiz-main #container{
+  grid-template-areas:
+    "header header header header"
+    "banner banner banner banner"   /* ← 헤더 아래 배너 */
+    "leftsidebar main   main   sidebar"
+    "footer footer footer footer";
+  grid-template-rows: auto auto minmax(650px,auto) 100px;
+}
+/* 배너 한 세트(가운데 정렬 + 전체폭 + 배경 이미지) */
+.quiz-main #container > .category-hero{
+
+  grid-area: banner;
+  grid-column: 1 / -1;
+
+  /* 레이아웃/크기 */
+  width: 100%;
+  max-width: none;
+  margin: 0 0 12px;
+  border-radius: 0;      
+
+  /* 배경(오버레이 + 이미지) */
+  background:
+    linear-gradient(to right, rgba(0,0,0,.30), rgba(0,0,0,.15)),
+    url('${bannerImg}') center/cover no-repeat;
+  color: #fff;
+  min-height: 100px;      
+
+  /* 텍스트 중앙 정렬 */
+  display: grid;
+  place-items: center;    
+  padding: 0 20px;  
+}
+
+/* 배너 타이틀 스타일 */
+.quiz-main .category-hero h1{
+  margin: 0;
+  font-size: 28px;        
+  font-weight: 800;
+  letter-spacing: .2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35); 
+}
+/* 헤더와 배너 사이 그리드 간격만 0으로 */
+.quiz-main #container { row-gap: 0 !important; }
+
+/* 헤더 여백/테두리는 건드리지 않음(초기화 코드가 있다면 제거) */
+
+/* 배너만 살짝 내리기 — 숫자만 조절해서 미세 튜닝 */
+.quiz-main #container > .category-hero{
+  margin-top: 0px !important;
+}
+</style>
 <title>핫이슈</title>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
-<body>
+<body class="quiz-main">
     <div id="container">
     
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
+    <%-- 배너 --%>
+     <section class="category-hero" role="banner" aria-label="퀴즈">
+       <h1>퀴즈</h1>
+     </section>
     <jsp:include page="/WEB-INF/views/include/sidebar.jsp"></jsp:include>
     <jsp:include page="/WEB-INF/views/include/leftsidebar.jsp"></jsp:include>
+    
+	    
       <main id="main">
       <div class="main-container">
 
