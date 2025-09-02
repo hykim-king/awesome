@@ -52,7 +52,10 @@ pageEncoding="UTF-8"%>
 
         <div class="quiz-form-container">
             <div class="quiz-info-box">
-                <p>퀴즈는 금일 조회수 상위 10위 안에서 랜덤으로 산출되었습니다.</p>
+                <p>퀴즈는 금일 한번만 풀이가 가능합니다.</p>
+                <p>총 문제는 8문제이며, 문제당 배점은 12.5점 입니다.</p>
+                <p>문제를 풀고나면 해설도 제공해드리니 확인해보시기 바랍니다.</p>
+                <p>즐거운 퀴즈풀이 시간 보내시길 바랍니다.  ` ㅅ '  / ☆</p>
             </div>
             
             <form action="${CP}/quiz/submit.do" method="post" id="quizForm">
