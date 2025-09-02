@@ -138,7 +138,8 @@ $(document).ready(function() {
                         rankingContainer.append(rankingItem);
                     });
                 } else {
-                    rankingContainer.append('<p class="no-data-message">정오 이후 업데이트됩니다.</p>');
+                	  rankingContainer.append('<p class="no-data-message">금일 문제를 푼 유저가 없습니다.</p>');
+                    //rankingContainer.append('<p class="no-data-message">정오 이후 업데이트됩니다.</p>');
                 }
             },
             error: function(xhr, status, error) {

@@ -65,7 +65,8 @@
             const currentMinute = now.getMinutes(); // 0~59
             
             // 퀴즈 시작 가능 시간: 정오(12:00)
-            const quizStartTime = 12;
+            //const quizStartTime = 12;
+            const quizStartTime = 10; //기존 정오이나 시연의 특수성을 위해 오전 10시로 설정
             
             // 퀴즈 종료 시간: 23시 30분
             const quizEndHour = 23;
@@ -85,7 +86,8 @@
                 // 활성화된 버튼 스타일
                 quizBtn.css({"background-color": "#007bff", "color": "white", "box-shadow": "0 4px 6px rgba(0,0,0,0.1)"});
             } else {
-                quizBtn.text("금일 정오에 열립니다");
+                //quizBtn.text("금일 정오에 열립니다");
+                quizBtn.text("금일 오전 10시에 열립니다");
                 quizBtn.prop("disabled", true);
                 // 비활성화된 버튼 스타일
                 quizBtn.css({"background-color": "#cccccc", "color": "#666666", "box-shadow": "none"});
