@@ -68,7 +68,7 @@
           <select name="grade" class="select">
             <option value="">등급 전체</option>
             <option value="0" <c:if test="${grade==0}">selected</c:if>>관리자</option>
-            <option value="1" <c:if test="${grade==1}">selected</c:if>>사용자</option>
+            <option value="1" <c:if test="${grade==1}">selected</c:if>>회원</option>
           </select>
           <button class="btn btn-primary" type="submit">검색</button>
           <button class="btn btn-warning" type="button" id="btnUpdate">수정</button>

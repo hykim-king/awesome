@@ -1,9 +1,9 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+<link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css" rel="stylesheet">
 
    body {
       background-size: cover;
-      font-family: 'Do Hyeon', sans-serif;
+      font-family: 'NanumBarunGothic', sans-serif;  
       margin: 0;
       color: #333;
       }
@@ -24,10 +24,10 @@
      "footer footer footer footer"
      ;
      grid-template-columns: 0.5fr 0.7fr 0.7fr 0.5fr;
-     grid-template-rows: 100px minmax(650px,auto) 100px;
+     grid-template-rows: 140px minmax(650px,auto) 100px;
      gap: 20px;
 
-     background-color: #ffffff;
+     background-color: transparent; 
 
    }
    #sidebar{
@@ -41,7 +41,7 @@
    }
 
    #header{
-      background-color: #f6f3f7;
+      background-color: transparent;
       grid-area: header;
    }
    #main{

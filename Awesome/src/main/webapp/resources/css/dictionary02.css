@@ -1,7 +1,7 @@
 :root{
-  --brand:#0046FF;
-  --line:#e9ecf2;
-  --card-bg:#fff;          /* 다크테마면 #161616 등으로 교체 가능 */
+  --brand:#FFD54F;
+  --line:#ddd;
+  --card-bg:#f9f9f9; 
   --text:#111;
   --muted:#666;
 }
@@ -58,8 +58,8 @@
 }
 .dict-form button{
   padding:8px 12px;
-  border:1px solid var(--brand);
-  background:var(--brand);
+  border:1px solid #3d3312;
+  background:#3d3312;
   color:#fff;
   border-radius:10px;
   cursor:pointer;
@@ -124,13 +124,15 @@
   line-height:1.45;
 }
 
-/* 링크(오른쪽) */
+/* 링크(오른쪽)-자세히보기 */
+
 .dict-actions a{
   display:inline-block;
   text-decoration:none;
   font-weight:600;
   padding:4px 8px;
-  border:1px solid #d8def3;
+  border:1px solid #fce081;
+  color:#3d3312; 
   border-radius:8px;
 }
 .dict-actions a:hover{

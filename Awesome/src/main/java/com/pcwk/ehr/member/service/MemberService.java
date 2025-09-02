@@ -1,6 +1,7 @@
 package com.pcwk.ehr.member.service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.pcwk.ehr.member.domain.MemberDTO;
 
@@ -50,7 +51,12 @@ public interface MemberService {
      * @return 1(성공)/0(실패)
      * @throws SQLException
      */
+
+
+    
+
     int delete(String dto) throws SQLException;
+
 
     /**
      * 이메일 인증 메일 전송
