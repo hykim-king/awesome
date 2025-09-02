@@ -8,7 +8,7 @@
   #sidebar{
     display:flex;
     flex-direction:column;
-    gap:10px; /* 간격 조절 */
+    gap:16px; /* 간격 조절 */
   }
 
   /* 내부 카드들은 부모 폭 100% 사용 */

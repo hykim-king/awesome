@@ -19,7 +19,7 @@
 
 <style>
 /************************************CHATMESSAGE CSS*******************************************************/
-:root { --bg:#fff; --line:#eee; --muted:#888; --btn:#444; --btn-text:#fff; }
+:root { --bg:#3d3312; --line:#eee; --muted:#888; --btn:#3d3312; --btn-text:#fff; }
 * { box-sizing: border-box; }
 body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; background:#f7f7f7; color:#222; }
 
@@ -42,8 +42,8 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
   border-bottom:1px solid var(--line);
   display:flex; align-items:center; gap:10px;
 }
-.chat-title{ font-weight:700; font-size:16px; }
-.chat-cat{ margin-left:auto; color:var(--muted); font-size:12px; }
+.chat-title{ font-weight:700; font-size:16px; color:#fff }
+.chat-cat{ margin-left:auto; color:#FFF4D1; font-size:12px; }
 
 /* ── 메시지 리스트(무한 스크롤 복구 핵심) ───────────── */
 .chat-list{
@@ -52,10 +52,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
   /* ② 화면 높이 기반(권장): */
   max-height: 40vh; /* 높이 조절 */
   overflow-y: auto;
-  background:#fff;
+  background:#FFFDF8 ;
 }
 .chat-item{ display:flex; gap:10px; padding:12px; border-bottom:1px solid var(--line); }
-.avatar{ width:36px; height:36px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
+.avatar{ width:36px; height:36px; border-radius:50%; background:#FFF4D1 ; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
 .bubble{ flex:1; min-width:0; }
 .meta{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
 .meta .uid{ font-weight:600; color:#444; }
@@ -67,7 +67,7 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
 .chat-input{
   position:sticky; bottom:0; /* 리스트가 스크롤될 때 하단에 붙도록 */
   display:flex; gap:8px; padding:10px;
-  background:#fafafa; border-top:1px solid var(--line);
+  background:#fafafa; border-top:1px solid var(--line); border-radius:0px; 
 }
 .chat-input input{ flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
 .chat-input button{ padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
@@ -147,11 +147,11 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <input type="radio" name="reason" value="SPAM">
           <span>스팸홍보/도배글입니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">  
-          	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
            </button>
         </label>
@@ -170,10 +170,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <span>음란물입니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
           </button>
         </label>
@@ -194,10 +194,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <span>불법정보를 포함하고 있습니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
           </button>
         </label>
@@ -216,10 +216,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <span>청소년에게 유해한 내용입니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
           </button>
         </label>
@@ -236,11 +236,11 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <input type="radio" name="reason" value="ABUSE">
           <span>욕설/생명경시/혐오/차별적 표현입니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">
-          	 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
           </button>
         </label>
@@ -261,10 +261,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <span>개인정보 노출 게시물입니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
           </button>
         </label>
@@ -283,10 +283,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
           <span>개인정보 노출 게시물입니다.</span>
           <button type="button" class="rp-toggle" aria-expanded="false">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-       	  	   	 fill="currentColor" viewBox="0 0 16 16">
-    		<path d="M7.247 11.14 2.451 5.658C1.885 5.013 
-            		 2.345 4 3.204 4h9.592a1 1 0 0 1 
-             		.753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                 fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 
+                     2.345 4 3.204 4h9.592a1 1 0 0 1 
+                    .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
              </svg>
           </button>
         </label>
@@ -497,24 +497,24 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
   }
 
   document.addEventListener('click', function (e) {
-	  const head   = e.target.closest('.rp-reason-head');
-	  if (!head) return;                 // 모달 안에서만 동작
+      const head   = e.target.closest('.rp-reason-head');
+      if (!head) return;                 // 모달 안에서만 동작
 
-	  const box    = head.parentElement; // .rp-reason
-	  const detail = box.querySelector('.rp-reason-detail');
-	  const toggle = head.querySelector('.rp-toggle');
+      const box    = head.parentElement; // .rp-reason
+      const detail = box.querySelector('.rp-reason-detail');
+      const toggle = head.querySelector('.rp-toggle');
 
-	  if (!detail) return;
+      if (!detail) return;
 
-	  // 라디오도 같이 선택
-	  const r = head.querySelector('input[type="radio"]');
-	  if (r) r.checked = true;
+      // 라디오도 같이 선택
+      const r = head.querySelector('input[type="radio"]');
+      if (r) r.checked = true;
 
-	  // 접힘/펼침 토글
-	  const expanded = toggle && toggle.getAttribute('aria-expanded') === 'true';
-	  if (toggle) toggle.setAttribute('aria-expanded', String(!expanded));
-	  detail.hidden = expanded; // true면 접힘, false면 펼침
-	});
+      // 접힘/펼침 토글
+      const expanded = toggle && toggle.getAttribute('aria-expanded') === 'true';
+      if (toggle) toggle.setAttribute('aria-expanded', String(!expanded));
+      detail.hidden = expanded; // true면 접힘, false면 펼침
+    });
 
   document.addEventListener('DOMContentLoaded', connectWS);
   window.addEventListener('beforeunload', function(){ unsub(); disconnect(); window.HOTISSUE_CHAT_INIT = false; });
