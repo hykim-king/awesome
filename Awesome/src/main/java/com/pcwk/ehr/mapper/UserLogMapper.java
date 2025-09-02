@@ -38,6 +38,8 @@ public interface UserLogMapper {
     //마이페이지 구글 차트 용 
     //유저별  클릭한 카테고리 조회
     List<UserChartDTO> doRetrieveById(UserLogDTO log);
+    //유저별 시청한 기사 횟수
+    List<UserChartDTO> selectWeeklyTrend(UserLogDTO log);
     
     
     List<ArticleDTO> getRecommendedArticlesByUser(String userId);

@@ -61,30 +61,43 @@
   
    <!-- 마이페이지 구글 차트 용 -->
    <!-- 유저별  클릭한 카테고리(횟수)-->
-  <select id="doRetrieveById" parameterType="UserLogDTO" resultType="UserChartDTO">
-	SELECT
-	    CASE ar.category
-	        WHEN 10 THEN '정치'
-	        WHEN 20 THEN '경제'
-	        WHEN 30 THEN '사회/문화'
-	        WHEN 40 THEN '스포츠'
-	        WHEN 50 THEN '연예'
-	        WHEN 60 THEN 'IT/과학'
-	        ELSE '알 수 없음'
-	    END AS category,
-	    COUNT(*) AS clickCount
-	FROM
-	    user_click_log ul
-	JOIN article ar
-	    ON ul.article_code = ar.article_code
-	WHERE
-	    ul.user_id = #{userId}
-	    AND TRUNC(ul.clicked_at) BETWEEN TRUNC(SYSDATE) - 7 AND TRUNC(SYSDATE)
-	GROUP BY
-	    ar.category
-	ORDER BY
-	    clickCount DESC
-  </select>
+	<select id="doRetrieveById" parameterType="UserLogDTO" resultType="UserChartDTO">
+	    SELECT
+	        CASE ar.category
+	            WHEN 10 THEN '정치'
+	            WHEN 20 THEN '경제'
+	            WHEN 30 THEN '사회/문화'
+	            WHEN 40 THEN '스포츠'
+	            WHEN 50 THEN '연예'
+	            WHEN 60 THEN 'IT/과학'
+	        END AS category,
+	        COUNT(*) AS clickCount
+	    FROM
+	        user_click_log ul
+	    JOIN article ar
+	        ON ul.article_code = ar.article_code
+	    WHERE
+	        ul.user_id = #{userId}
+	        AND TRUNC(ul.clicked_at) BETWEEN TRUNC(SYSDATE) - 7 AND TRUNC(SYSDATE)
+	        AND ar.category IS NOT NULL 
+	        AND ar.category IN (10, 20, 30, 40, 50, 60)   <!-- ✅ 지정된 카테고리만 -->
+	    GROUP BY
+	        ar.category
+	    ORDER BY
+	        clickCount DESC
+	</select>
+  
+  <!-- 유저별  시청한 기사(횟수)-->
+  <select id="selectWeeklyTrend" parameterType="UserLogDTO" resultType="UserChartDTO">
+	  SELECT 
+	      TO_CHAR(l.clicked_at, 'DY', 'NLS_DATE_LANGUAGE=KOREAN') AS dayOfWeek,
+	      COUNT(*) AS clickCount
+	  FROM user_click_log l
+	  WHERE l.user_id = #{userId}
+	  GROUP BY TO_CHAR(l.clicked_at, 'DY', 'NLS_DATE_LANGUAGE=KOREAN'),
+	           TO_CHAR(l.clicked_at, 'D')
+	  ORDER BY TO_CHAR(l.clicked_at, 'D')
+	</select>
 
   <!-- 전체 조회 -->
   <select id="doRetrieve" resultMap="UserLogResult">

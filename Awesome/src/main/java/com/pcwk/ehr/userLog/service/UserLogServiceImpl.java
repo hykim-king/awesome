@@ -92,4 +92,11 @@ public class UserLogServiceImpl implements UserLogService {
 	public List<UserChartDTO> doRetrieveById(UserLogDTO log) {
 		return userLogMapper.doRetrieveById(log);
 	}
+
+
+
+	@Override
+	public List<UserChartDTO> selectWeeklyTrend(UserLogDTO log) {
+		return userLogMapper.selectWeeklyTrend(log);
+	}
 }

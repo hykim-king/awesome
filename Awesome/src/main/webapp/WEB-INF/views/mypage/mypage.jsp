@@ -30,29 +30,50 @@
     <div class="main-container">
       <div class="wrap">
 
-        <!-- 상단: 요약 + 차트/워드클라우드 -->
-        <div class="summary" id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
+        <!-- 상단: 요약 -->
+        <section class="panel summary-section">
+		  <div class="chart-summary" id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
+		</section>
         <div class="grid top">
-          <div id="piechart_3d" style="height:240px;"></div>
-          <div class="wordCloud" id="wordCloud"></div>
+	        <div class="categoryChart-wrapper">
+	          <div id="categoryChart" style="height:240px;"></div>
+	          <div class="categoryChart-title">한 주간 읽은 카테고리</div>
+	        </div>
+	        <div class="trendChart-wrapper">
+	          <div id="trendChart" style="height:240px;"></div>
+	          <div class="trendChart-title">요일별 기사 추이</div>
+	        </div>
+        </div>
+        
+        <!-- 차트 확대용 모달 -->
+        <div id="chartModal" class="modal" style="display:none;">
+          <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="expandedChart" style="width:90%; height:500px; margin:auto; display:none;"></div>
+            <div id="expandedWordCloud" style="width:90%; height:500px; margin:auto; display:none;"></div>
+          </div>
         </div>
 
-        <!-- 중단: 좌(북마크) / 우(신고) -->
-        <div class="grid middle">
           <!-- 북마크 패널 -->
-          <section class="panel recommend" style="margin-top:24px">
+          <section class="panel recommend">
             <div class="section-title"><span class="badge">북마크</span></div>
             <div id="bookmarkList"></div>
             <div id="bookmarkPagination" class="pagination" style="margin-top:8px"></div>
           </section>
 
-          <!-- 신고 패널 -->
-          <section class="panel recommend" style="margin-top:24px">
-            <div class="section-title"><span class="badge">신고사항</span></div>
-            <div id="reportList"></div>
-            <div id="reportPagination" class="pagination" style="margin-top:8px"></div>
-          </section>
-        </div>
+        <!-- 중단: 좌(워드클라우드) / 우(신고) -->
+        <div class="grid middle">
+            <!-- 워드클라우드 (중간 배너 느낌) -->
+			<section class="panel wordcloud-section">
+			  <div class="wordCloud" id="wordCloud"></div>
+			</section>
+	          <!-- 신고 패널 -->
+	         <section class="panel report">
+	           <div class="section-title"><span class="badge">신고사항</span></div>
+	           <div id="reportList"></div>
+	           <div id="reportPagination" class="pagination" style="margin-top:8px"></div>
+	         </section>
+	     </div>
 
         <!-- 하단: 추천 기사 (기존 JSTL 그대로 유지) -->
         <section class="panel recommend" style="margin-top:24px">
@@ -60,9 +81,6 @@
           <div id="recommendList"></div>
         </section>
 
-        <div class="userInfo-btn-wrap">
-          <a href="${CP}/mypage/userInfo.do" class="userInfo-btn">회원정보</a>
-        </div>
       </div>
     </div>
   </main>
@@ -77,6 +95,62 @@ fetch('${CP}/mypage/api/mypage/summary')
   .then(msg => {
     document.getElementById("summary").innerText = msg;
   });
+</script>
+
+<script>
+// -------------------------------
+// 공통 모달 제어
+// -------------------------------
+function openChartModal(dataTable, options, type) {
+  const modal = document.getElementById("chartModal");
+  modal.style.display = "block";
+
+  // Chart 영역 보이기 / WordCloud 영역 숨기기
+  document.getElementById("expandedChart").style.display = "block";
+  document.getElementById("expandedWordCloud").style.display = "none";
+
+  // 차트 그리기
+  let chart;
+  if (type === 'BarChart') {
+    chart = new google.visualization.BarChart(document.getElementById("expandedChart"));
+  } else {
+    chart = new google.visualization.ColumnChart(document.getElementById("expandedChart"));
+  }
+  chart.draw(dataTable, { ...options, chartArea: { width: '90%', height: '80%' } });
+}
+
+function openWordCloudModal(list) {
+  const modal = document.getElementById("chartModal");
+  modal.style.display = "block";
+
+  // WordCloud 영역 보이기 / Chart 영역 숨기기
+  document.getElementById("expandedChart").style.display = "none";
+  const el = document.getElementById("expandedWordCloud");
+  el.style.display = "block";
+
+  // 모달이 실제 크기를 잡은 후 렌더링 (약간 딜레이)
+  setTimeout(() => {
+    WordCloud(el, {
+      list,
+      gridSize: 8,
+      weightFactor: 30,
+      fontFamily: 'Arial',
+      color: 'random-dark',
+      rotateRatio: 0,
+      backgroundColor: '#fff',
+      clearCanvas: true
+    });
+  }, 100);
+}
+
+function closeModal() {
+  const modal = document.getElementById("chartModal");
+  modal.style.display = "none";
+
+  // 모달 닫을 때 모든 영역 숨김
+  document.getElementById("expandedChart").style.display = "none";
+  document.getElementById("expandedWordCloud").style.display = "none";
+}
 </script>
 
 <!-- 워드 클라우드 -->
@@ -103,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // 컨테이너 크기 기준으로 스케일
       const w = el.clientWidth  || 600;
-      const h = el.clientHeight || 300;
+      const h = el.clientHeight || 500;
 
       // count 범위
       const counts = data.map(d => d.count);
@@ -133,6 +207,11 @@ document.addEventListener('DOMContentLoaded', function () {
         rotateRatio: 0,
         backgroundColor: '#fff',
         clearCanvas: true
+        
+      });
+      // ✅ 클릭 시 모달 열기
+      el.addEventListener('click', function () {
+        openWordCloudModal(list);
       });
     })
     .catch(err => {
@@ -140,40 +219,159 @@ document.addEventListener('DOMContentLoaded', function () {
       el.innerHTML = '<div class="error">워드클라우드를 불러오지 못했습니다.</div>';
     });
 });
+
 </script>
 
 <!-- 구글 차트 -->
 <script>
-google.charts.load("current", {packages:["corechart"]});
-google.charts.setOnLoadCallback(drawChart);
+google.charts.load("current", { packages: ["corechart"] });
+google.charts.setOnLoadCallback(drawCharts);
 
-function drawChart() {
+function drawCharts() {
+  // 1. 카테고리별 (BarChart)
   fetch('${CP}/mypage/api/mypage/chart')
     .then(response => response.json())
     .then(data => {
-      if (data.length === 0) {
-        document.getElementById('piechart_3d').innerHTML =
-          "이번주 읽은 기사가 없습니다.<br>핫이슈 '오늘의 토픽'을 살펴보세요!";
+      if (!data.length) {
+        document.getElementById('categoryChart').innerHTML =
+          "이번주 읽은 기사가 없습니다.";
         return;
       }
-      const chartData = [['카테고리', 'Frequency per Week']];
+
+      const chartData = [['카테고리', '클릭수']];
       data.forEach(item => chartData.push([item.category, item.clickCount]));
+
       const dataTable = google.visualization.arrayToDataTable(chartData);
       const options = {
-        title: '한 주간 읽은 카테고리',
-        is3D: true,
-        backgroundColor: 'transparent'
-      };
-      const chart = new google.visualization.PieChart(
-        document.getElementById('piechart_3d')
+    		  chartArea: { width: '80%', height: '70%' },
+    		  bars: 'horizontal',
+    		  colors: ['#3b82f6'],
+    		  animation: {
+    			    startup: true,          // 처음 로드할 때 실행
+    			    duration: 1000,         // 애니메이션 시간 (ms)
+    			    easing: 'out'           // 'linear', 'in', 'out', 'inAndOut' 가능
+    			  }
+    			};
+
+      const chart = new google.visualization.BarChart(
+        document.getElementById('categoryChart')
       );
       chart.draw(dataTable, options);
-    })
-    .catch(() => {
-      document.getElementById('piechart_3d').innerText =
-        "차트 데이터를 불러올 수 없습니다.";
+  
+	  // ✅ 클릭 이벤트 추가 (차트 전체 클릭 시 확대)
+      google.visualization.events.addListener(chart, 'select', function() {
+    	  openChartModal(dataTable, options, 'BarChart');
+    	});
+	});
+
+  // 2. 날짜별 추이 (ColumnChart)
+  fetch('${CP}/mypage/api/mypage/trend')
+    .then(response => response.json())
+    .then(data => {
+      if (!data.length) {
+        document.getElementById('trendChart').innerHTML =
+          "날짜별 추이 데이터가 없습니다.";
+        return;
+      }
+
+      const chartData = [['요일', '클릭수']];
+      data.forEach(item => chartData.push([item.dayOfWeek, item.clickCount]));
+
+      const dataTable = google.visualization.arrayToDataTable(chartData);
+      const options = {
+        chartArea: { width: '80%', height: '70%' },
+        colors: ['#10b981'],
+        legend: { position: 'none' },
+        animation: {
+            startup: true,          // 처음 로드할 때 실행
+            duration: 1000,         // 애니메이션 시간 (ms)
+            easing: 'out'           // 'linear', 'in', 'out', 'inAndOut' 가능
+          }
+        };
+
+      const chart = new google.visualization.ColumnChart(
+        document.getElementById('trendChart')
+      );
+      chart.draw(dataTable, options);
+
+      // ✅ ColumnChart도 확대 이벤트 추가
+      google.visualization.events.addListener(chart, 'select', function() {
+    	  openChartModal(dataTable, options, 'ColumnChart');
+    	});
     });
 }
+
+</script>
+
+<script>
+	//===============================
+	//공통 페이지네이션 (ellipsis 지원) - ES5 문자열 연결
+	//===============================
+	function renderPagination(containerId, pageNo, pageSize, totalCnt, callback) {
+	pageNo   = Number(pageNo)   || 1;
+	pageSize = Number(pageSize) || 5;
+	totalCnt = Number(totalCnt) || 0;
+	
+	var totalPage = Math.ceil(totalCnt / pageSize);
+	var maxPagesToShow = 5;
+	var pgHtml = '';
+	
+	if (totalPage <= 1) {
+	 document.getElementById(containerId).innerHTML = '';
+	 return;
+	}
+	
+	// 콜백 이름 추출 (문자열 또는 함수객체 지원)
+	var cbName = (typeof callback === 'string') 
+	             ? callback 
+	             : (callback && callback.name ? callback.name : null);
+	if (!cbName) {
+	 console.warn('renderPagination: callback name missing');
+	 document.getElementById(containerId).innerHTML = '';
+	 return;
+	}
+	
+	// 이전 버튼
+	if (pageNo > 1) {
+	 pgHtml += '<a href="#" onclick="' + cbName + '(' + (pageNo - 1) + ', ' + pageSize + '); return false;">&lt;</a>';
+	}
+	
+	var startPage = Math.max(1, pageNo - Math.floor(maxPagesToShow / 2));
+	var endPage   = startPage + maxPagesToShow - 1;
+	if (endPage > totalPage) {
+	 endPage = totalPage;
+	 startPage = Math.max(1, endPage - maxPagesToShow + 1);
+	}
+	
+	// 처음 + ...
+	if (startPage > 1) {
+	 pgHtml += '<a href="#" onclick="' + cbName + '(1, ' + pageSize + '); return false;">1</a>';
+	 if (startPage > 2) pgHtml += '<span class="ellipsis">...</span>';
+	}
+	
+	// 현재 구간
+	for (var i = startPage; i <= endPage; i++) {
+	 if (i === pageNo) {
+	   pgHtml += '<span class="current">' + i + '</span>';
+	 } else {
+	   pgHtml += '<a href="#" onclick="' + cbName + '(' + i + ', ' + pageSize + '); return false;">' + i + '</a>';
+	 }
+	}
+	
+	// ... + 마지막
+	if (endPage < totalPage) {
+	 if (endPage < totalPage - 1) pgHtml += '<span class="ellipsis">...</span>';
+	 pgHtml += '<a href="#" onclick="' + cbName + '(' + totalPage + ', ' + pageSize + '); return false;">' + totalPage + '</a>';
+	}
+	
+	// 다음 버튼
+	if (pageNo < totalPage) {
+	 pgHtml += '<a href="#" onclick="' + cbName + '(' + (pageNo + 1) + ', ' + pageSize + '); return false;">&gt;</a>';
+	}
+	
+	document.getElementById(containerId).innerHTML = pgHtml;
+	}
+
 </script>
 
 <!-- JS: 북마크/신고 AJAX 로딩 -->
@@ -251,24 +449,9 @@ function loadBookmarks(pageNo, pageSize) {
         });
       });
       
-      // 페이지네이션
-      // (가급적 숫자로 강제 변환)
-	  pageNo = Number(pageNo || 1);
-	  pageSize = Number(pageSize || 5);
-      const totalPage = Math.ceil(totalCnt / pageSize);
-      if (totalPage >= 1) {
-    	  let pgHtml = "";
-    	  for (let i = 1; i <= totalPage; i++) {
-    	    if (i === pageNo) {
-    	      pgHtml += '<span class="current">' + i + '</span>';
-    	    } else { 
-    	    	pgHtml += '<a href="#" onclick="loadBookmarks(' + i + ', ' + pageSize + ')">' + i + '</a>';
-    	    } console.log("pgHtml:",pgHtml);
-    	    console.log("pageNo:",i);
-            console.log("pageSize:",pageSize);
-    	  }
-    	  document.getElementById("bookmarkPagination").innerHTML = pgHtml;
-    	}
+   	  // 페이지네이션 (공통 함수 사용)
+   	  renderPagination("bookmarkPagination", pageNo, pageSize, totalCnt, loadBookmarks);
+   	  
       window.markBookmarksIn('#bookmarkList');
     }); 
 }
@@ -288,9 +471,9 @@ function loadReports(pageNo, pageSize) {
       } else {
         list.forEach(item => {
       	  html += 
-   		    '<div class="item">' +
-   		      '<div class="title">사유: ' + escapeHtml(item.reasonLabel) + '</div>' +
-   		      '<div class="meta">' +
+   		    '<div class="report-item">' +
+   		      '<div class="report-title">사유: ' + escapeHtml(item.reasonLabel) + '</div>' +
+   		      '<div class="report-meta">' +
    		        '<span class="status">' + escapeHtml(item.statusLabel) + '</span>' +
    		        '<span class="date">' + escapeHtml(item.regDt) + '</span>' +
    		      '</div>' +
@@ -299,17 +482,8 @@ function loadReports(pageNo, pageSize) {
       }
       document.getElementById("reportList").innerHTML = html;
 
-      // 페이지네이션
-      const totalPage = Math.ceil(totalCnt / pageSize);
-      let pgHtml = "";
-      for (let i = 1; i <= totalPage; i++) {
-        if (i === pageNo) {
-          pgHtml += '<span class="current">' + i + '</span>';
-        } else {
-          pgHtml += '<a href="#" onclick="loadReports(' + i + ', ' + pageSize + ')">' + i + '</a>';
-        }
-      }
-      document.getElementById("reportPagination").innerHTML = pgHtml;
+      // 페이지네이션 (공통 함수 사용)
+      renderPagination("reportPagination", pageNo, pageSize, totalCnt, loadReports);
     });
 }
 

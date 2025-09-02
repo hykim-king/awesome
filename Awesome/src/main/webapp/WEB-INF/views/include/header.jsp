@@ -4,22 +4,19 @@
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
-<!-- 외부 CSS -->
-<link rel="stylesheet" href="${ctx}/resources/css/header_edit.css">
-
 <header id="header">
   <div class="navbar">
 
     <!-- 상단 중앙: 로고 -->
     <div class="logo-wrap">
-      <a class="logo" href="${ctx}/mainPage/main.do">HotIssue</a>
+      <a class="logo" href="${ctx}/mainPage/main.do">Hot Issue</a>
     </div>
 
     <!-- 중앙: 메인 메뉴 -->
     <nav class="nav-center">
       <ul class="main-menu">
         <li><a href="${ctx}/mainPage/main.do">메인</a></li>
-        <li><a href="${ctx}/quiz/main.do">퀴즈</a></li>
+        <li><a href="<c:url value='/intro/hotissue.do'/>">핫이슈 소개</a></li>
 
         <!-- 기사 보기 + 카테고리 팝업 -->
         <li class="has-popover">
@@ -34,16 +31,15 @@
             <a href="${ctx}/article/list.do?category=60">IT/과학</a>
           </div>
         </li>
-
+        <li><a href="${ctx}/quiz/main.do">퀴즈</a></li>
         <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
-        <li><a href="<c:url value='/intro/hotissue.do'/>">핫이슈 소개</a></li>
       </ul>
     </nav>
 
     <!-- 우측: 닉네임 + 사용자 메뉴 -->
     <div class="nav-right">
       <c:if test="${not empty sessionScope.loginUser}">
-        <span class="nickname">${sessionScope.loginUser.nickNm}님 안녕하세요</span>
+        <span class="nickname-name">${sessionScope.loginUser.nickNm}<a class="nickname">님 안녕하세요</a></span>
       </c:if>
       <div class="user-menu">
         <button id="userBtn" class="user-icon" type="button">
@@ -55,6 +51,7 @@
           <c:choose>
             <c:when test="${not empty sessionScope.loginUser}">
               <a href="<c:url value='/mypage'/>">마이페이지</a>
+              <a href="<c:url value='/mypage/userInfo.do'/>">회원정보</a>
               <a href="<c:url value='/member/logout.do'/>">로그아웃</a>
             </c:when>
             <c:otherwise>
