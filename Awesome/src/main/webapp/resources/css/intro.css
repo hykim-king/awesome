@@ -69,7 +69,7 @@
 .intro-features {
   width: min(1100px, calc(100% - 10vw)); /* 폭 (반응형) */
   margin-left: auto;                     /* 왼쪽 여백 자동 → 오른쪽 정렬 */
-  margin-right: 1vw;                     /* 오른쪽 여백 (히어로 padding과 맞추면 깔끔) */
+  margin-right: 7vw;                     /* 오른쪽 여백 (히어로 padding과 맞추면 깔끔) */
   margin-top: clamp(-60px, -18vw, -12px); /* 위로 살짝 당김(원하면 0으로) */
 
   display: grid;
@@ -124,14 +124,16 @@
   margin: 0 auto;                     /* 가 로 중앙 정렬 */
   padding: 0 24px;                    /* 좌우 안전 여백 */
   text-align: center;
+
+  position: relative;  /*position이 relative | absolute | fixed | sticky 일 때만 동작*/
+  left: 120px; 
 }
 
-/* 섹션 제목 */
+/*제목*/
 #team .section-title{
   margin: 0 0 28px;
   font-size: clamp(24px, 3.2vw, 32px);
   font-weight: 800;
-  letter-spacing: -0.2px;
 }
 
 /* 카드 그리드: 가운데 정렬 */
@@ -140,8 +142,8 @@
   grid-template-columns: repeat(3, minmax(220px, 1fr)); /* 3열 */
   gap: 28px 36px;                   /* 세로/가로 간격 */
   justify-items: center;            /* 각 카드 중앙 정렬 */
+  justify-content: center;   /* 그리드 자체를 가운데 */
 }
-
 
 /* 카드 */
 #team .team-card{
@@ -205,46 +207,51 @@
   /* margin-top: -24px;  <- 살짝 당기고 싶으면 주석 해제하고 값만 조절 */
 }
 
-/* --- Back-to-top 버튼 --- */
+/* 화면 여백/챗봇 크기 변수(필요시 수정) */
+:root{
+  --edge: 24px;       /* 화면 오른쪽/아래쪽 여백 */
+  --chat-size: 64px;  /* 챗봇 버튼 지름(대략) */
+  --gap: 14px;        /* 챗봇과의 간격 */
+}
+
+/* 맨 위로 버튼: 챗봇 위쪽에 고정 */
 #backToTop{
   position: fixed;
-  left: 24px;
-  bottom: 24px;
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 999px;
-  background: #111;
+  right: var(--edge);
+  bottom: calc(var(--edge) + var(--chat-size) + var(--gap));
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #1f3a8a;
   color: #fff;
-  font-size: 20px;
-  line-height: 48px;
   display: grid;
   place-items: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,.15);
+  font-size: 18px;
   cursor: pointer;
-  z-index: 1100;
+  box-shadow: 0 10px 20px rgba(0,0,0,.15);
+  z-index: 1000;
 
-
+  /* 스크롤 전엔 숨김 */
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, box-shadow .2s ease;
 }
+
+/* 보여줄 때 */
 #backToTop.show{
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-#backToTop:hover{
-  box-shadow: 0 14px 28px rgba(0,0,0,.18);
-  transform: translateY(0) scale(1.05);
-}
-#backToTop:active{
-  transform: translateY(1px) scale(.98);
-}
-
-/* 스크롤 중 표시 */
-#chat-launcher.visible,
-.chat-launcher.visible{
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
+#backToTop:hover{
+  box-shadow: 0 16px 24px rgba(0,0,0,.18);
+  transform: translateY(-2px);
+}
 
+/* 모바일에선 여백/챗봇 크기 조금 축소 */
+@media (max-width: 640px){
+  :root{ --edge: 16px; --chat-size: 56px; }
+}
