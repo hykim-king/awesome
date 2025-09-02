@@ -12,7 +12,7 @@
 <meta charset="UTF-8">
 <title>HOT ISSUE - 오늘의 흐름을 잡다</title>
 
-<link rel="stylesheet" href="${ctx}/resources/css/mainPage.css">
+<link rel="stylesheet" href="${ctx}/resources/css/mainPage2.css">
 <link rel="stylesheet" href="${ctx}/resources/css/header.css">
 
 
@@ -56,6 +56,7 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 22px rgba(0, 0, 0, .09);
     border-color: #e6e6e6;
+    text-decoration: none;   /* 밑줄 제거 */
 }
 
 /* 언론사 */
@@ -140,7 +141,7 @@
     <nav class="nav-center">
       <ul class="main-menu">
         <li><a href="${ctx}/mainPage/main.do">메인</a></li>
-        <li><a href="${ctx}/quiz/main.do">퀴즈</a></li>
+        <li><a href="<c:url value='/intro/hotissue.do'/>">핫이슈 소개</a></li>
 
         <!-- 기사 보기 + 카테고리 팝업 -->
         <li class="has-popover">
@@ -155,9 +156,9 @@
             <a href="${ctx}/article/list.do?category=60">IT/과학</a>
           </div>
         </li>
-
+        <li><a href="${ctx}/quiz/main.do">퀴즈</a></li>
         <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
-        <li><a href="<c:url value='/intro/hotissue.do'/>">핫이슈 소개</a></li>
+
       </ul>
     </nav>
 
@@ -176,6 +177,7 @@
           <c:choose>
             <c:when test="${not empty sessionScope.loginUser}">
               <a href="<c:url value='/mypage'/>">마이페이지</a>
+              <a href="<c:url value='/mypage/userInfo.do'/>">회원정보</a>
               <a href="<c:url value='/member/logout.do'/>">로그아웃</a>
             </c:when>
             <c:otherwise>

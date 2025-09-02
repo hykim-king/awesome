@@ -391,3 +391,49 @@ h2{
     inset 0 1px 6px rgba(0,0,0,0.25),
     0 4px 10px rgba(0,0,0,0.15);
 }
+
+
+#main-popular .popular-card{
+  border:1px solid #eee; border-radius:14px; background:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  overflow:hidden;
+}
+#main-popular .popular-link{
+  display:flex; gap:12px; padding:14px 16px; text-decoration:none; color:#111;
+}
+
+#main-popular .popular-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(0,0,0,.09);
+  border-color:#e6e6e6;
+}
+/* 인기 기사 카드 hover 살짝 띄우기 */
+#main-popular .popular-card{
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  will-change: transform, box-shadow;
+}
+#main-popular .popular-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.09);
+  border-color: #e6e6e6;
+}
+
+/* 기사 타이틀 색상 (추천/인기기사 공통 적용) */
+#main-recommended .title,
+#main-popular .title {
+  color: #2e260c;   /* 기본 색 */
+  text-decoration: none; 
+}
+/* ===== 기사 타이틀 링크 공통 ===== */
+#main-recommended .title a,
+#main-popular .title a,
+#main-recommended .top-title a {
+  color: #3d3312;          /* 기본 글자색 */
+  text-decoration: none;   /* 밑줄 제거 */
+}
+
+#main-popular .title a:visited {
+  color: #a8903b;          /* 방문 후 글자색 */
+  text-decoration: none;   /* 밑줄 제거 */
+}
