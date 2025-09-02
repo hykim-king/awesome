@@ -11,16 +11,78 @@
 <link rel="stylesheet" href="/ehr/resources/css/pcwk_main.css">
 <link rel="stylesheet" href="/ehr/resources/css/header.css">
 <link rel="stylesheet" href="/ehr/resources/css/intro.css">
+<c:url var="bannerImg" value="/resources/file/banner.png"/>
+
+<style>
+
+/* 소개 페이지 전용 레이아웃 */
+.page-intro #container{
+  grid-template-areas:
+    "header header header header"
+    "banner banner banner banner"   /* ← 헤더 아래 배너 */
+    "leftsidebar main   main   sidebar"
+    "footer footer footer footer";
+  grid-template-rows: auto auto minmax(650px,auto) 100px;
+}
+
+/* 배너 스타일 (이미 쓰던 introBanner 그대로) */
+.page-intro #container > .category-hero{
+  grid-area: banner;
+  grid-column: 1 / -1;
+
+  /* 레이아웃/크기 */
+  width: 100%;
+  max-width: none;
+  margin: 0 0 12px;
+  border-radius: 0;      
+
+  /* 배경(오버레이 + 이미지) */
+  background:
+    linear-gradient(to right, rgba(0,0,0,.30), rgba(0,0,0,.15)),
+    url('${bannerImg}') center/cover no-repeat;
+  color: #fff;
+  min-height: 100px;      
+
+  /* 텍스트 중앙 정렬 */
+  display: grid;
+  place-items: center;    
+  padding: 0 20px;  
+}
+
+/* 타이틀 */
+.page-intro .category-hero h1{
+  margin: 0;
+  font-size: 28px;        
+  font-weight: 800;
+  letter-spacing: .2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35); 
+}
+
+/* 헤더와 배너 사이 그리드 간격만 0으로 */
+.page-intro #container { row-gap: 0 !important; }
+
+/* 배너만 살짝 내리기 — 숫자만 조절해서 미세 튜닝 */
+.page-intro #container > .category-hero{
+  margin-top: 0px !important;
+}
+
+</style>
 
 <title>핫이슈 소개</title>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
 
-<body>
+<body class = "page-intro">
   <div id="container">
 
     <jsp:include page="/WEB-INF/views/include/header.jsp"></jsp:include>
+
+        <!-- 배너 -->
+    <section class="category-hero" role="banner" aria-label="핫이슈 소개">
+      <h1>핫이슈 소개</h1>
+    </section>
+    
     <jsp:include page="/WEB-INF/views/chatBot/chatBot.jsp"></jsp:include>
 
     <!-- main -->
@@ -65,74 +127,61 @@
 	    <div class="team-grid">
 	      <div class="team-card hidden">
 	        <img src="https://via.placeholder.com/120" alt="member">
-	        <h3>팀원 1</h3>
-	        <p>설명</p>
+	        <h3>팀장</h3>
+	        <p>이종민</p>
 	      </div>
 	      <div class="team-card hidden">
 	        <img src="https://via.placeholder.com/120" alt="member">
-	        <h3>팀원 2</h3>
-	        <p>설명</p>
+	        <h3>팀원</h3>
+	        <p>가민경</p>
 	      </div>
 	      <div class="team-card hidden">
 	        <img src="https://via.placeholder.com/120" alt="member">
-	        <h3>팀원 3</h3>
-	        <p>설명</p>
+	        <h3>팀원</h3>
+	        <p>임두나</p>
 	      </div>
 	      <div class="team-card hidden">
 	        <img src="https://via.placeholder.com/120" alt="member">
-	        <h3>팀원 4</h3>
-	        <p>설명</p>
+	        <h3>팀원</h3>
+	        <p>이병헌</p>
 	      </div>
 	      <div class="team-card hidden">
 	        <img src="https://via.placeholder.com/120" alt="member">
-	        <h3>팀원 5</h3>
-	        <p>설명</p>
+	        <h3>팀원</h3>
+	        <p>정유성</p>
 	      </div>
 	      <div class="team-card hidden">
 	        <img src="https://via.placeholder.com/120" alt="member">
-	        <h3>팀원 6</h3>
-	        <p>설명</p>
+	        <h3>팀원</h3>
+	        <p>양승현</p>
 	      </div>
 	    </div>
 	  </div>
 	</section> 
       
-      <!-- 맨 위로 버튼 -->
+    <!-- 맨 위로 버튼 -->
 	<button id="backToTop" title="맨 위로">⬆</button>
       
-      </main>
-      <!--//main end-------------------->
+    </main>
+    <!--//main end-------------------->
 
  <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
    </div> 
    
-   <script>
-// 스크롤 애니메이션
-   const hiddenEls = document.querySelectorAll('.hidden');
-   const observer = new IntersectionObserver((entries)=>{
-     entries.forEach(entry=>{
-       if(entry.isIntersecting){
-         entry.target.classList.add('show');
-         observer.unobserve(entry.target);
-       }
-     });
-   }, {threshold: 0.2});
-   hiddenEls.forEach(el=>observer.observe(el));
+<script>
+  const toTop = document.getElementById('backToTop');
 
-   // 맨 위로 버튼
-   const backToTop = document.getElementById("backToTop");
-   window.addEventListener("scroll", ()=>{
-     if(document.documentElement.scrollTop > 200){
-       backToTop.style.display = "block";
-     } else {
-       backToTop.style.display = "none";
-     }
-   });
-   backToTop.addEventListener("click", ()=>{
-     window.scrollTo({ top: 0, behavior: 'smooth' });
-   });
+  // 스크롤 내려가면 표시 / 맨 위면 숨김
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY || document.documentElement.scrollTop;
+    toTop.classList.toggle('show', y > 200);   // 200px 내려가면 표시 (원하면 수치 조정)
+  });
 
-   </script>
+  // 클릭 시 맨 위로
+  toTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
    
 </body>
 </html>
