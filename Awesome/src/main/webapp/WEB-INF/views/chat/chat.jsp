@@ -19,7 +19,7 @@
 
 <style>
 /************************************CHATMESSAGE CSS*******************************************************/
-:root { --bg:#3d3312; --line:#eee; --muted:#888; --btn:#3d3312; --btn-text:#fff; }
+:root { --bg:#28396E ; --line:#eee; --muted:#888; --btn:#3d3312; --btn-text:#fff; }
 * { box-sizing: border-box; }
 body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; background:#f7f7f7; color:#222; }
 
@@ -52,10 +52,10 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
   /* ② 화면 높이 기반(권장): */
   max-height: 40vh; /* 높이 조절 */
   overflow-y: auto;
-  background:#FFFDF8 ;
+  background:#f7f9ff ;
 }
 .chat-item{ display:flex; gap:10px; padding:12px; border-bottom:1px solid var(--line); }
-.avatar{ width:36px; height:36px; border-radius:50%; background:#FFF4D1 ; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
+.avatar{ width:36px; height:36px; border-radius:50%; background:#dee4ff ; display:flex; align-items:center; justify-content:center; font-size:12px; color:#555; flex-shrink:0; }
 .bubble{ flex:1; min-width:0; }
 .meta{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
 .meta .uid{ font-weight:600; color:#444; }
@@ -67,11 +67,14 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
 .chat-input{
   position:sticky; bottom:0; /* 리스트가 스크롤될 때 하단에 붙도록 */
   display:flex; gap:8px; padding:10px;
-  background:#fafafa; border-top:1px solid var(--line); border-radius:0px; 
+  background:#fafafa; border-top:1px solid var(--line);
+  border-radius: 0 !important;
+  overflow: hidden;      
 }
 .chat-input input{ flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
 .chat-input button{ padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
 .chat-input button:disabled{ opacity:.5; cursor:not-allowed; }
+
 
 /* ── 모바일 대응 ────────────────────────────────────── */
 @media (max-width: 540px){
