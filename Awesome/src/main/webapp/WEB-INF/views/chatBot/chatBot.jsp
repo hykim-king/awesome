@@ -20,8 +20,8 @@
         
         .chatbot-header {
             padding: 15px;
-            background-color: #007bff;
-            color: white;
+            background-color: #FFD54F;
+            color: #3d3312;
             font-size: 1.2em;
             font-weight: bold;
             text-align: center;
@@ -38,7 +38,7 @@
         
         .message-container { display: flex; margin-bottom: 10px; }
         .user-message { justify-content: flex-end; }
-        .user-message .bubble { background-color: #dcf8c6; }
+        .user-message .bubble { background-color: #fff8e3; }
         .bot-message { justify-content: flex-start; }
         .bot-message .bubble { background-color: #e5e5ea; }
         .bubble {
@@ -66,7 +66,7 @@
         }
         .send-button {
             padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #3d3312;
             color: white;
             border: none;
             border-radius: 20px;
@@ -82,14 +82,18 @@
         .bot-list li { margin: 2px 0; }
         /* 플로팅 런처 버튼 */
 		.chat-launcher{
-		  position: fixed; right: 24px; bottom: 24px;
-		  width: 56px; height: 56px; border-radius: 50%;
-		  border: 0; background:#007bff; color:#fff; font-size:24px;
+		  position: fixed !important; 
+		  right: 24px !important; 
+		  bottom: 24px !important;
+		  width: 56px !important; 
+		  height: 56px !important; 
+		  border-radius: 50% !important;
+		  border: 0; background:#FFD54F; color:#fff; font-size:24px;
 		  display:flex; align-items:center; justify-content:center;
 		  box-shadow: 0 8px 24px rgba(0,0,0,.2);
 		  cursor:pointer; z-index: 9998;
 		}
-		.chat-launcher:hover{ background:#0056b3; }
+		.chat-launcher:hover{ background:#FFF4D1  ; }
 		
 		/* 플로팅 챗봇 패널(처음엔 숨김). 기존 .chatbot-container 스타일을 덮어쓰기 위해 id 선택자 사용 */
 		#chatbot-panel{
