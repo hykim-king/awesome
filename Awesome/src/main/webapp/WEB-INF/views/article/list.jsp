@@ -76,6 +76,41 @@
   grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
   grid-template-rows: 100px auto minmax(650px,auto) 100px;
 }
+
+/*이하 컬러 수정_가민경*/
+/* 검색 버튼 색 */
+.page-article-list #main .search-box button[type="submit"]{
+  background:#28396E; 
+  border-color:#28396E;
+  color:#fff;
+}
+.page-article-list #main .search-box button[type="submit"]:hover{
+  background:#1f2c54;    /* hover 시 조금 어둡게 */
+  border-color:#1f2c54;
+}
+
+/* 페이지네이션 - 현재 페이지 색 */
+.page-article-list .paging .activePage{
+  background:#28396E;   
+  border-color:#28396E;
+  color:#fff;
+}
+
+/* 페이지번호 hover 색 */
+.page-article-list .paging a:hover{
+  background:#b8c3e3;   
+  border-color:#b8c3e3;
+  color:#28396E;
+}
+
+/*기사 제목*/
+.page-article-list .news-title a{
+  color:#3d3312; 
+}
+.page-article-list .news-title a:visited{
+ color:#a8903b;
+} 
+
 </style>
 <script>
 /* 새로고침 시 검색 조건 초기화 (category만 유지) */
