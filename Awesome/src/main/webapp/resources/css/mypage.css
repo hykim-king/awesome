@@ -76,10 +76,12 @@
 }
 
 .summary {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.5;
-  margin-bottom: 6px;
+  font-weight: 700;         /* 더 두껍게 */
+  font-size: 18px;
+  color: #222;              /* 진한 회색 */
+  line-height: 1.6;
+  margin-bottom: 10px;
+  letter-spacing: 0.7px; 
 }
 
 .meta {
