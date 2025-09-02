@@ -27,14 +27,6 @@ html,body{
   padding: 80px 60px 150px;    /* 위/아래 패딩 축소 */
 }
 
-/* 가운데 정렬 강제하던 미디어쿼리 무력화 */
-@media (min-height: 720px){
-  #main{ align-content: start; }
-}
-.main-container{
-  width: min(1100px, 94vw);
-  margin-inline: auto;
-}
 
 /* Title */
 .main-container > h2{

@@ -33,6 +33,8 @@ public interface UserLogService {
      */
     List<UserChartDTO> doRetrieveById(UserLogDTO log);
     
+    List<UserChartDTO> selectWeeklyTrend(UserLogDTO log);
+    
     
     List<ArticleDTO> getRecommendedArticlesByUser(String userId);
     
