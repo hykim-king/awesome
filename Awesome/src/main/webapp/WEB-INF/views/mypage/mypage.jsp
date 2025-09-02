@@ -17,6 +17,8 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <!-- 워드 클라우드 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.1.2/wordcloud2.min.js"></script>
+
+
 </head>
 <body>
 <div id="container">
@@ -29,7 +31,7 @@
       <div class="wrap">
 
         <!-- 상단: 요약 + 차트/워드클라우드 -->
-        <div id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
+        <div class="summary" id="summary" style="white-space:pre-line;margin-bottom:12px"></div>
         <div class="grid top">
           <div id="piechart_3d" style="height:240px;"></div>
           <div class="wordCloud" id="wordCloud"></div>
