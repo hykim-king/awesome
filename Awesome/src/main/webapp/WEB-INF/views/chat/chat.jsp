@@ -71,6 +71,8 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
   border-radius: 0 !important;
   overflow: hidden;      
 }
+
+
 .chat-input input{ flex:1; padding:12px; border:1px solid #ccc; border-radius:8px; outline:none; }
 .chat-input button{ padding:12px 16px; border:none; border-radius:8px; background:var(--btn); color:var(--btn-text); cursor:pointer; }
 .chat-input button:disabled{ opacity:.5; cursor:not-allowed; }
