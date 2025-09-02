@@ -92,7 +92,7 @@
       <section class="intro-hero">
         <!-- 왼쪽 텍스트 -->
         <div class="hero-content">
-    <h1>뉴스 빅데이터 플랫폼,<br>HotIssue</h1>
+    <h1>뉴스 빅데이터 플랫폼,<br>Hot Issue</h1>
     <p>핫이슈는 최신 뉴스와 데이터를 분석하고,<br>사용자에게 맞춤형 정보를 제공합니다.</p>
   </div>
 
@@ -126,32 +126,32 @@
 	    <h2 class="section-title">핫이슈 팀</h2>
 	    <div class="team-grid">
 	      <div class="team-card hidden">
-	        <img src="https://via.placeholder.com/120" alt="member">
+	        <img src="${CP}/resources/file/team1.png" alt="member">
 	        <h3>팀장</h3>
 	        <p>이종민</p>
 	      </div>
 	      <div class="team-card hidden">
-	        <img src="https://via.placeholder.com/120" alt="member">
+	        <img src="${CP}/resources/file/team2.png" alt="member">
 	        <h3>팀원</h3>
 	        <p>가민경</p>
 	      </div>
 	      <div class="team-card hidden">
-	        <img src="https://via.placeholder.com/120" alt="member">
+	        <img src="${CP}/resources/file/team3.png" alt="member">
 	        <h3>팀원</h3>
 	        <p>임두나</p>
 	      </div>
 	      <div class="team-card hidden">
-	        <img src="https://via.placeholder.com/120" alt="member">
+	        <img src="${CP}/resources/file/team4.png" alt="member">
 	        <h3>팀원</h3>
 	        <p>이병헌</p>
 	      </div>
 	      <div class="team-card hidden">
-	        <img src="https://via.placeholder.com/120" alt="member">
+	        <img src="${CP}/resources/file/team5.png" alt="member">
 	        <h3>팀원</h3>
 	        <p>정유성</p>
 	      </div>
 	      <div class="team-card hidden">
-	        <img src="https://via.placeholder.com/120" alt="member">
+	        <img src="${CP}/resources/file/team6.png" alt="member">
 	        <h3>팀원</h3>
 	        <p>양승현</p>
 	      </div>
