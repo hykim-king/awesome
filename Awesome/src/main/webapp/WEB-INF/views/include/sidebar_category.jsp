@@ -29,4 +29,6 @@
   <jsp:include page="/WEB-INF/views/quiz/quizRank.jsp"/>
   <jsp:include page="/WEB-INF/views/chat/chat.jsp"/>
   <jsp:include page="/WEB-INF/views/widget/dictionary.jsp"/>
+     <jsp:include page = "/WEB-INF/views/chatBot/chatBot.jsp" />
+  
 </div>

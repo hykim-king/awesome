@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   
 
 <div id="leftsidebar">
-   <%-- chatBot API KEY 연결안됨([no Body]오류 해결 안됨) --%>
-   <jsp:include page = "/WEB-INF/views/chatBot/chatBot.jsp" />
+
+
 
 </div>
