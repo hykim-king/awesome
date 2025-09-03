@@ -148,6 +148,7 @@ public class MypageController {
 		
 		user.setUserId(loginUser.getUserId());
 		memberService.updateNickNmByUserId(user); 
+		session.setAttribute("loginUser", user);
 		redirect.addFlashAttribute("msg", "회원정보가 수정되었습니다.");
 	    return "redirect:/mypage/userInfo.do";
 	}
