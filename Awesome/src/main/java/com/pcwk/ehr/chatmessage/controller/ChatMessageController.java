@@ -59,7 +59,7 @@ public class ChatMessageController {
 	                      SimpMessageHeaderAccessor accessor) throws Exception {
 
 	    String uid = null;
-	    String outnick = null;
+	    MemberDTO outnick = null;
 
 	    
 	    Map<String,Object> attrs = accessor.getSessionAttributes();
@@ -77,13 +77,13 @@ public class ChatMessageController {
 	        return;
 	    }
 	    
-	    	outnick = String.valueOf(attrs.get("USER_NICK"));
+	    	outnick = (MemberDTO) attrs.get("loginUser");
 	    	log.debug("outnick:{}",outnick);
 	    	log.debug("uid:{}",uid);
 	    	
 	    payload.setCategory(category);
 	    payload.setUserId(uid);
-	    payload.setNickNm(outnick);
+	    payload.setNickNm(outnick.getNickNm());
 	    payload.setSendDt(new Date());
 	    service.doSave(payload);
 	    messagingTemplate.convertAndSend("/topic/chat/" + category, payload);
