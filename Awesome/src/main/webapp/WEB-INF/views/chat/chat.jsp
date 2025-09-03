@@ -419,7 +419,7 @@ body { margin:0; font:14px/1.45 -apple-system, BlinkMacSystemFont,"Segoe UI",Rob
     li.dataset.text = m.message  || '';
 
     var html = ''
-      + '<div class="avatar">'+ esc((li.dataset.uid.charAt(0)||'u')) +'</div>'
+      + '<div class="avatar">'+ esc((li.dataset.outnick.charAt(0)||'u')) +'</div>'
       + '<div class="bubble">'
       +   '<div class="meta">'
       +     '<span class="uid">'+ esc(li.dataset.outnick) +'</span>'

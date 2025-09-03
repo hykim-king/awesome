@@ -123,8 +123,9 @@
 (function (){
   try {
     var base = "${pageContext.request.contextPath}/article/list.do";
+    // isListPath : 현재 경로가 기사 목록 페이지 인지 확인
     var isListPath = location.pathname.indexOf("/article/list.do") !== -1;
-
+    // 최신 스펙과 구 스펙 모두 대응(최신 스펙과 구 스펙에서 쓰는 용어가 다름)
     var nav = (performance && performance.getEntriesByType)
       ? performance.getEntriesByType("navigation")[0] : null;
 
@@ -142,11 +143,13 @@
       var cat = sp.get("category");
       var sp2 = new URLSearchParams(sp.toString());
       sp2.delete("category");
+      //hasOtherParams : 카테고리 제외하고 다른 파라미터가 남아있는지 확인
       var hasOtherParams = (sp2.toString() !== "");
-
+      //리다이렉트 목표, 카테고리가 있으면 카테고리 값 없으면 그냥 base
       var target = cat ? (base + "?category=" + encodeURIComponent(cat)) : base;
+      //onlyCategory: 쿼리가 아예 없거나 카테고리만 있는 상태
       var onlyCategory = (!hasOtherParams && (sp.has("category") || sp.toString() === ""));
-
+      //카테고리만 가지고 있는 상태가 아니라면 기록을 남기지 않고 교체
       if (!onlyCategory) {
         location.replace(target);
       }
@@ -186,7 +189,6 @@
     <c:otherwise><c:set var="catName" value="전체"/></c:otherwise>
   </c:choose>
 
-  <%-- 이제 전체/카테고리 상관없이 항상 배너 노출 --%>
   <div class="category-hero" role="banner" aria-label="${catName} 기사">
     <h1>${catName} 기사</h1>
   </div>
@@ -230,6 +232,7 @@
                   <c:url var="visitUrl" value="/article/visit.do">
                     <c:param name="articleCode" value="${item.articleCode}" />
                   </c:url>
+                  <!-- noopener noreferrer: 보안, 프라이버시  옵션 -->
                   <a href="${visitUrl}"
                      target="_blank"
                      rel="noopener noreferrer"
@@ -306,7 +309,7 @@
         <c:otherwise><span class="disabled">이전</span></c:otherwise>
       </c:choose>
 
-      <!-- 이전 블록 -->
+      <!-- 이전 블록(블록 1개 = 10)-->
       <c:if test="${startPage > 1}">
         <c:url var="prevBlkUrl" value="/article/list.do">
           <c:param name="pageNum" value="${startPage - 1}" />
@@ -339,7 +342,7 @@
         </c:choose>
       </c:forEach>
 
-      <!-- 다음 블록 -->
+      <!-- 다음 블록(블록 1개:10) -->
       <c:if test="${endPage < totalPage}">
         <c:url var="nextBlkUrl" value="/article/list.do">
           <c:param name="pageNum" value="${endPage + 1}" />
@@ -394,9 +397,10 @@
 /* 리스트 화면에서만 즉시 조회수 +1 (UI 반영용) */
 (function(){
   function bumpOnce(anchor){
+	//중복 방지 플래그, 같은 액션에 한 번만 실행(예: 클릭, Enter 키)
     if (anchor.dataset.bumped === '1') return;
     anchor.dataset.bumped = '1';
-
+    //기사 코드(articleCode) 추출
     var code = anchor.getAttribute('data-article-code');
     if (!code) {
       try {
@@ -405,27 +409,31 @@
       } catch(_) {}
     }
     if (!code) return;
-
+    // 카운터 요소 찾기, DOM에 조회수 이벤트가 있어야 UI 업데이트 가능
     var span = document.getElementById('views-' + code);
     if (!span) return;
-
+    // 숫자 파싱 후 +1, 텍스트에서 숫자만 추출(',' , 한글, 공백 제거), 정수 변환 실패시 0으로 간주
     var cur = parseInt((span.textContent || '').replace(/[^0-9]/g,''), 10) || 0;
+    //+1한 값을 그대로 문자열로 덮어쓰기
     span.textContent = String(cur + 1);
   }
-
   document.addEventListener('click', function(e){
+	// 부모 체인에서 대상 앵커를 탐색
     var a = e.target.closest && e.target.closest('a[href*="/article/visit.do"]');
+	// 좌클릭만 처리
     if (!a || e.button !== 0) return;
     bumpOnce(a);
   }, true);
-
+  // 가운데 클릭(새 탭) 이벤트, auxclick: 보조 버튼(가운데/오른쪽 등)
   document.addEventListener('auxclick', function(e){
     var a = e.target.closest && e.target.closest('a[href*="/article/visit.do"]');
     if (!a) return;
+    //가운데 버튼이 1일 때만 증가 -> 휠 클릭으로 새 탭 떠도 즉시 +1
     if (e.button === 1) bumpOnce(a);
   }, true);
-
+  //키보드 Enter키 이벤트
   document.addEventListener('keydown', function(e){
+	//Enter로 열 때 +1
     if (e.key !== 'Enter') return;
     var a = e.target.closest && e.target.closest('a[href*="/article/visit.do"]');
     if (a) bumpOnce(a);
@@ -436,11 +444,15 @@
 <script>
 /* 북마크 토글 (비로그인 모달 / 로컬 저장) */
 (function () {
+  //사용자 식별 & 로컬스토리지 키
   function getUserId(){
+	//세션에 userId 키를 주입 비어있을 시 'guest', escapeXml: XSS 안전하게 출력
     var uid = '${fn:escapeXml(sessionScope.userId)}';
     return (uid && uid.trim && uid.trim().length) ? uid : 'guest';
   }
+  //로컬스토리지 키를 사용자 단위로 분리 -> 로그인 사용자마다 독립된 북마크 상태 저장
   function storageKey(code){ return 'bm:' + getUserId() + ':' + String(code); }
+  //버튼 상태 반영(토글 UI)
   function applyBtnState(btn, on){
     btn.classList.toggle('on', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -448,7 +460,7 @@
     if (ic) ic.textContent = on ? '★' : '☆';
     btn.title = on ? '북마크 해제' : '북마크 추가';
   }
-
+  //초기 복원
   document.addEventListener('DOMContentLoaded', function(){
     var btns = document.querySelectorAll('.bm-btn');
     for (var i=0; i<btns.length; i++){
@@ -460,7 +472,7 @@
       else if (v === '0') applyBtnState(btn, false);
     }
   });
-
+  //로그인 모달 열기/닫기
   function showLoginModal(){
     var m = document.getElementById('login-modal');
     if (!m) { alert('로그인이 필요합니다.'); return; }
@@ -473,16 +485,18 @@
     m.classList.add('hidden');
     m.setAttribute('aria-hidden','true');
   }
-
+  //서버 응답 ID 추출 유틸
   function pickMsgId(data){
     if (!data) return null;
+    //병합 연산자 ??로 첫 번째 존재 값을 선택
     return (data.messageId ?? data.msgId ?? data.code ?? data.flag ?? data.status ?? null);
   }
-
+  //북마크 토글 클릭 핸들러
   document.addEventListener('click', function(e){
+	//이벤트 위임
     var btn = e.target.closest && e.target.closest('.bm-btn');
     if(!btn) return;
-
+    //게스트 처리: guest 일 때 서버 요청 없이 모달만 띄우기
     if(btn.classList.contains('guest')){
       e.preventDefault(); e.stopPropagation();
       showLoginModal();
@@ -490,30 +504,34 @@
     }
 
     e.preventDefault(); e.stopPropagation();
+    //더블/중복 클릭 차단
     if(btn._busy) return; btn._busy = true;
 
     var code = btn.getAttribute('data-article-code');
     var url = btn.getAttribute('data-toggle-url');
+    //요청 URL, 없으면 기본 URL 사용
     if (!url) {
       var base = '${pageContext.request.contextPath}/bookmark/toggleBookmark.do';
       url = base + (code ? ('?articleCode=' + encodeURIComponent(code)) : '');
     }
-
+    // 세션 쿠키 포함, 서버에서 AJAX 요청 구분 가능
     fetch(url, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(function(res){ if(!res.ok) throw res; return res.text(); })
+    //응답 처리: 텍스트로 받고 파싱 시도
     .then(function(txt){
       var data = null; try { data = JSON.parse(txt); } catch(_) {}
       var id = pickMsgId(data);
-
+      //-99: 인증 필요 -> 로그인 모달 띄우기
       if (id === -99){ showLoginModal(); return; }
 
       var nowOn  = btn.classList.contains('on');
+      // 1: 북마크 추가
       var nextOn = (typeof id === 'number') ? (id === 1) : !nowOn;
-
+      //상태 반영: UI 갱신 + 로컬스토리지
       applyBtnState(btn, nextOn);
       try { localStorage.setItem(storageKey(code), nextOn ? '1' : '0'); } catch(_){}
 
@@ -522,7 +540,7 @@
     .catch(function(err){ console.error('북마크 토글 실패', err); })
     .finally(function(){ btn._busy = false; });
   }, false);
-
+  //모달 닫기 핸들러
   document.addEventListener('click', function(e){
     if (e.target.closest('[data-action="close"]') ||
         e.target.classList.contains('login-modal_backdrop')) {
