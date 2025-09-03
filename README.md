@@ -89,9 +89,26 @@
 
 ## 6. 테스트 및 산출물
 - **단위 테스트 & 통합 테스트**
-  👉  
+  👉  <img width="929" height="726" alt="image" src="https://github.com/user-attachments/assets/ad435bae-6d42-49d7-824d-48f08533022b" />
+      <img width="930" height="701" alt="image" src="https://github.com/user-attachments/assets/3cf19652-2c3e-4ac3-8d26-ac2ba0483cc1" />
+      <img width="929" height="702" alt="image" src="https://github.com/user-attachments/assets/f8404427-1e9a-41ec-85e7-10c06a6b4c90" />
+      <img width="930" height="701" alt="image" src="https://github.com/user-attachments/assets/b5935818-819b-4a15-bf64-ff6500125122" />
+      <img width="930" height="211" alt="image" src="https://github.com/user-attachments/assets/88b7993a-657e-4a93-bd16-bc1f63a20cba" />
+
+
+   👉  <img width="878" height="701" alt="image" src="https://github.com/user-attachments/assets/b2c77104-044b-49c1-9e72-b0087f2b6aa7" />
+
+
+
+
+
+
+
+
+
 - **프로그램 사양서**
-  👉 
+  👉 ![aws프로그램사양서](https://github.com/user-attachments/assets/b98103b0-0a64-4c69-b515-821521838b20)
+
 - **GitHub Repository**: [Awesome GitHub Repo](https://github.com/hykim-king/awesome.git)
 
 ---
