@@ -42,8 +42,8 @@
 ### 5-1. 회원 기능
 - 회원가입 (중복확인, 이메일 인증)
   <p align="left">
-  <img src="Awesome/src/main/webapp/resources/readme/member.png" alt="회원가입 화면" width="700">
-</p>
+    <img src="Awesome/src/main/webapp/resources/readme/member.png" alt="회원가입 화면" width="700">
+  </p>
 - 로그인
 - 아이디/비밀번호 찾기
 
