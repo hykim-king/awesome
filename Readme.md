@@ -219,42 +219,51 @@
 ## 7. 시연 영상
 👉 시연 영상
 
-
+메인
 https://github.com/user-attachments/assets/600fe7a1-2100-424b-aefe-1c29c87337d6
 
 
-
-
+핫이슈 소개
 https://github.com/user-attachments/assets/8cb0a1d7-54b2-4f35-8a30-9955099b65bd
 
 
-
-
+기사
 https://github.com/user-attachments/assets/e26ef65e-b105-4002-b1d8-8524bd5aa8a1
 
 
-
-
+로그인
 https://github.com/user-attachments/assets/edfcbd23-2473-4804-91b7-61ced60e6ca9
 
 
-
+마이페이지
 https://github.com/user-attachments/assets/047a1691-b6f3-4a15-869c-f9aeaa8da6a9
 
 
-
-
+회원정보 수정
 https://github.com/user-attachments/assets/8c0fb54c-ead8-41bf-8a9a-656e4a76b517
 
 
-
-
+채팅
 https://github.com/user-attachments/assets/03193c65-3a41-4a11-a35b-86f7de15e360
 
 
-
-
+퀴즈
 https://github.com/user-attachments/assets/6eb01e0b-f3bb-4c69-9a32-00bbdf118f0f
+
+
+챗봇
+
+
+회원가입
+
+
+신고
+https://github.com/user-attachments/assets/7d4727f3-a6fb-4ab4-a23d-3b717cd2bd29
+
+
+관리자(전체)
+https://github.com/user-attachments/assets/879b8608-e166-4206-9e76-82c850c26a6b
+
 
 
 
