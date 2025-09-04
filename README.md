@@ -37,7 +37,8 @@
 <img width="610" height="341" alt="image" src="https://github.com/user-attachments/assets/5ea4788d-f6ff-4c78-962a-34dd33a08ef8" />
 
 ### 4-2. 기능 정의서 & 요구사항
-👉
+<img width="1410" height="704" alt="image" src="https://github.com/user-attachments/assets/8297c703-e2aa-40cc-9811-d3ec19dde6b8" />
+<img width="1411" height="396" alt="image" src="https://github.com/user-attachments/assets/7361a3ec-53c4-4fbc-8670-a2d554d85eb7" />
 
 ---
 
