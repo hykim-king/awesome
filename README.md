@@ -7,14 +7,25 @@
 
 ## 1. 프로젝트 소개
 ### 1-2. 프로젝트 개요
+<img width="605" height="644" alt="image" src="https://github.com/user-attachments/assets/c0d818ae-fced-4aac-96ee-349b0a393aa6" />
+
 ### 1-3. 프로젝트 배경
+<img width="552" height="427" alt="image" src="https://github.com/user-attachments/assets/5c7234d2-e0d0-445e-8aa2-f9c0e0164cea" />
+<img width="613" height="398" alt="image" src="https://github.com/user-attachments/assets/d311bde7-4ceb-47f1-81bf-f7d3938a4031" />
+<img width="612" height="282" alt="image" src="https://github.com/user-attachments/assets/b6402ddc-020e-4e84-b751-6a4161c9a506" />
+<img width="607" height="513" alt="image" src="https://github.com/user-attachments/assets/eed932cf-e4e4-4ab2-8e6a-cf0867a95b7c" />
+
+
 ### 1-4. 프로젝트 선정 기준
+<img width="619" height="419" alt="image" src="https://github.com/user-attachments/assets/5b21833a-2fd1-46ad-8d38-e6778bbd15ec" />
+
 ### 1-5. 기대 효과
+<img width="639" height="566" alt="image" src="https://github.com/user-attachments/assets/64af33ee-17af-41ba-b342-e20edfe14410" />
 
 ---
 
 ## 2. 개발 환경 및 기술 스택
-
+<img width="1059" height="549" alt="image" src="https://github.com/user-attachments/assets/63ece1ec-e8af-46a6-87bd-7830342a83b9" />
 ---
 
 ## 3. 프로젝트 팀 구성
