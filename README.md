@@ -62,6 +62,9 @@
 
 ### 5-2. 관리자 기능
 - 회원 관리 (검색, 등급 수정, 삭제)
+  <p align="left">
+    <img src="Awesome/src/main/webapp/resources/readme/adminMember.png" alt="회원 관리 화면" width="700">
+  </p>
 - 기사 관리 (검색, 삭제)
 - 신고 관리 (조회, 상태 변경)
 
