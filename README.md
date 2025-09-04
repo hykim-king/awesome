@@ -123,6 +123,7 @@
   
   <img width="690" height="568" alt="image" src="https://github.com/user-attachments/assets/c70fe97c-9bbb-456d-ab97-4599370c3fda" />
   
+  
   <img width="259" height="253" alt="image" src="https://github.com/user-attachments/assets/c0a48740-0ed8-426f-b18d-5a1bc2794dfb" />
   
 ### 5-6. 사전 기능
