@@ -3,7 +3,7 @@
 팀명: **Awesome (어썸)**  
 기간: **2025.07.15 ~ 2025.09.05**
 
----
+
 
 ## 1. 프로젝트 소개
 ### 1-2. 프로젝트 개요
@@ -23,11 +23,11 @@
 ### 1-5. 기대 효과
 <img width="639" height="566" alt="image" src="https://github.com/user-attachments/assets/64af33ee-17af-41ba-b342-e20edfe14410" />
 
----
+
 
 ## 2. 개발 환경 및 기술 스택
 <img width="1059" height="549" alt="image" src="https://github.com/user-attachments/assets/63ece1ec-e8af-46a6-87bd-7830342a83b9" />
----
+
 
 ## 3. 프로젝트 팀 구성
 | 이름 | 역할 |
@@ -52,7 +52,6 @@
 <img width="1410" height="704" alt="image" src="https://github.com/user-attachments/assets/8297c703-e2aa-40cc-9811-d3ec19dde6b8" />
 <img width="1411" height="396" alt="image" src="https://github.com/user-attachments/assets/7361a3ec-53c4-4fbc-8670-a2d554d85eb7" />
 
----
 
 ## 5. 구현 결과 (기능별 화면)
 ### 5-1. 회원 기능
