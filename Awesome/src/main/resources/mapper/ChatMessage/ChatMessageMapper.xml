@@ -83,13 +83,15 @@
 	  SELECT *
 	  FROM (
 	    SELECT 
-	       CHAT_CODE, 
-	       CATEGORY, 
-	       USER_ID,
-	       NICK_NM, 
-	       MESSAGE, 
-	       SEND_DT
-	    FROM CHAT_MESSAGE
+	       c.CHAT_CODE, 
+	       c.CATEGORY, 
+	       c.USER_ID,
+	       c.MESSAGE, 
+	       c.SEND_DT,
+	       m.NICK_NM 
+	    FROM CHAT_MESSAGE c
+	    JOIN member m
+              ON c.USER_ID = m.USER_ID
 	    WHERE CATEGORY = #{category}
 	    ORDER BY CHAT_CODE DESC
 	  )
