@@ -41,7 +41,7 @@
 ## 5. 구현 결과 (기능별 화면)
 ### 5-1. 회원 기능
 - 회원가입 (중복확인, 이메일 인증)
-  <img src="Awesome/src/main/webapp/resources/readme/All_article.png" alt="전체 기사 화면" width="700">
+  <img src="Awesome/src/main/webapp/resources/readme/All_article.png" alt="전체 기사 화면">
 - 로그인
 - 아이디/비밀번호 찾기
 
