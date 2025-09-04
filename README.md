@@ -40,7 +40,9 @@
 - **형상 관리**: Git, GitHub
 - **아키텍처**: MVC 패턴
 - **ERD & DB 설계**  
-  (ERD 다이어그램 이미지)
+<img width="1826" height="844" alt="image" src="https://github.com/user-attachments/assets/c5df29c7-2aa6-4710-ba30-2a8a01903a9b" />
+
+
 
 ---
 
