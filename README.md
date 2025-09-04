@@ -56,13 +56,18 @@
 ## 5. 구현 결과 (기능별 화면)
 ### 5-1. 회원 기능
 - 회원가입 (중복확인, 이메일 인증)
-  <img width="606" height="892" alt="image" src="https://github.com/user-attachments/assets/cdd7ff9d-d274-47af-b922-6ba04360948c" />
+  <p align="left">
+    <img width="606" height="892" alt="image" src="https://github.com/user-attachments/assets/cdd7ff9d-d274-47af-b922-6ba04360948c" />
+  </p>
 - 로그인
-  <img width="456" height="390" alt="image" src="https://github.com/user-attachments/assets/ff1023a5-5cec-44b5-9ce1-953ef3c42280" />
+  <p align="left">
+    <img width="456" height="390" alt="image" src="https://github.com/user-attachments/assets/ff1023a5-5cec-44b5-9ce1-953ef3c42280" />
+  </p>
 - 아이디/비밀번호 찾기
-  <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/7418ea9c-3362-4974-abdb-c4f8839b8cd2" />
-  <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/eba99ffa-298a-49df-9f2b-aedf46519e88" />
-
+  <p align="left">
+    <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/7418ea9c-3362-4974-abdb-c4f8839b8cd2" />
+    <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/eba99ffa-298a-49df-9f2b-aedf46519e88" />
+  </p>
 
 ### 5-2. 관리자 기능
 - 회원 관리 (검색, 등급 수정, 삭제)
