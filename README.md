@@ -119,10 +119,11 @@
   
   <img width="283" height="330" alt="image" src="https://github.com/user-attachments/assets/1e231d74-9d5a-440f-9d4e-20587d909d57" />
   
-- 퀴즈 결과 및 해설
+- 퀴즈 해설
   
   <img width="690" height="568" alt="image" src="https://github.com/user-attachments/assets/c70fe97c-9bbb-456d-ab97-4599370c3fda" />
   
+- 퀴즈 결과
   
   <img width="259" height="253" alt="image" src="https://github.com/user-attachments/assets/c0a48740-0ed8-426f-b18d-5a1bc2794dfb" />
   
