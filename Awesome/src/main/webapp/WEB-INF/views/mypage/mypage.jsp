@@ -44,6 +44,10 @@
 	          <div class="trendChart-title">요일별 기사 추이</div>
 	        </div>
         </div>
+	        <div class="week-nav">
+			  <button onclick="changeWeek(1)">◀ 지난 주</button>
+			  <button onclick="changeWeek(0)">이번 주 ▶</button>
+			</div>
         
         <!-- 차트 확대용 모달 -->
         <div id="chartModal" class="modal" style="display:none;">
@@ -88,14 +92,6 @@
   <jsp:include page="/WEB-INF/views/include/footer.jsp"></jsp:include>
 </div>
 
-<!-- 구글 차트 요약 -->
-<script>
-fetch('${CP}/mypage/api/mypage/summary')
-  .then(res => res.text())
-  .then(msg => {
-    document.getElementById("summary").innerText = msg;
-  });
-</script>
 
 <script>
 // -------------------------------
@@ -224,83 +220,126 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <!-- 구글 차트 -->
 <script>
-google.charts.load("current", { packages: ["corechart"] });
+// 구글 차트 로드
+google.charts.load('current', { packages: ['corechart'] });
 google.charts.setOnLoadCallback(drawCharts);
 
-function drawCharts() {
-  // 1. 카테고리별 (BarChart)
-  fetch('${CP}/mypage/api/mypage/chart')
-    .then(response => response.json())
-    .then(data => {
-      if (!data.length) {
-        document.getElementById('categoryChart').innerHTML =
-          "이번주 읽은 기사가 없습니다.";
-        return;
-      }
+// -------------------------------
+// 공통: 카테고리 차트 렌더
+// -------------------------------
+function renderCategoryChart(data) {
+  if (!data || data.length === 0) {
+    document.getElementById('categoryChart').innerHTML = '이번주 읽은 기사가 없습니다.';
+    return;
+  }
 
-      const chartData = [['카테고리', '클릭수']];
-      data.forEach(item => chartData.push([item.category, item.clickCount]));
+  const chartData = [['카테고리', '클릭수']];
+  data.forEach(item => chartData.push([item.category, item.clickCount]));
 
-      const dataTable = google.visualization.arrayToDataTable(chartData);
-      const options = {
-    		  chartArea: { width: '80%', height: '70%' },
-    		  bars: 'horizontal',
-    		  colors: ['#3b82f6'],
-    		  animation: {
-    			    startup: true,          // 처음 로드할 때 실행
-    			    duration: 1000,         // 애니메이션 시간 (ms)
-    			    easing: 'out'           // 'linear', 'in', 'out', 'inAndOut' 가능
-    			  }
-    			};
+  const dataTable = google.visualization.arrayToDataTable(chartData);
+  const options = {
+    chartArea: { width: '80%', height: '70%' },
+    bars: 'horizontal',
+    colors: ['#3b82f6'],
+    legend: { position: 'none' },
+    animation: { startup: true, duration: 800, easing: 'out' }
+  };
 
-      const chart = new google.visualization.BarChart(
-        document.getElementById('categoryChart')
-      );
-      chart.draw(dataTable, options);
-  
-	  // ✅ 클릭 이벤트 추가 (차트 전체 클릭 시 확대)
-      google.visualization.events.addListener(chart, 'select', function() {
-    	  openChartModal(dataTable, options, 'BarChart');
-    	});
-	});
+  const chart = new google.visualization.BarChart(
+    document.getElementById('categoryChart')
+  );
+  chart.draw(dataTable, options);
 
-  // 2. 날짜별 추이 (ColumnChart)
-  fetch('${CP}/mypage/api/mypage/trend')
-    .then(response => response.json())
-    .then(data => {
-      if (!data.length) {
-        document.getElementById('trendChart').innerHTML =
-          "날짜별 추이 데이터가 없습니다.";
-        return;
-      }
-
-      const chartData = [['요일', '클릭수']];
-      data.forEach(item => chartData.push([item.dayOfWeek, item.clickCount]));
-
-      const dataTable = google.visualization.arrayToDataTable(chartData);
-      const options = {
-        chartArea: { width: '80%', height: '70%' },
-        colors: ['#10b981'],
-        legend: { position: 'none' },
-        animation: {
-            startup: true,          // 처음 로드할 때 실행
-            duration: 1000,         // 애니메이션 시간 (ms)
-            easing: 'out'           // 'linear', 'in', 'out', 'inAndOut' 가능
-          }
-        };
-
-      const chart = new google.visualization.ColumnChart(
-        document.getElementById('trendChart')
-      );
-      chart.draw(dataTable, options);
-
-      // ✅ ColumnChart도 확대 이벤트 추가
-      google.visualization.events.addListener(chart, 'select', function() {
-    	  openChartModal(dataTable, options, 'ColumnChart');
-    	});
-    });
+  // 확대 모달 열기(선택 이벤트 활용)
+  google.visualization.events.addListener(chart, 'select', function () {
+    if (typeof openChartModal === 'function') {
+      openChartModal(dataTable, options, 'BarChart');
+    }
+  });
 }
 
+// -------------------------------
+// 공통: 요일 추이 차트 렌더
+// -------------------------------
+function renderTrendChart(data) {
+  if (!data || data.length === 0) {
+    document.getElementById('trendChart').innerHTML = '날짜별 추이 데이터가 없습니다.';
+    return;
+  }
+
+  const chartData = [['요일', '클릭수']];
+  data.forEach(item => chartData.push([item.dayOfWeek, item.clickCount]));
+
+  const dataTable = google.visualization.arrayToDataTable(chartData);
+  const options = {
+    chartArea: { width: '80%', height: '70%' },
+    colors: ['#10b981'],
+    legend: { position: 'none' },
+    animation: { startup: true, duration: 800, easing: 'out' }
+  };
+
+  const chart = new google.visualization.ColumnChart(
+    document.getElementById('trendChart')
+  );
+  chart.draw(dataTable, options);
+
+  // 확대 모달 열기
+  google.visualization.events.addListener(chart, 'select', function () {
+    if (typeof openChartModal === 'function') {
+      openChartModal(dataTable, options, 'ColumnChart');
+    }
+  });
+}
+
+// -------------------------------
+// 초기 로딩: 이번 주 기준으로 두 차트 그림
+// -------------------------------
+function drawCharts() {
+  // 카테고리
+  fetch(`${CP}/mypage/api/mypage/chart`)
+    .then(r => r.json())
+    .then(renderCategoryChart);
+
+  // 요일 추이
+  fetch(`${CP}/mypage/api/mypage/trend`)
+    .then(r => r.json())
+    .then(renderTrendChart);
+
+  //구글 차트 요약
+  fetch('${CP}/mypage/api/mypage/summary')
+    .then(res => res.text())
+    .then(msg => {
+      document.getElementById("summary").innerText = msg;
+});
+
+}
+
+// -------------------------------
+// 주차 변경: weekOffset(0=이번 주, 1=지난 주)
+// -------------------------------
+function changeWeek(offset) {
+  // 요일 추이
+  fetch("${CP}/mypage/api/mypage/trend" +
+		"?weekOffset=" + offset)
+    .then(r => r.json())
+    .then(renderTrendChart);
+
+  // 카테고리
+  fetch("${CP}/mypage/api/mypage/chart" + 
+		"?weekOffset=" + offset)
+    .then(r => r.json())
+    .then(renderCategoryChart);
+
+
+  //요약
+  fetch("${CP}/mypage/api/mypage/summary" +
+		"?weekOffset=" + offset)
+     .then(res => res.text())
+     .then(msg=> {
+    	 document.getElementById("summary").innerText = msg;
+     });
+  
+ }
 </script>
 
 <script>

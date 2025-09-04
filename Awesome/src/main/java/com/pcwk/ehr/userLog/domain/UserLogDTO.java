@@ -17,6 +17,8 @@ public class UserLogDTO {
     private Long articleCode;   // ARTICLE_CODE
     private Date clickedAt;     // CLICKED_AT
     
+    //마이페이지 차트 조회용
+    private int weekOffset; // 0=이번 주, 1=지난 주
     
 
     // 기본 생성자
@@ -33,6 +35,9 @@ public class UserLogDTO {
 
 	
 	// Getter / Setter
+    
+    public int getWeekOffset() { return weekOffset; }
+    public void setWeekOffset(int weekOffset) { this.weekOffset = weekOffset; }
     
 	public String getNickNm() {return nickNm;}
 	public void setNickNm(String nickNm) {this.nickNm = nickNm;}
@@ -51,9 +56,8 @@ public class UserLogDTO {
 
 	@Override
 	public String toString() {
-		return "UserLogDTO [logCode=" + logCode + ", userId=" + userId + ", articleCode=" + articleCode + ", clickedAt="
-				+ clickedAt + "]";
+		return "UserLogDTO [nickNm=" + nickNm + ", logCode=" + logCode + ", userId=" + userId + ", articleCode="
+				+ articleCode + ", clickedAt=" + clickedAt + ", weekOffset=" + weekOffset + "]";
 	}
-
 
 }

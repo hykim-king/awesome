@@ -335,3 +335,34 @@
   font-size: 24px;
   cursor: pointer;
 }
+
+/* ============================= */
+/* 구글 차트 차수 선택 */
+/* ============================= */
+.week-nav {
+  display: flex;
+  justify-content: flex-end; /* 중앙 정렬 */
+  gap: 8px;                /* 버튼 간격 */
+  margin: 12px 0;          /* 위아래 여백 */
+}
+
+.week-nav button {
+  background-color: #e5f0ff;  /* 연한 파랑 */
+  color: #2563eb;             /* 파란 글씨 */
+  border: 1px solid #cbd5e1;  /* 옅은 테두리 */
+  padding: 3px 10px;          /* 작은 크기 */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.week-nav button:hover {
+  background-color: #bfdbfe;  /* hover 시 살짝 진하게 */
+  color: #1e40af;
+}
+
+.week-nav button:active {
+  background-color: #93c5fd;  /* 클릭 시 더 진하게 */
+}
