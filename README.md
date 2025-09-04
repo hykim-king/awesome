@@ -92,6 +92,7 @@
   <img width="780" height="524" alt="image" src="https://github.com/user-attachments/assets/c86e7084-4dd2-4c29-8492-710cce656094" />
   
 - 날씨 API
+  
   <img width="260" height="377" alt="image" src="https://github.com/user-attachments/assets/43bf47bc-8144-412c-9475-eb658fd51891" />
   
 ### 5-4. 기사 기능
