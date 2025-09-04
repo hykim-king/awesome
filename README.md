@@ -31,7 +31,10 @@
 
 ## 4. 프로젝트 수행 절차 및 방법
 ### 4-1. WBS (개발 일정)
-👉 
+<img width="1649" height="406" alt="image" src="https://github.com/user-attachments/assets/f4f2ce30-3b65-4cdd-90c9-b6d939a03f8e" />
+<img width="1144" height="340" alt="image" src="https://github.com/user-attachments/assets/a6bd96de-b5d6-4e7c-9178-425d93d8d7be" />
+<img width="1143" height="343" alt="image" src="https://github.com/user-attachments/assets/31ab15f6-3d8e-4e38-a418-381d38c4967f" />
+<img width="610" height="341" alt="image" src="https://github.com/user-attachments/assets/5ea4788d-f6ff-4c78-962a-34dd33a08ef8" />
 
 ### 4-2. 기능 정의서 & 요구사항
 👉
