@@ -155,6 +155,7 @@
   <img width="1141" height="540" alt="image" src="https://github.com/user-attachments/assets/c466a0db-8a16-4985-b297-6a72a8c79a7f" />
   
 - 신고 내역
+  
   <img width="417" height="443" alt="image" src="https://github.com/user-attachments/assets/b290d4ae-f691-48ef-8b05-46ff6022c741" />
 
 - 데이터 시각화 (차트, 워드 클라우드)
