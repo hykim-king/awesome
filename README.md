@@ -41,6 +41,7 @@
 ## 5. 구현 결과 (기능별 화면)
 ### 5-1. 회원 기능
 - 회원가입 (중복확인, 이메일 인증)
+<img src="src/main/webapp/resources/readme/login.png" alt="프로젝트 구조" width="360">
 - 로그인
 - 아이디/비밀번호 찾기
 
