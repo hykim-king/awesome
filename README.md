@@ -64,12 +64,9 @@
     <img src="Awesome/src/main/webapp/resources/readme/login.png" alt="로그인 화면" width="700">
   </p>
 - 아이디/비밀번호 찾기
-  <p align="left">
-    <img src="Awesome/src/main/webapp/resources/readme/findID.png" alt="아이디 찾기 화면" width="700">
-  </p>
-  <p align="left">
-    <img src="Awesome/src/main/webapp/resources/readme/findPassword.png" alt="비밀번호 찾기 화면" width="700">
-  </p>
+  <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/7418ea9c-3362-4974-abdb-c4f8839b8cd2" />
+  <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/eba99ffa-298a-49df-9f2b-aedf46519e88" />
+
 
 ### 5-2. 관리자 기능
 - 회원 관리 (검색, 등급 수정, 삭제)
