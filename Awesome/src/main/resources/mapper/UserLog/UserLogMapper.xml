@@ -59,44 +59,60 @@
     </select>  
   
   
-   <!-- 마이페이지 구글 차트 용 -->
+   <!-- 마이페이지 구글 차트 용  weekOffset : 0=이번 주, 1=지난 주 -->
    <!-- 유저별  클릭한 카테고리(횟수)-->
 	<select id="doRetrieveById" parameterType="UserLogDTO" resultType="UserChartDTO">
-	    SELECT
-	        CASE ar.category
-	            WHEN 10 THEN '정치'
-	            WHEN 20 THEN '경제'
-	            WHEN 30 THEN '사회/문화'
-	            WHEN 40 THEN '스포츠'
-	            WHEN 50 THEN '연예'
-	            WHEN 60 THEN 'IT/과학'
-	        END AS category,
-	        COUNT(*) AS clickCount
-	    FROM
-	        user_click_log ul
-	    JOIN article ar
-	        ON ul.article_code = ar.article_code
-	    WHERE
-	        ul.user_id = #{userId}
-	        AND TRUNC(ul.clicked_at) BETWEEN TRUNC(SYSDATE) - 7 AND TRUNC(SYSDATE)
-	        AND ar.category IS NOT NULL 
-	        AND ar.category IN (10, 20, 30, 40, 50, 60)   <!-- ✅ 지정된 카테고리만 -->
-	    GROUP BY
-	        ar.category
-	    ORDER BY
-	        clickCount DESC
+        <![CDATA[
+        SELECT
+            CASE ar.category
+                WHEN 10 THEN '정치'
+                WHEN 20 THEN '경제'
+                WHEN 30 THEN '사회/문화'
+                WHEN 40 THEN '스포츠'
+                WHEN 50 THEN '연예'
+                WHEN 60 THEN 'IT/과학'
+            END AS category,
+            COUNT(*) AS clickCount
+        FROM user_click_log ul
+        JOIN article ar
+            ON ul.article_code = ar.article_code
+        WHERE ul.user_id = #{userId}
+          AND ul.clicked_at >= TRUNC(SYSDATE,'IW') - (7 * #{weekOffset})
+          AND ul.clicked_at <  TRUNC(SYSDATE,'IW') - (7 * #{weekOffset}) + 7
+          AND ar.category IS NOT NULL
+          AND ar.category IN (10,20,30,40,50,60)
+        GROUP BY ar.category
+        ORDER BY clickCount DESC
+        ]]>
 	</select>
   
-  <!-- 유저별  시청한 기사(횟수)-->
+  <!-- 주간 클릭수 (요일별) weekOffset : 0=이번 주, 1=지난 주-->
   <select id="selectWeeklyTrend" parameterType="UserLogDTO" resultType="UserChartDTO">
-	  SELECT 
-	      TO_CHAR(l.clicked_at, 'DY', 'NLS_DATE_LANGUAGE=KOREAN') AS dayOfWeek,
-	      COUNT(*) AS clickCount
-	  FROM user_click_log l
-	  WHERE l.user_id = #{userId}
-	  GROUP BY TO_CHAR(l.clicked_at, 'DY', 'NLS_DATE_LANGUAGE=KOREAN'),
-	           TO_CHAR(l.clicked_at, 'D')
-	  ORDER BY TO_CHAR(l.clicked_at, 'D')
+        <![CDATA[
+        WITH week_days AS (
+          SELECT
+            TRUNC(SYSDATE,'IW') - (7 * #{weekOffset}) + (LEVEL-1) AS d,
+            TO_CHAR(TRUNC(SYSDATE,'IW') - (7 * #{weekOffset}) + (LEVEL-1),
+                    'FMDY', 'NLS_DATE_LANGUAGE=KOREAN') AS day_label,
+            LEVEL AS dow_num
+          FROM dual
+          CONNECT BY LEVEL <= 7
+        ),
+        clicks AS (
+          SELECT TRUNC(l.clicked_at) AS d, COUNT(*) AS cnt
+          FROM user_click_log l
+          WHERE l.user_id = #{userId}
+            AND l.clicked_at >= TRUNC(SYSDATE,'IW') - (7 * #{weekOffset})
+            AND l.clicked_at <  TRUNC(SYSDATE,'IW') - (7 * #{weekOffset}) + 7
+          GROUP BY TRUNC(l.clicked_at)
+        )
+        SELECT
+          w.day_label AS dayOfWeek,
+          NVL(c.cnt, 0) AS clickCount
+        FROM week_days w
+        LEFT JOIN clicks c ON c.d = w.d
+        ORDER BY w.dow_num
+        ]]>
 	</select>
 
   <!-- 전체 조회 -->

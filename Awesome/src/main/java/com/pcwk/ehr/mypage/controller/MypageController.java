@@ -355,7 +355,8 @@ public class MypageController {
 	 */
 	@GetMapping(value = "/api/mypage/summary", produces = "text/plain; charset=UTF-8")
 	@ResponseBody
-	public String getSummary(HttpSession session) {
+	public String getSummary(HttpSession session,
+			   				 @RequestParam(defaultValue = "0") int weekOffset) {
 	    log.debug("┌───────────────────────────────────────┐");
 	    log.debug("│ getSummary()                          │");
 	    log.debug("└───────────────────────────────────────┘");
@@ -365,23 +366,28 @@ public class MypageController {
 	    UserLogDTO param = new UserLogDTO();
 	    param.setUserId(loginUser.getUserId());
 	    param.setNickNm(loginUser.getNickNm());
+	    param.setWeekOffset(weekOffset);
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
-
+	    
 	    if (list == null || list.isEmpty()) {
-	        return "";
+	        return "안녕하세요 " + param.getNickNm()+"님" + (weekOffset == 0 ? "\n이번 주" : "\n지난 주") + " 기사를 읽으신 기록이 없습니다.";
 	    }
 
 	    UserChartDTO top = list.get(0);
-	    return "안녕하세요 " + param.getNickNm()+"님" + "\n이번 주 " + "'" + top.getCategory() + "'" + " 분야를 유심히 보셨네요.";
+	    String label = (weekOffset == 0) ? "\n이번 주 " : "\n지난 주 ";
+	    
+	    
+	    return "안녕하세요 " + param.getNickNm()+"님" +  label  + "'" + top.getCategory() + "'" + " 분야를 유심히 보셨네요.";
 	}
 	
 	/**
-	 * 차트 컨트롤러
+	 * 요일 별 차트 컨트롤러
 	 */
 	@GetMapping("/api/mypage/trend")
 	@ResponseBody
-	public List<UserChartDTO> getUserDate(HttpSession session) {
+	public List<UserChartDTO> getUserDate(HttpSession session,
+										  @RequestParam(defaultValue = "0") int weekOffset) {
 	    log.debug("┌───────────────────────────────────────┐");
 	    log.debug("│ getUserDate()                         │");
 	    log.debug("└───────────────────────────────────────┘");
@@ -391,6 +397,7 @@ public class MypageController {
 
 	    UserLogDTO param = new UserLogDTO();
 	    param.setUserId(loginUser.getUserId());
+	    param.setWeekOffset(weekOffset);
 
 	    List<UserChartDTO> list = userLogService.selectWeeklyTrend(param);
 
@@ -404,7 +411,8 @@ public class MypageController {
 	 */
 	@GetMapping("/api/mypage/chart")
 	@ResponseBody
-	public List<UserChartDTO> getUserChartData(HttpSession session) {
+	public List<UserChartDTO> getUserChartData(HttpSession session,
+									           @RequestParam(defaultValue = "0") int weekOffset) {
 	    log.debug("┌───────────────────────────────────────┐");
 	    log.debug("│ getUserChartData()                    │");
 	    log.debug("└───────────────────────────────────────┘");
@@ -414,6 +422,7 @@ public class MypageController {
 
 	    UserLogDTO param = new UserLogDTO();
 	    param.setUserId(loginUser.getUserId());
+	    param.setWeekOffset(weekOffset);
 
 	    List<UserChartDTO> list = userLogService.doRetrieveById(param);
 
