@@ -66,68 +66,95 @@
 - 아이디/비밀번호 찾기
   <p align="left">
     <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/7418ea9c-3362-4974-abdb-c4f8839b8cd2" />
+    
     <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/eba99ffa-298a-49df-9f2b-aedf46519e88" />
   </p>
 
 ### 5-2. 관리자 기능
 - 회원 관리 (검색, 등급 수정, 삭제)
   <img width="1651" height="734" alt="image" src="https://github.com/user-attachments/assets/5611b712-468f-4512-870d-345a964e4c7b" />
+  
 - 기사 관리 (검색, 삭제)
   <img width="1645" height="559" alt="image" src="https://github.com/user-attachments/assets/8d8335b3-4a96-4a6e-aeb7-77d1a2f2f75c" />
+  
 - 신고 관리 (조회, 상태 변경)
   <img width="1638" height="431" alt="image" src="https://github.com/user-attachments/assets/03ba36ae-960c-42a3-a3cd-04e8750755af" />
+  
 ### 5-3. 메인 페이지
 - 카테고리별 키워드
   <img width="1093" height="539" alt="image" src="https://github.com/user-attachments/assets/37308272-eda0-41cc-9ffd-e2f0048314aa" />
+  
 - 카테고리별 추천 기사
   <img width="1050" height="419" alt="image" src="https://github.com/user-attachments/assets/1c935f96-db68-4b26-aa3d-cf6f3f2e43a9" />
+  
 - 유저별 맞춤 기사
   <img width="780" height="524" alt="image" src="https://github.com/user-attachments/assets/c86e7084-4dd2-4c29-8492-710cce656094" />
+  
 - 날씨 API
   <img width="260" height="377" alt="image" src="https://github.com/user-attachments/assets/43bf47bc-8144-412c-9475-eb658fd51891" />
+  
 ### 5-4. 기사 기능
 - 전체 기사 조회
   <img width="1911" height="802" alt="image" src="https://github.com/user-attachments/assets/fb5fd41f-073d-421d-926e-ba0482fc167c" />
+  
 - 카테고리별 기사
   <img width="1889" height="791" alt="image" src="https://github.com/user-attachments/assets/27b15065-1fba-4864-9bff-a6220033757c" />
+  
 - 북마크 기능
   <img width="1110" height="620" alt="image" src="https://github.com/user-attachments/assets/357eec9c-7488-4c45-b66f-e01e36c51de0" />
+  
 
 ### 5-5. 퀴즈 기능
 - 일간/주간 퀴즈
   <img width="1891" height="789" alt="image" src="https://github.com/user-attachments/assets/80377427-0ce1-4938-8a53-c78f003e3ad5" />
+  
 - OX 형식 문제
   <img width="471" height="416" alt="image" src="https://github.com/user-attachments/assets/b3bd360a-7337-4d3b-b0ea-e7d6de6a9074" />
+  
 - 랭킹 시스템
   <img width="283" height="330" alt="image" src="https://github.com/user-attachments/assets/1e231d74-9d5a-440f-9d4e-20587d909d57" />
+  
 - 퀴즈 결과 및 해설
   <img width="690" height="568" alt="image" src="https://github.com/user-attachments/assets/c70fe97c-9bbb-456d-ab97-4599370c3fda" />
+  
   <img width="259" height="253" alt="image" src="https://github.com/user-attachments/assets/c0a48740-0ed8-426f-b18d-5a1bc2794dfb" />
+  
 ### 5-6. 사전 기능
 - 네이버 지식백과 API
   <img width="385" height="91" alt="image" src="https://github.com/user-attachments/assets/8829a84d-e25c-43ae-a360-f8691ee203cd" />
+  
 - 단어 검색 / 기사 내 단어 선택 검색
   <img width="377" height="218" alt="image" src="https://github.com/user-attachments/assets/5f78af97-ae2a-4a8e-88eb-93b1988e6d08" />
+  
 ### 5-7. 커뮤니티 & 채팅
 - 로그인 전: 읽기 전용
   <img width="390" height="473" alt="image" src="https://github.com/user-attachments/assets/8c30042e-e842-4672-8c7b-6d2f1207cfeb" />
+  
 - 로그인 후: 실시간 채팅 + 댓글 신고
   <img width="387" height="472" alt="image" src="https://github.com/user-attachments/assets/c742ed50-e8ab-4ab5-a4bf-a5941dee9a17" />
+  
 ### 5-8. 마이페이지
 - 내가 북마크한 기사
   <img width="1124" height="743" alt="image" src="https://github.com/user-attachments/assets/8290b7f6-f011-413c-be9a-d99c59341d27" />
+  
 - 나를 위한 추천 기사
   <img width="1141" height="540" alt="image" src="https://github.com/user-attachments/assets/c466a0db-8a16-4985-b297-6a72a8c79a7f" />
+  
 - 신고 내역
   <img width="407" height="407" alt="image" src="https://github.com/user-attachments/assets/9a3bf885-3892-4969-a68f-f40f82fc924f" />
+  
 - 데이터 시각화 (차트, 워드 클라우드)
   <img width="1075" height="444" alt="image" src="https://github.com/user-attachments/assets/94567da2-1195-4ab5-af52-34f69f28a753" />
+  
   <img width="1527" height="487" alt="image" src="https://github.com/user-attachments/assets/c50b38be-fc67-4920-a7e3-3f9e0238ddbf" />
+  
 ### 5-9. 챗봇
 - 키워드/카테고리 질문
   <img width="298" height="207" alt="image" src="https://github.com/user-attachments/assets/f0a36040-8297-4780-b7ff-434537af58fc" />
+  
 - 기사 추천 기능
   <img width="326" height="396" alt="image" src="https://github.com/user-attachments/assets/36564ed5-0053-45ed-844c-26133aa8482b" />
+  
 ---
 
 ## 6. 테스트 및 산출물
