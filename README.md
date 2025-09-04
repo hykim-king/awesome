@@ -17,7 +17,8 @@
 
 
 ### 1-4. 프로젝트 선정 기준
-<img width="619" height="419" alt="image" src="https://github.com/user-attachments/assets/5b21833a-2fd1-46ad-8d38-e6778bbd15ec" />
+<img width="629" height="365" alt="image" src="https://github.com/user-attachments/assets/210238b3-e575-4e86-9fee-85789220dd06" />
+
 
 ### 1-5. 기대 효과
 <img width="639" height="566" alt="image" src="https://github.com/user-attachments/assets/64af33ee-17af-41ba-b342-e20edfe14410" />
