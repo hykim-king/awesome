@@ -92,7 +92,7 @@
 - 기사 관리 (검색, 삭제)
   <img width="1645" height="559" alt="image" src="https://github.com/user-attachments/assets/8d8335b3-4a96-4a6e-aeb7-77d1a2f2f75c" />
   
-- 신고 관리 (조회, 상태 변경)
+- 신고 관리 (조회, 상태 변경, 삭제)
   <img width="1638" height="431" alt="image" src="https://github.com/user-attachments/assets/03ba36ae-960c-42a3-a3cd-04e8750755af" />
   
 ### 5-3. 메인 페이지
