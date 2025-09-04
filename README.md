@@ -50,7 +50,10 @@
   </p>
 - 아이디/비밀번호 찾기
   <p align="left">
-    <img src="Awesome/src/main/webapp/resources/readme/findID.png" alt="기 화면" width="700">
+    <img src="Awesome/src/main/webapp/resources/readme/findID.png" alt="아이디 찾기 화면" width="700">
+  </p>
+  <p align="left">
+    <img src="Awesome/src/main/webapp/resources/readme/findPassword.png" alt="비밀번호 찾기 화면" width="700">
   </p>
 
 ### 5-2. 관리자 기능
