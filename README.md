@@ -1,39 +1,54 @@
 # 📰 Hot Issue
-뉴스 요약 & 퀴즈 기반 참여형 뉴스 플랫폼  
-팀명: **Awesome (어썸)**  
-기간: **2025.07.15 ~ 2025.09.05**
 
+> 🔥 **뉴스 요약 & 퀴즈 기반 참여형 뉴스 플랫폼**  
+
+👥 **팀명**: Awesome (어썸)  
+⏰ **기간**: 2025.07.15 ~ 2025.09.05  
+📍 **주제**: 당일의 이슈 요약 · AI 추천 · 퀴즈 · 커뮤니티
+
+---
 
 
 ## 1. 프로젝트 소개
-### 1-2. 프로젝트 개요
-<img width="605" height="644" alt="image" src="https://github.com/user-attachments/assets/c0d818ae-fced-4aac-96ee-349b0a393aa6" />
 
-### 1-3. 프로젝트 배경
-<img width="552" height="427" alt="image" src="https://github.com/user-attachments/assets/5c7234d2-e0d0-445e-8aa2-f9c0e0164cea" />
-<img width="613" height="398" alt="image" src="https://github.com/user-attachments/assets/d311bde7-4ceb-47f1-81bf-f7d3938a4031" />
-<img width="612" height="282" alt="image" src="https://github.com/user-attachments/assets/b6402ddc-020e-4e84-b751-6a4161c9a506" />
-<img width="607" height="513" alt="image" src="https://github.com/user-attachments/assets/eed932cf-e4e4-4ab2-8e6a-cf0867a95b7c" />
+### 1-1. 프로젝트 배경 및 선정사유
+- 뉴스 소비 환경의 변화: TV/신문 ↓, 인터넷 뉴스 ↑
+- 정보 과잉으로 인한 사용자 피로도 증가
+- 맞춤형 뉴스 경험의 부재
+- 뉴스의 학습 매체로서의 확장 가능성
+- “나라도 쓰고 싶은” 뉴스 플랫폼
 
+### 1-2. 프로젝트 목표
+- **실시간 주요 이슈 제공** : 분야별 주요 키워드를 AI 기반으로 추출하여 당일의 이슈를 효율적으로 파악할 수 있도록 지원
+- **시사 상식 강화**: 수집된 뉴스를 기반으로 퀴즈를 생성하고 랭킹 시스템을 도입하여, 학습·참여형 뉴스 소비 경험 제공
+- **의견 교류 공간 제공**: 특정 기사가 아닌 주제 단위의 토론·댓글 기능을 지원하여, 사용자 간 건전한 소통 및 공론장 형성을 유도
+- **주요 타깃 사용자**: 디지털 환경에 익숙하며 시사 정보의 습득과 참여를 동시에 추구하는 뉴스 콘텐츠 소비자
 
-### 1-4. 프로젝트 선정 기준
-<img width="629" height="365" alt="image" src="https://github.com/user-attachments/assets/210238b3-e575-4e86-9fee-85789220dd06" />
+### 1-3. 기대 효과
+- **사용자 경험**: 뉴스 피로도 ↓, 맞춤형 추천, 능동적 참여  
+- **교육/학습**: 시사 퀴즈 학습, 어휘력·배경지식 강화  
+- **사회적 영향**: 신뢰성 있는 뉴스 소비, 건강한 공론장 형성  
 
+---
 
-### 1-5. 기대 효과
-<img width="639" height="566" alt="image" src="https://github.com/user-attachments/assets/64af33ee-17af-41ba-b342-e20edfe14410" />
-
-
-
-## 2. 개발 환경 및 기술 스택
-<img width="1059" height="549" alt="image" src="https://github.com/user-attachments/assets/63ece1ec-e8af-46a6-87bd-7830342a83b9" />
+## 2. 개발 환경 및 활용 기술
+- **언어**: Java, Python, Oracle SQL, HTML/CSS/JavaScript
+- **프레임워크**: Spring Framework
+- **개발 도구**: STS, Eclipse, SQL Developer, VSCode, Figma, Pycharm
+- **빌드 도구**: Maven
+- **형상 관리**: Git, GitHub
+- **아키텍처**: MVC 패턴
+- **AI 모델**: OpenAI
+- **외부 API**: 네이버 지식백과 API, 기상청 초단기예보 API
+- **ERD & DB 설계**  
+<img width="1826" height="844" alt="image" src="https://github.com/user-attachments/assets/c5df29c7-2aa6-4710-ba30-2a8a01903a9b" />
 
 
 ## 3. 프로젝트 팀 구성
 | 이름 | 역할 |
 |------|------|
 | 이종민 (팀장) | 기획/분석 총괄, 회의록, 최종 발표, 전체 기사/카테고리별 기사 페이지, 챗봇 기능 |
-| 가민경 | 기획 발표 |
+| 가민경 | 기획 발표, 메인 페이지 UI/UX 구현, 추천 기사 기능 개발, 사용자 로그 설계 및 시각화, 외부API 연동|
 | 임두나 | PPT, 회의록 |
 | 이병헌 | WBS, 화면/파일 설계서, 기획 발표 |
 | 양승현 | 기획서 작성 |
