@@ -252,9 +252,15 @@ https://github.com/user-attachments/assets/6eb01e0b-f3bb-4c69-9a32-00bbdf118f0f
 
 
 챗봇
+https://github.com/user-attachments/assets/a6ceea86-8f95-4dfb-ac95-e2f2990b85a1
+
 
 
 회원가입
+
+
+https://github.com/user-attachments/assets/ddea8800-c0e6-4407-864c-f22938075010
+
 
 
 신고
